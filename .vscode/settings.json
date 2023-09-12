@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,
+  "C_Cpp.default.compileCommands": "builddir/compile_commands.json",
+  "cmake.configureOnOpen": false,
+  "clangd.arguments": [
+    "--compile-commands-dir=builddir",
+    "--header-insertion=iwyu"
+  ],
+  "files.associations": {
+    ".clangd": "yaml"
+  }
+}

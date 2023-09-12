@@ -1,0 +1,4 @@
+option('enable_tests',
+    type: 'boolean',
+    value: false,
+    description: 'build tests by default')

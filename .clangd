@@ -1,0 +1,8 @@
+CompileFlags:
+  # GCC recommendation on optimization for debugging
+  Add: ["-Og"]
+  Remove: ["-O"]
+InlayHints:
+  # inlay hints sometimes get very noisy
+  Designators: No
+  ParameterNames: No
