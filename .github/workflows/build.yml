@@ -1,0 +1,46 @@
+name: build
+run-name: Build
+on:
+  workflow_dispatch:
+  push:
+    branches: [trunk]
+  pull_request:
+    branches: [trunk]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+        O: [2, 3]
+        sanitize: [none]
+        include:
+          - cc: gcc
+            O: g
+            sanitize: address
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Meson and dependencies
+        run: apt-get install meson ninja check
+      - name: Configure project
+        run: |
+          mkdir builddir
+          meson setup \
+            CC={{ matrix.cc }} \
+            --backend=ninja \
+            --debug \
+            --optimization={{ matrix.O }}
+            --prefix=/usr \
+            --strip \
+            -Db_pie=true
+            -Db_sanitize={{ matrix.sanitize }}
+            -Denable_tests=true
+            builddir
+      - name: Build
+        run: ninja V=1 -C builddir all
+      - name: Test
+        run: ninja -C builddir test
+      - name: Install
+        run: |
+          mkdir install_tree
+          meson install --destdir=install_tree

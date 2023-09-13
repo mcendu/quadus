@@ -5,7 +5,7 @@ project('quadus', 'c',
     default_options: [
         'buildtype=debugoptimized',
         'strip=true',
-        'c_std=gnu17,gnu2x,gnu11,c17,c2x,c11',
+        'c_std=gnu17',
     ],
 )
 
