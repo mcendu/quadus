@@ -208,11 +208,11 @@ QDS_API bool qdsPlayfieldCanRotate(qdsPlayfield *p, int x, int y, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	rotation = (rotation + p->orientation) % 4;
+	rotation = (unsigned)(rotation + p->orientation) % 4;
 	x += p->x;
 	y += p->y;
 
-	const qdsCoords *shape = p->rs->getShape(p->piece, p->orientation);
+	const qdsCoords *shape = p->rs->getShape(p->piece, rotation);
 	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
 		int bx = x + b->x;
 		int by = y + b->y;

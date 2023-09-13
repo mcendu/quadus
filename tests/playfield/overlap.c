@@ -42,7 +42,7 @@ static void teardown(void)
 	qdsPlayfieldCleanup(game);
 }
 
-START_TEST(testOverlapInBounds)
+START_TEST(inbounds)
 {
 	/*
 	 *  QDS_API const piecedef qdsPieceO = {
@@ -85,7 +85,7 @@ START_TEST(testOverlapInBounds)
 }
 END_TEST
 
-START_TEST(testOverlapOutOfBounds)
+START_TEST(outofbounds)
 {
 	qdsPlayfieldSpawn(game, QDS_PIECE_O);
 	ck_assert(!qdsPlayfieldOverlaps(game));
@@ -109,14 +109,27 @@ START_TEST(testOverlapOutOfBounds)
 }
 END_TEST
 
+START_TEST(rotated)
+{
+	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+	game->y = 0;
+
+	ck_assert(!qdsPlayfieldOverlaps(game));
+	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, QDS_ROTATE_CLOCKWISE));
+	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, 2));
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsPlayfieldCanRotate");
 
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);
-	tcase_add_test(c, testOverlapInBounds);
-	tcase_add_test(c, testOverlapOutOfBounds);
+	tcase_add_test(c, inbounds);
+	tcase_add_test(c, outofbounds);
+	tcase_add_test(c, rotated);
 	suite_add_tcase(s, c);
 
 	return s;

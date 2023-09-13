@@ -84,6 +84,20 @@ START_TEST(base)
 }
 END_TEST
 
+START_TEST(collision)
+{
+	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+
+	game->y = 0;
+	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
+					 QDS_PLAYFIELD_ROTATE_FAILED);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
+					 QDS_PLAYFIELD_ROTATE_FAILED);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsPlayfieldRotate");
@@ -91,6 +105,7 @@ Suite *createSuite(void)
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, base);
+	tcase_add_test(c, collision);
 	suite_add_tcase(s, c);
 
 	return s;
