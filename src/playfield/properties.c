@@ -36,12 +36,17 @@ QDS_API qdsTile (*qdsPlayfieldGetPlayfield(qdsPlayfield *p))[10]
 	return p->playfield;
 }
 
-QDS_API qdsMino *qdsPlayfieldGetActive(qdsPlayfield *p, int *x, int *y)
+QDS_API void qdsPlayfieldGetActive(qdsPlayfield *p,
+								   int *x,
+								   int *y,
+								   int *type,
+								   unsigned *orientation)
 {
 	assert((p != NULL));
-	if (x != NULL) *x = p->x;
-	if (y != NULL) *y = p->y;
-	return &(p->active);
+	if (x) *x = p->x;
+	if (y) *y = p->y;
+	if (type) *type = p->piece;
+	if (orientation) *orientation = p->orientation;
 }
 
 QDS_API int qdsPlayfieldGetNextPiece(qdsPlayfield *p, int pos)

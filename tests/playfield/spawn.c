@@ -57,8 +57,8 @@ START_TEST(test_spawnSet)
 	ck_assert_int_ne(modeData->spawnCount, 0);
 	ck_assert_int_eq(rsData->spawnType, QDS_PIECE_I);
 
-	ck_assert_int_eq(game->active.type, QDS_PIECE_I);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->piece, QDS_PIECE_I);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 	ck_assert_int_eq(game->x, 4);
 	ck_assert_int_eq(game->y, 20);
 
@@ -76,8 +76,8 @@ START_TEST(test_spawnNext)
 	ck_assert(qdsPlayfieldSpawn(game, 0));
 	ck_assert_int_ne(rsData->shiftCount, 0);
 
-	ck_assert_int_eq(game->active.type, QDS_PIECE_O);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->piece, QDS_PIECE_O);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 	ck_assert_int_eq(game->x, 4);
 	ck_assert_int_eq(game->y, 20);
 

@@ -29,7 +29,6 @@ extern "C" {
 
 #include <stdbool.h>
 
-#include <mino.h>
 #include <qdsbuild.h>
 
 #define QDS_INPUT_LEFT 1
@@ -44,6 +43,15 @@ extern "C" {
 #define QDS_DROP_GRAVITY 0
 #define QDS_DROP_HARD 1
 #define QDS_DROP_SOFT 2
+
+#define QDS_ROTATE_NONE 0
+#define QDS_ROTATE_CLOCKWISE 1
+#define QDS_ROTATE_COUNTERCLOCKWISE -1
+
+#define QDS_ORIENTATION_BASE 0
+#define QDS_ORIENTATION_C 1
+#define QDS_ORIENTATION_FLIP 2
+#define QDS_ORIENTATION_CC 3
 
 /*
  * Results for rotation.
@@ -126,7 +134,11 @@ QDS_API qdsTile (*qdsPlayfieldGetPlayfield(qdsPlayfield *))[10];
 /**
  * Get the active piece.
  */
-QDS_API qdsMino *qdsPlayfieldGetActive(qdsPlayfield *, int *x, int *y);
+QDS_API void qdsPlayfieldGetActive(qdsPlayfield *,
+								   int *x,
+								   int *y,
+								   int *type,
+								   unsigned *orientation);
 /**
  * Get the piece at a specific position in the queue.
  */

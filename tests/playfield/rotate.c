@@ -27,7 +27,6 @@
 
 #include "mockruleset.h"
 #include <game.h>
-#include <mino.h>
 #include <piece.h>
 #include <playfield.h>
 
@@ -53,35 +52,35 @@ static void teardown(void)
 START_TEST(base)
 {
 	qdsPlayfieldSpawn(game, QDS_PIECE_T);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_C);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_FLIP);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
 
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_CC);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_CC);
 
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_CC);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_CC);
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_FLIP);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_C);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
 	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_NORMAL);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 }
 END_TEST
 

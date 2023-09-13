@@ -29,7 +29,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <mino.h>
 #include <mode.h>
 #include <rs.h>
 #include <threads.h>
@@ -77,7 +76,8 @@ QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
 
 	EMIT_CANCELLABLE(p, onSpawn, false, p, type);
 
-	p->active = (qdsMino){ type, 0 };
+	p->piece = type;
+	p->orientation = 0;
 	p->x = p->rs->spawnX(p);
 	p->y = p->rs->spawnY(p);
 
@@ -146,7 +146,7 @@ QDS_API int qdsPlayfieldRotate(qdsPlayfield *p, int rotation)
 
 	p->x += x;
 	p->y += y;
-	p->active.orientation = (p->active.orientation + rotation) % 4;
+	p->orientation = (p->orientation + rotation) % 4;
 	return result;
 }
 
@@ -159,18 +159,18 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 
 	EMIT_CANCELLABLE(p, onLock, false, p);
 
-	const qdsCoords *shape
-		= p->rs->getShape(p->active.type, p->active.orientation);
+	const qdsCoords *shape = p->rs->getShape(p->piece, p->orientation);
 	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
 		int x = p->x + b->x;
 		int y = p->y + b->y;
-		p->playfield[y][x] = p->active.type; /* for piece coloring */
+		p->playfield[y][x] = p->piece; /* for piece coloring */
 
 		if (y > p->top) p->top = y;
 
 		if (lineFilled(p, y)) EMIT(p, onLineFilled, p, y);
 	}
-	p->active = (qdsMino){ 0, 0 };
+	p->piece = 0;
+	p->orientation = 0;
 	return true;
 }
 
@@ -181,7 +181,7 @@ QDS_API int qdsPlayfieldHold(qdsPlayfield *p)
 	assert((p->mode != NULL));
 	EMIT_CANCELLABLE(p, onHold, QDS_PLAYFIELD_HOLD_BLOCKED, p);
 
-	int active = p->active.type;
+	int active = p->piece;
 	/* spawn already draws from the queue when hold is empty */
 	bool overlaps = !qdsPlayfieldSpawn(p, p->hold);
 	p->hold = active;
@@ -208,12 +208,11 @@ QDS_API bool qdsPlayfieldCanRotate(qdsPlayfield *p, int x, int y, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	rotation = (rotation + p->active.orientation) % 4;
+	rotation = (rotation + p->orientation) % 4;
 	x += p->x;
 	y += p->y;
 
-	const qdsCoords *shape
-		= p->rs->getShape(p->active.type, p->active.orientation);
+	const qdsCoords *shape = p->rs->getShape(p->piece, p->orientation);
 	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
 		int bx = x + b->x;
 		int by = y + b->y;

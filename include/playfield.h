@@ -30,7 +30,6 @@
 extern "C" {
 #endif
 
-#include <mino.h>
 #include <mode.h>
 #include <qdsbuild.h>
 #include <rs.h>
@@ -54,7 +53,8 @@ typedef struct qdsPlayfield
 	qdsTile playfield[48][10];
 	int x;
 	int y;
-	qdsMino active;
+	int piece;
+	unsigned orientation;
 	int top;
 	int hold;
 

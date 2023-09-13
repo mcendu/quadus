@@ -41,8 +41,8 @@ void teardown(void)
 START_TEST(testInit)
 {
 	ck_assert_int_eq(game->hold, 0);
-	ck_assert_int_eq(game->active.type, QDS_PIECE_NONE);
-	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
+	ck_assert_int_eq(game->piece, QDS_PIECE_NONE);
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 	ck_assert_ptr_null(game->rs);
 	ck_assert_ptr_null(game->rsData);
 	ck_assert_ptr_null(game->mode);

@@ -35,7 +35,8 @@ QDS_API void qdsPlayfieldInit(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	memset(p->playfield, 0, sizeof(p->playfield));
-	p->active = (qdsMino){ QDS_PIECE_NONE, QDS_ORIENTATION_BASE };
+	p->piece = QDS_PIECE_NONE;
+	p->orientation = QDS_ORIENTATION_BASE;
 	p->top = -1; /* no lines */
 	p->hold = 0;
 	p->rs = NULL;

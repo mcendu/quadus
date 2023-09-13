@@ -30,8 +30,6 @@
 extern "C" {
 #endif
 
-#include <stdalign.h>
-
 #include <qdsbuild.h>
 
 /**
