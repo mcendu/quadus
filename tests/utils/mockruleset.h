@@ -68,6 +68,7 @@ typedef struct mockRulesetData
 	int lineClearCount;
 	int topOutCount;
 
+	bool blockSpawn : 1;
 	bool blockMove : 1;
 	bool blockRotate : 1;
 	bool blockDrop : 1;

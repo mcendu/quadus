@@ -39,11 +39,12 @@ static void destroy(void *data)
 	free(data);
 }
 
-static void onSpawnRs(qdsPlayfield *game, int type)
+static bool onSpawnRs(qdsPlayfield *game, int type)
 {
 	struct mockRulesetData *data = game->rsData;
 	data->spawnCount++;
 	data->spawnType = type;
+	return !data->blockSpawn;
 }
 
 static bool onMoveRs(qdsPlayfield *game, int offset)
@@ -189,11 +190,12 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.canRotate = rotationCheck,
 };
 
-static void onSpawnMode(qdsPlayfield *game, int type)
+static bool onSpawnMode(qdsPlayfield *game, int type)
 {
 	struct mockRulesetData *data = game->modeData;
 	data->spawnCount++;
 	data->spawnType = type;
+	return !data->blockSpawn;
 }
 
 static bool onMoveMode(qdsPlayfield *game, int offset)

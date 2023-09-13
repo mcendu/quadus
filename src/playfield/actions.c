@@ -74,17 +74,14 @@ QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
 
 	if (type == 0) type = p->rs->shiftPiece(p->rsData);
 
-	EMIT(p, onSpawn, p, type);
+	EMIT_CANCELLABLE(p, onSpawn, false, p, type);
 
 	p->active = (qdsMino){ type, 0 };
 	p->x = p->rs->spawnX(p);
 	p->y = p->rs->spawnY(p);
 
 	bool overlaps = qdsPlayfieldOverlaps(p);
-	if (overlaps) {
-		if (p->rs->onTopOut) p->rs->onTopOut(p);
-		if (p->mode->onTopOut) p->mode->onTopOut(p);
-	}
+	if (overlaps) EMIT(p, onTopOut, p);
 
 	return !overlaps;
 }

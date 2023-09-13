@@ -26,6 +26,7 @@
 #include <mode.h>
 #include <playfield.h>
 #include <rs.h>
+#include <stdbool.h>
 
 static qdsPlayfield gamed;
 static qdsPlayfield *game = &gamed;
@@ -85,6 +86,29 @@ START_TEST(test_spawnNext)
 }
 END_TEST
 
+START_TEST(test_blockSpawn)
+{
+	ck_assert_int_eq(rsData->blockSpawn, false);
+	ck_assert_int_eq(modeData->blockSpawn, false);
+
+	/*
+	 * allowing spawn to be cancelled in ruleset is not useful, but
+	 * simplifies implementation
+	 */
+	ck_assert(qdsPlayfieldSpawn(game, QDS_PIECE_I));
+	rsData->blockSpawn = true;
+	ck_assert(!qdsPlayfieldSpawn(game, QDS_PIECE_I));
+	rsData->blockSpawn = false;
+
+	ck_assert(qdsPlayfieldSpawn(game, QDS_PIECE_I));
+	modeData->blockSpawn = true;
+	ck_assert(!qdsPlayfieldSpawn(game, QDS_PIECE_I));
+	modeData->blockSpawn = false;
+
+	ck_assert(qdsPlayfieldSpawn(game, QDS_PIECE_I));
+}
+END_TEST
+
 START_TEST(test_topOut)
 {
 	ck_assert_int_eq(rsData->topOutCount, 0);
@@ -132,6 +156,7 @@ Suite *createSuite(void)
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, test_spawnSet);
 	tcase_add_test(c, test_spawnNext);
+	tcase_add_test(c, test_blockSpawn);
 	tcase_add_test(c, test_topOut);
 	suite_add_tcase(s, c);
 
