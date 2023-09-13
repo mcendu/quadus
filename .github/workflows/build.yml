@@ -25,8 +25,8 @@ jobs:
       - name: Configure project
         run: |
           mkdir builddir
-          meson setup \
-            CC={{ matrix.cc }} \
+          CC={{ matrix.cc }} \
+            meson setup \
             --backend=ninja \
             --debug \
             --optimization={{ matrix.O }}

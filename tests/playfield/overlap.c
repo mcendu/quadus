@@ -42,20 +42,6 @@ static void teardown(void)
 	qdsPlayfieldCleanup(game);
 }
 
-static const qdsTile field_basic[][10] = {
-	{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-};
-
-static const qdsTile field_tspin[][10] = {
-	{ 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 0, 0, 0, 1, 1, 1, 1 },
-	{ 0, 0, 1, 1, 0, 0, 1, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-};
-
 START_TEST(testOverlapInBounds)
 {
 	/*
@@ -66,22 +52,46 @@ START_TEST(testOverlapInBounds)
 	 *  	(const coords[]){ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, END },
 	 *  };
 	 */
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsTile(*playfield)[10] = qdsPlayfieldGetPlayfield(game);
 
-	qdsTile (*playfield)[10] = qdsPlayfieldGetPlayfield(game);
+	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	ck_assert(!qdsPlayfieldOverlaps(game));
+	game->x = 0;
+	game->y = 0;
+	ck_assert(!qdsPlayfieldOverlaps(game));
 
 	/* set a single tile */
 	playfield[4][4] = 1;
+
+	ck_assert(qdsPlayfieldCanMove(game, 5, 5));
+	ck_assert(qdsPlayfieldCanMove(game, 5, 4));
+	ck_assert(qdsPlayfieldCanMove(game, 5, 3));
+	ck_assert(qdsPlayfieldCanMove(game, 5, 2));
+	ck_assert(qdsPlayfieldCanMove(game, 4, 2));
+	ck_assert(qdsPlayfieldCanMove(game, 3, 2));
+	ck_assert(qdsPlayfieldCanMove(game, 2, 2));
+	ck_assert(qdsPlayfieldCanMove(game, 2, 3));
+	ck_assert(qdsPlayfieldCanMove(game, 2, 4));
+	ck_assert(qdsPlayfieldCanMove(game, 2, 5));
+	ck_assert(qdsPlayfieldCanMove(game, 3, 5));
+	ck_assert(qdsPlayfieldCanMove(game, 4, 5));
+
+	ck_assert(!qdsPlayfieldCanMove(game, 4, 4));
+	ck_assert(!qdsPlayfieldCanMove(game, 3, 4));
+	ck_assert(!qdsPlayfieldCanMove(game, 3, 3));
+	ck_assert(!qdsPlayfieldCanMove(game, 4, 3));
+
+	ck_assert(qdsPlayfieldCanMove(game, 5, 6));
 }
 END_TEST
 
 START_TEST(testOverlapOutOfBounds)
 {
 	qdsPlayfieldSpawn(game, QDS_PIECE_O);
-	ck_assert(qdsPlayfieldCanRotate(game, 0, 0, 0));
+	ck_assert(!qdsPlayfieldOverlaps(game));
 	game->x = 0;
 	game->y = 0;
-	ck_assert(qdsPlayfieldCanRotate(game, 0, 0, 0));
+	ck_assert(!qdsPlayfieldOverlaps(game));
 
 	/* below the ground */
 	ck_assert(!qdsPlayfieldCanMove(game, 4, -1));
