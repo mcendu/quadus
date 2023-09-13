@@ -2,7 +2,7 @@ tests_playfield = [
     ['testPlayfieldInit', 'init.c'],
     ['testPlayfieldSpawn', 'spawn.c'],
     ['testPlayfieldCanRotate', 'overlap.c'],
-#    ['testPlayfieldMove', 'move.c']
+    ['testPlayfieldMove', 'move.c']
 ]
 
 foreach t : tests_playfield

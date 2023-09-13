@@ -26,7 +26,27 @@
 #include <playfield.h>
 #include <rs.h>
 
+#include "game.h"
 #include "mockruleset.h"
+
+/**
+ * Define mock ruleset and gamemode event handlers.
+ *
+ * WARNING: This is a C preprocessor hack. the comma operator should
+ * always be wrapped in parentheses. Do not insert a semicolon after
+ * this macro.
+ */
+#define EVENT_HANDLER(name, rettype, body, game, ...)    \
+	static rettype name##Rs(__VA_ARGS__)                 \
+	{                                                    \
+		struct mockRulesetData *data = (game)->rsData;   \
+		body                                             \
+	}                                                    \
+	static rettype name##Mode(__VA_ARGS__)               \
+	{                                                    \
+		struct mockRulesetData *data = (game)->modeData; \
+		body                                             \
+	}
 
 static void *init()
 {
@@ -39,21 +59,29 @@ static void destroy(void *data)
 	free(data);
 }
 
-static bool onSpawnRs(qdsPlayfield *game, int type)
-{
-	struct mockRulesetData *data = game->rsData;
-	data->spawnCount++;
-	data->spawnType = type;
-	return !data->blockSpawn;
-}
+EVENT_HANDLER(
+	onSpawn,
+	bool,
+	{
+		data->spawnCount++;
+		data->spawnType = type;
+		return !data->blockSpawn;
+	},
+	game,
+	qdsPlayfield *game,
+	int type)
 
-static bool onMoveRs(qdsPlayfield *game, int offset)
-{
-	struct mockRulesetData *data = game->rsData;
-
-	data->moveCount++;
-	return !data->blockMove;
-}
+EVENT_HANDLER(
+	onMove,
+	bool,
+	{
+		data->moveCount++;
+		data->moveOffset = offset;
+		return !data->blockMove;
+	},
+	game,
+	qdsPlayfield *game,
+	int offset)
 
 static int onRotateRs(qdsPlayfield *game, int rotation)
 {
@@ -189,22 +217,6 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.getShape = getShape,
 	.canRotate = rotationCheck,
 };
-
-static bool onSpawnMode(qdsPlayfield *game, int type)
-{
-	struct mockRulesetData *data = game->modeData;
-	data->spawnCount++;
-	data->spawnType = type;
-	return !data->blockSpawn;
-}
-
-static bool onMoveMode(qdsPlayfield *game, int offset)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->moveCount++;
-	return !data->blockMove;
-}
 
 static int onRotateMode(qdsPlayfield *game, int rotation)
 {

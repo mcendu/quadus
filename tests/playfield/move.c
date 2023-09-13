@@ -20,3 +20,145 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <check.h>
+
+#include <stdbool.h>
+
+#include "mockruleset.h"
+#include <game.h>
+#include <playfield.h>
+
+static qdsPlayfield game[1];
+static mockRulesetData *rsData;
+static mockRulesetData *modeData;
+
+static void setup(void)
+{
+	qdsPlayfieldInit(game);
+	qdsPlayfieldSetRuleset(game, mockRuleset);
+	qdsPlayfieldSetMode(game, mockGamemode);
+
+	rsData = game->rsData;
+	modeData = game->modeData;
+}
+
+static void teardown(void)
+{
+	qdsPlayfieldCleanup(game);
+}
+
+START_TEST(base)
+{
+	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	ck_assert_int_eq(game->x, 4);
+
+	/*
+	 * |. . . . [][]. . . . |    |. . . . . [][]. . . |
+	 * |. . . . [][]. . . . | => |. . . . . [][]. . . |
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	ck_assert_int_eq(rsData->moveCount, 0);
+	ck_assert_int_eq(modeData->moveCount, 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 1);
+	ck_assert_int_eq(game->x, 5);
+	ck_assert_int_ne(rsData->moveCount, 0);
+	ck_assert_int_ne(modeData->moveCount, 0);
+	ck_assert_int_eq(rsData->moveOffset, 1);
+	ck_assert_int_eq(modeData->moveOffset, 1);
+
+	/*
+	 * |. . . . . [][]. . . |    |. . . . [][]. . . . |
+	 * |. . . . . [][]. . . | => |. . . . [][]. . . . |
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	ck_assert_int_eq(qdsPlayfieldMove(game, -1), -1);
+	ck_assert_int_eq(rsData->moveOffset, -1);
+	ck_assert_int_eq(modeData->moveOffset, -1);
+	ck_assert_int_eq(game->x, 4);
+
+	/*
+	 * |. . . . [][]. . . . |    |. . . . . . [][]. . |
+	 * |. . . . [][]. . . . | => |. . . . . . [][]. . |
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	ck_assert_int_eq(qdsPlayfieldMove(game, 2), 2);
+	ck_assert_int_eq(rsData->moveOffset, 2);
+	ck_assert_int_eq(modeData->moveOffset, 2);
+	ck_assert_int_eq(game->x, 6);
+}
+END_TEST
+
+START_TEST(cancel)
+{
+	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	ck_assert(!rsData->blockMove);
+	ck_assert(!modeData->blockMove);
+	ck_assert_int_eq(game->x, 4);
+
+	rsData->blockMove = true;
+	ck_assert_int_eq(qdsPlayfieldMove(game, -1), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, -5), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 0);
+	ck_assert_int_eq(game->x, 4);
+	rsData->blockMove = false;
+	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 1);
+	ck_assert_int_eq(game->x, 5);
+
+	modeData->blockMove = true;
+	ck_assert_int_eq(qdsPlayfieldMove(game, -1), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, -5), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 0);
+	ck_assert_int_eq(game->x, 5);
+	modeData->blockMove = false;
+	ck_assert_int_eq(qdsPlayfieldMove(game, -1), -1);
+	ck_assert_int_eq(game->x, 4);
+}
+
+START_TEST(collision)
+{
+	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+
+	/*
+	 * |. . . . [][]. . . . |    |. . . . . . . . [][]|
+	 * |. . . . [][]. . . . | => |. . . . . . . . [][]|
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	ck_assert_int_eq(qdsPlayfieldMove(game, 4), 4);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
+	ck_assert_int_eq(qdsPlayfieldMove(game, 4), 0);
+
+	/*
+	 * |. . . . . . . . [][]|    |[][]. . . . . . . . |
+	 * |. . . . . . . . [][]| => |[][]. . . . . . . . |
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	ck_assert_int_eq(qdsPlayfieldMove(game, -15), -8);
+	ck_assert_int_eq(rsData->moveOffset, -8);
+	ck_assert_int_eq(modeData->moveOffset, -8);
+
+	/*
+	 * |[][]. . . . . . . . |    |. . . . [][]. . . . |
+	 * |[][]. . . . []. . . | => |. . . . [][][]. . . |
+	 * |. . . . . . . . . . |    |. . . . . . . . . . |
+	 */
+	qdsPlayfieldGetPlayfield(game)[game->y][6] = QDS_PIECE_I;
+	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 4);
+	ck_assert_int_eq(rsData->moveOffset, 4);
+	ck_assert_int_eq(modeData->moveOffset, 4);
+}
+
+Suite *createSuite(void)
+{
+	Suite *s = suite_create("qdsPlayfieldMove");
+
+	TCase *c = tcase_create("base");
+	tcase_add_checked_fixture(c, setup, teardown);
+	tcase_add_test(c, base);
+	tcase_add_test(c, cancel);
+	tcase_add_test(c, collision);
+	suite_add_tcase(s, c);
+
+	return s;
+}

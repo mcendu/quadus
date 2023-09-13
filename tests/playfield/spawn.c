@@ -33,7 +33,7 @@ static qdsPlayfield *game = &gamed;
 static mockRulesetData *rsData;
 static mockRulesetData *modeData;
 
-void setup(void)
+static void setup(void)
 {
 	qdsPlayfieldInit(game);
 	qdsPlayfieldSetRuleset(game, mockRuleset);
@@ -43,7 +43,7 @@ void setup(void)
 	modeData = game->modeData;
 }
 
-void teardown(void)
+static void teardown(void)
 {
 	qdsPlayfieldCleanup(game);
 }
@@ -88,8 +88,8 @@ END_TEST
 
 START_TEST(test_blockSpawn)
 {
-	ck_assert_int_eq(rsData->blockSpawn, false);
-	ck_assert_int_eq(modeData->blockSpawn, false);
+	ck_assert(!rsData->blockSpawn);
+	ck_assert(!modeData->blockSpawn);
 
 	/*
 	 * allowing spawn to be cancelled in ruleset is not useful, but

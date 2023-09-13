@@ -37,7 +37,7 @@ jobs:
             -Denable_tests=true
             builddir
       - name: Build
-        run: ninja V=1 -C builddir all
+        run: ninja -v -C builddir all
       - name: Test
         run: ninja -C builddir test
       - name: Install

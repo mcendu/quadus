@@ -81,6 +81,7 @@ typedef struct mockRulesetData
 	int shiftCount;
 
 	int spawnType;
+	int moveOffset;
 } mockRulesetData;
 
 #endif /* !MOCKRULESET_H */

@@ -32,6 +32,7 @@
 #include <mino.h>
 #include <mode.h>
 #include <rs.h>
+#include <threads.h>
 
 #define EMIT(p, e, ...)                            \
 	do {                                           \
@@ -103,17 +104,16 @@ QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset)
 	assert((p->mode != NULL));
 	int i;
 	if (offset < 0) {
-		for (i = -1; i > offset; --i) {
-			if (qdsPlayfieldCanMove(p, i, 0)) i -= 1;
+		for (i = 0; i > offset; --i) {
+			if (!qdsPlayfieldCanMove(p, i - 1, 0)) break;
 		}
 	} else {
-		for (i = 1; i < offset; ++i) {
-			if (qdsPlayfieldCanMove(p, i, 0)) i += 1;
+		for (i = 0; i < offset; ++i) {
+			if (!qdsPlayfieldCanMove(p, i + 1, 0)) break;
 		}
 	}
 
-	if (p->rs->onMove && !p->rs->onMove(p, i)) return 0;
-	if (p->mode->onMove && !p->mode->onMove(p, i)) return 0;
+	EMIT_CANCELLABLE(p, onMove, 0, p, i);
 	p->x += i;
 	return i;
 }
@@ -128,8 +128,7 @@ QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance)
 		if (qdsPlayfieldCanMove(p, 0, -1)) p->y -= 1;
 	}
 
-	if (p->rs->onDrop && !p->rs->onDrop(p, type, distance)) return 0;
-	if (p->mode->onDrop && !p->mode->onDrop(p, type, distance)) return 0;
+	EMIT_CANCELLABLE(p, onDrop, 0, p, type, i);
 	return i;
 }
 
@@ -143,10 +142,7 @@ QDS_API int qdsPlayfieldRotate(qdsPlayfield *p, int rotation)
 	if (result == QDS_PLAYFIELD_ROTATE_FAILED)
 		return QDS_PLAYFIELD_ROTATE_FAILED;
 
-	if (p->rs->onRotate && !p->rs->onRotate(p, rotation))
-		return QDS_PLAYFIELD_ROTATE_FAILED;
-	if (p->mode->onRotate && !p->mode->onRotate(p, rotation))
-		return QDS_PLAYFIELD_ROTATE_FAILED;
+	EMIT_CANCELLABLE(p, onRotate, QDS_PLAYFIELD_ROTATE_FAILED, p, rotation);
 
 	p->x += x;
 	p->y += y;
@@ -161,8 +157,7 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 	assert((p->mode != NULL));
 	if (!qdsPlayfieldGrounded(p)) return false;
 
-	if (p->rs->onLock && !p->rs->onLock(p)) return false;
-	if (p->mode->onLock && !p->mode->onLock(p)) return false;
+	EMIT_CANCELLABLE(p, onLock, false, p);
 
 	const qdsCoords *shape
 		= p->rs->getShape(p->active.type, p->active.orientation);
@@ -173,10 +168,7 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 
 		if (y > p->top) p->top = y;
 
-		if (lineFilled(p, y)) {
-			if (p->rs->onLineFilled) p->rs->onLineFilled(p, y);
-			if (p->mode->onLineFilled) p->mode->onLineFilled(p, y);
-		}
+		if (lineFilled(p, y)) EMIT(p, onLineFilled, p, y);
 	}
 	p->active = (qdsMino){ 0, 0 };
 	return true;
@@ -187,9 +179,7 @@ QDS_API int qdsPlayfieldHold(qdsPlayfield *p)
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
-	if (p->rs->onHold && !p->rs->onHold(p)) return QDS_PLAYFIELD_HOLD_BLOCKED;
-	if (p->mode->onHold && !p->mode->onHold(p))
-		return QDS_PLAYFIELD_HOLD_BLOCKED;
+	EMIT_CANCELLABLE(p, onHold, QDS_PLAYFIELD_HOLD_BLOCKED, p);
 
 	int active = p->active.type;
 	/* spawn already draws from the queue when hold is empty */
@@ -206,8 +196,7 @@ QDS_API bool qdsPlayfieldClear(qdsPlayfield *p, int y)
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 	if (!lineFilled(p, y)) return false;
-	if (p->rs->onLineClear && !p->rs->onLineClear(p, y)) return false;
-	if (p->mode->onLineClear && !p->mode->onLineClear(p, y)) return false;
+	EMIT_CANCELLABLE(p, onLineClear, false, p, y);
 
 	int lineNum = (p->top)-- - y;
 	memmove(
