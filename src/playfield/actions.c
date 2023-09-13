@@ -33,6 +33,22 @@
 #include <mode.h>
 #include <rs.h>
 
+#define EMIT(p, e, ...)                            \
+	do {                                           \
+		if (p->rs->e) (p->rs->e)(__VA_ARGS__);     \
+		if (p->mode->e) (p->mode->e)(__VA_ARGS__); \
+	} while (0)
+
+#define EMIT_CANCELLABLE(p, e, cancel_retval, ...)        \
+	do {                                                  \
+		if ((p->rs->e) && !(p->rs->e)(__VA_ARGS__)) {     \
+			return (cancel_retval);                       \
+		}                                                 \
+		if ((p->mode->e) && !(p->mode->e)(__VA_ARGS__)) { \
+			return (cancel_retval);                       \
+		}                                                 \
+	} while (0)
+
 static bool lineFilled(qdsPlayfield *p, int y)
 {
 	for (int i = 0; i < 10; ++i) {
@@ -58,8 +74,7 @@ QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
 
 	if (type == 0) type = p->rs->shiftPiece(p->rsData);
 
-	if (p->rs->onSpawn) p->rs->onSpawn(p, type);
-	if (p->mode->onSpawn) p->mode->onSpawn(p, type);
+	EMIT(p, onSpawn, p, type);
 
 	p->active = (qdsMino){ type, 0 };
 	p->x = p->rs->spawnX(p);
