@@ -33,9 +33,8 @@
 /**
  * Define mock ruleset and gamemode event handlers.
  *
- * WARNING: This is a C preprocessor hack. the comma operator should
- * always be wrapped in parentheses. Do not insert a semicolon after
- * this macro.
+ * WARNING: This is a hack. the comma operator should always be wrapped
+ * in parentheses. Do not insert a semicolon after this macro.
  */
 #define EVENT_HANDLER(name, rettype, body, game, ...)    \
 	static rettype name##Rs(__VA_ARGS__)                 \

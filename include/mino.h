@@ -42,7 +42,7 @@ typedef struct qdsMino
 	/* The mino's type. */
 	int type;
 	/* The current orientation of the mino. */
-	int orientation;
+	unsigned orientation;
 } qdsMino;
 
 #ifdef __cplusplus

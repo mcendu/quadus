@@ -86,7 +86,8 @@ QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset);
  */
 QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance);
 /**
- * Rotate the active mino. Returns whether the rotation succeeded.
+ * Rotate the active mino. Returns whether the rotation succeeded,
+ * and whether the rotation is considered a twist.
  */
 QDS_API int qdsPlayfieldRotate(qdsPlayfield *, int rotation);
 /**

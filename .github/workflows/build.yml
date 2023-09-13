@@ -1,5 +1,4 @@
-name: build
-run-name: Build
+name: Build
 on:
   workflow_dispatch:
   push:
@@ -21,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Meson and dependencies
-        run: apt-get install meson ninja check
+        run: sudo apt-get install meson ninja check
       - name: Configure project
         run: |
           mkdir builddir
