@@ -78,6 +78,8 @@ typedef struct mockRulesetData
 	int cycleCount;
 	unsigned int lastInput;
 	int shiftCount;
+
+	int spawnType;
 } mockRulesetData;
 
 #endif /* !MOCKRULESET_H */

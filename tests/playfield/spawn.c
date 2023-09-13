@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "mockruleset.h"
+#include "piece.h"
 #include <check.h>
 #include <mode.h>
 #include <playfield.h>
@@ -53,11 +54,17 @@ START_TEST(test_spawnSet)
 	ck_assert(qdsPlayfieldSpawn(game, QDS_PIECE_I));
 	ck_assert_int_ne(rsData->spawnCount, 0);
 	ck_assert_int_ne(modeData->spawnCount, 0);
+	ck_assert_int_eq(rsData->spawnType, QDS_PIECE_I);
 
 	ck_assert_int_eq(game->active.type, QDS_PIECE_I);
 	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
 	ck_assert_int_eq(game->x, 4);
 	ck_assert_int_eq(game->y, 20);
+
+	qdsPlayfieldSpawn(game, QDS_PIECE_J);
+	ck_assert_int_eq(rsData->spawnType, QDS_PIECE_J);
+	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	ck_assert_int_eq(rsData->spawnType, QDS_PIECE_O);
 }
 END_TEST
 
@@ -72,6 +79,9 @@ START_TEST(test_spawnNext)
 	ck_assert_int_eq(game->active.orientation, QDS_ORIENTATION_BASE);
 	ck_assert_int_eq(game->x, 4);
 	ck_assert_int_eq(game->y, 20);
+
+	/* onSpawn should set off with the piece from the queue */
+	ck_assert_int_eq(rsData->spawnType, QDS_PIECE_O);
 }
 END_TEST
 

@@ -43,6 +43,7 @@ static void onSpawnRs(qdsPlayfield *game, int type)
 {
 	struct mockRulesetData *data = game->rsData;
 	data->spawnCount++;
+	data->spawnType = type;
 }
 
 static bool onMoveRs(qdsPlayfield *game, int offset)
@@ -179,15 +180,6 @@ const qdsRuleset *mockRuleset = &(const qdsRuleset){
 const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.init = init,
 	.destroy = destroy,
-	.onSpawn = NULL,
-	.onMove = NULL,
-	.onRotate = NULL,
-	.onDrop = NULL,
-	.onLock = NULL,
-	.onHold = NULL,
-	.onLineFilled = NULL,
-	.onLineClear = NULL,
-	.onTopOut = NULL,
 	.doGameCycle = mockGameCycle,
 	.spawnX = spawnX,
 	.spawnY = spawnY,
@@ -201,6 +193,7 @@ static void onSpawnMode(qdsPlayfield *game, int type)
 {
 	struct mockRulesetData *data = game->modeData;
 	data->spawnCount++;
+	data->spawnType = type;
 }
 
 static bool onMoveMode(qdsPlayfield *game, int offset)
@@ -279,13 +272,4 @@ const qdsGamemode *mockGamemode = &(const qdsGamemode){
 const qdsGamemode *noHandlerGamemode = &(const qdsGamemode){
 	.init = init,
 	.destroy = destroy,
-	.onSpawn = NULL,
-	.onMove = NULL,
-	.onRotate = NULL,
-	.onDrop = NULL,
-	.onLock = NULL,
-	.onHold = NULL,
-	.onLineFilled = NULL,
-	.onLineClear = NULL,
-	.onTopOut = NULL,
 };

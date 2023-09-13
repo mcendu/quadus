@@ -56,10 +56,10 @@ QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 
+	if (type == 0) type = p->rs->shiftPiece(p->rsData);
+
 	if (p->rs->onSpawn) p->rs->onSpawn(p, type);
 	if (p->mode->onSpawn) p->mode->onSpawn(p, type);
-
-	if (type == 0) type = p->rs->shiftPiece(p->rsData);
 
 	p->active = (qdsMino){ type, 0 };
 	p->x = p->rs->spawnX(p);
