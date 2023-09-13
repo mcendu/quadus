@@ -20,6 +20,13 @@ if cc.get_define('__GNUC__') != ''
     ], language: ['c'])
 endif
 
+# disable asserts if not in a debug optimization preset
+if get_option('optimization') not in ['plain', '0', 'g']
+    add_project_arguments([
+        '-DNDEBUG'
+    ], language: ['c'])
+endif
+
 quaduscore_include = include_directories('include')
 
 subdir('src')
