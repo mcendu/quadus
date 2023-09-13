@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include <piece.h>
@@ -83,14 +84,16 @@ EVENT_HANDLER(
 	qdsPlayfield *game,
 	int offset)
 
-static int onRotateRs(qdsPlayfield *game, int rotation)
-{
-	struct mockRulesetData *data = game->rsData;
-
-	data->rotateCount++;
-	return data->blockRotate ? QDS_PLAYFIELD_ROTATE_FAILED
-							 : QDS_PLAYFIELD_ROTATE_NORMAL;
-}
+EVENT_HANDLER(
+	onRotate,
+	bool,
+	{
+		data->rotateCount++;
+		return !data->blockRotate;
+	},
+	game,
+	qdsPlayfield *game,
+	int rotation)
 
 static bool onDropRs(qdsPlayfield *game, int type, int distance)
 {
@@ -217,15 +220,6 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.getShape = getShape,
 	.canRotate = rotationCheck,
 };
-
-static int onRotateMode(qdsPlayfield *game, int rotation)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->rotateCount++;
-	return data->blockRotate ? QDS_PLAYFIELD_ROTATE_FAILED
-							 : QDS_PLAYFIELD_ROTATE_NORMAL;
-}
 
 static bool onDropMode(qdsPlayfield *game, int type, int distance)
 {

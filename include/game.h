@@ -78,7 +78,7 @@ typedef struct qdsGamemode qdsGamemode;
 
 typedef bool qdsSpawnCallback(qdsPlayfield *game, int piece);
 typedef bool qdsMoveCallback(qdsPlayfield *game, int offset);
-typedef int qdsRotateCallback(qdsPlayfield *game, int rotation);
+typedef bool qdsRotateCallback(qdsPlayfield *game, int rotation);
 typedef bool qdsDropCallback(qdsPlayfield *game, int type, int distance);
 typedef bool qdsLockCallback(qdsPlayfield *game);
 typedef bool qdsHoldCallback(qdsPlayfield *game);
