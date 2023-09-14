@@ -56,17 +56,7 @@ typedef struct qdsRuleset
 	qdsLineClearCallback *onLineClear;
 	qdsTopOutCallback *onTopOut;
 
-	/**
-	 * Get a ruleset-defined property.
-	 * Returns NULL if property is not defined.
-	 */
-	void *(*getProperty)(qdsPlayfield *game, int key);
-
-	/**
-	 * Set a ruleset-defined property.
-	 * Returns NULL if property is not defined.
-	 */
-	void *(*setProperty)(qdsPlayfield *game, int key, ...);
+	qdsCustomCall *call;
 
 	/**
 	 * Advance the game state by one cycle.

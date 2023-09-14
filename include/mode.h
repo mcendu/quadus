@@ -55,11 +55,7 @@ typedef struct qdsGamemode
 	qdsLineClearCallback *onLineClear;
 	qdsTopOutCallback *onTopOut;
 
-	/**
-	 * Get a mode-defined property.
-	 * Returns NULL if property is not defined.
-	 */
-	void *(*getProperty)(qdsPlayfield *game, int key);
+	qdsCustomCall *call;
 } qdsGamemode;
 
 #ifdef __cplusplus

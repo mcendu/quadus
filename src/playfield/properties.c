@@ -24,6 +24,8 @@
 #include <playfield.h>
 
 #include <assert.h>
+#include <errno.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -101,4 +103,24 @@ QDS_API void *qdsPlayfieldGetModeData(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->modeData;
+}
+
+QDS_API int qdsPlayfieldCall(qdsPlayfield *p, unsigned long req, ...)
+{
+	assert((p != NULL));
+
+	int result;
+	va_list ap;
+	va_start(ap, req);
+	if (p->rs && p->rs->call && (result = p->rs->call(p, req, ap)) != -ENOTTY) {
+		va_end(ap);
+		return result;
+	}
+	if (p->mode && p->mode->call
+		&& (result = p->mode->call(p, req, ap)) != -ENOTTY) {
+		va_end(ap);
+		return result;
+	}
+	va_end(ap);
+	return -ENOTTY;
 }

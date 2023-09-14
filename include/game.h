@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+#include <stdarg.h>
 #include <stdbool.h>
 
 #include <qdsbuild.h>
@@ -95,6 +96,15 @@ typedef bool qdsLineClearCallback(qdsPlayfield *game, int y);
 typedef void qdsTopOutCallback(qdsPlayfield *game);
 
 /**
+ * Call a ruleset or gamemode defined function.
+ *
+ * If the function is not defined for the ruleset or gamemode, -ENOTTY
+ * is returned and ap is not modified. Otherwise, the state of ap is
+ * undefined. In both cases, the caller should free ap using va_end().
+ */
+typedef int qdsCustomCall(qdsPlayfield *, unsigned long req, va_list ap);
+
+/**
  * Initialize the game state.
  */
 QDS_API void qdsPlayfieldInit(qdsPlayfield *);
@@ -149,9 +159,10 @@ QDS_API int qdsPlayfieldGetNextPiece(qdsPlayfield *, int pos);
 QDS_API int qdsPlayfieldGetHeldPiece(qdsPlayfield *);
 
 /**
- * Get data defined by the ruleset and the game mode.
+ * Call a ruleset-defined function. Returns 0 on success and non-zero
+ * on failure.
  */
-QDS_API void *qdsPlayfieldGet(qdsPlayfield *, int key);
+QDS_API int qdsPlayfieldCall(qdsPlayfield *, unsigned long req, ...);
 
 #ifdef __cplusplus
 }
