@@ -94,47 +94,63 @@ EVENT_HANDLER(
 	qdsPlayfield *game,
 	int rotation)
 
-static bool onDropRs(qdsPlayfield *game, int type, int distance)
-{
-	struct mockRulesetData *data = game->rsData;
+EVENT_HANDLER(
+	onDrop,
+	bool,
+	{
+		data->dropCount++;
+		return !data->blockDrop;
+	},
+	game,
+	qdsPlayfield *game,
+	int type,
+	int distance)
 
-	data->dropCount++;
-	return !data->blockDrop;
-}
+EVENT_HANDLER(
+	onLock,
+	bool,
+	{
+		data->lockCount++;
+		return !data->blockLock;
+	},
+	game,
+	qdsPlayfield *game)
 
-static bool onLockRs(qdsPlayfield *game)
-{
-	struct mockRulesetData *data = game->rsData;
+EVENT_HANDLER(
+	onHold,
+	bool,
+	{
+		data->holdCount++;
+		return !data->blockHold;
+	},
+	game,
+	qdsPlayfield *game)
 
-	data->lockCount++;
-	return !data->blockLock;
-}
+EVENT_HANDLER(
+	onLineFill,
+	void,
+	{ data->lineFillCount++; },
+	game,
+	qdsPlayfield *game,
+	int y)
 
-static bool onHoldRs(qdsPlayfield *game)
-{
-	struct mockRulesetData *data = game->rsData;
+EVENT_HANDLER(
+	onLineClear,
+	bool,
+	{
+		data->lineClearCount++;
+		return !data->blockLineClear;
+	},
+	game,
+	qdsPlayfield *game,
+	int y);
 
-	data->holdCount++;
-	return !data->blockHold;
-}
-
-static void onLineFillRs(qdsPlayfield *game, int y)
-{
-	++((struct mockRulesetData *)(game->rsData))->lineFillCount;
-}
-
-static bool onLineClearRs(qdsPlayfield *game, int y)
-{
-	struct mockRulesetData *data = game->rsData;
-
-	data->lineClearCount++;
-	return !data->blockLineClear;
-}
-
-static void onTopOutRs(qdsPlayfield *game)
-{
-	++((struct mockRulesetData *)(game->rsData))->topOutCount;
-}
+EVENT_HANDLER(
+	onTopOut,
+	void,
+	{ data->topOutCount++; },
+	game,
+	qdsPlayfield *game);
 
 static void mockGameCycle(qdsPlayfield *game, unsigned int input)
 {
@@ -219,48 +235,6 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.getShape = getShape,
 	.canRotate = rotationCheck,
 };
-
-static bool onDropMode(qdsPlayfield *game, int type, int distance)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->dropCount++;
-	return !data->blockDrop;
-}
-
-static bool onLockMode(qdsPlayfield *game)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->lockCount++;
-	return !data->blockLock;
-}
-
-static bool onHoldMode(qdsPlayfield *game)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->holdCount++;
-	return !data->blockHold;
-}
-
-static void onLineFillMode(qdsPlayfield *game, int y)
-{
-	++((struct mockRulesetData *)(game->modeData))->lineFillCount;
-}
-
-static bool onLineClearMode(qdsPlayfield *game, int y)
-{
-	struct mockRulesetData *data = game->modeData;
-
-	data->lineClearCount++;
-	return !data->blockLineClear;
-}
-
-static void onTopOutMode(qdsPlayfield *game)
-{
-	++((struct mockRulesetData *)(game->modeData))->topOutCount;
-}
 
 const qdsGamemode *mockGamemode = &(const qdsGamemode){
 	.init = init,
