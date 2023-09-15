@@ -124,11 +124,12 @@ QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance)
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 	int i;
-	for (i = 1; i < distance; ++i) {
-		if (qdsPlayfieldCanMove(p, 0, -1)) p->y -= 1;
+	for (i = 0; i < distance; ++i) {
+		if (!qdsPlayfieldCanMove(p, 0, -(i + 1))) break;
 	}
 
 	EMIT_CANCELLABLE(p, onDrop, 0, p, type, i);
+	p->y -= i;
 	return i;
 }
 

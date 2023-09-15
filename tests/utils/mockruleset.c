@@ -88,6 +88,7 @@ EVENT_HANDLER(
 	bool,
 	{
 		data->rotateCount++;
+		data->rotation = rotation;
 		return !data->blockRotate;
 	},
 	game,
@@ -99,6 +100,8 @@ EVENT_HANDLER(
 	bool,
 	{
 		data->dropCount++;
+		data->dropType = type;
+		data->dropDistance = distance;
 		return !data->blockDrop;
 	},
 	game,
