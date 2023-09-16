@@ -57,3 +57,8 @@ dkms.conf
 
 # Clangd
 .cache/
+
+# Vim
+*.swp
+*~
+*.un~

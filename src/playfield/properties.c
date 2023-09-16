@@ -111,16 +111,21 @@ QDS_API int qdsPlayfieldCall(qdsPlayfield *p, unsigned long req, ...)
 
 	int result;
 	va_list ap;
+
 	va_start(ap, req);
 	if (p->rs && p->rs->call && (result = p->rs->call(p, req, ap)) != -ENOTTY) {
 		va_end(ap);
 		return result;
 	}
+	va_end(ap);
+
+	va_start(ap, req);
 	if (p->mode && p->mode->call
 		&& (result = p->mode->call(p, req, ap)) != -ENOTTY) {
 		va_end(ap);
 		return result;
 	}
 	va_end(ap);
+
 	return -ENOTTY;
 }

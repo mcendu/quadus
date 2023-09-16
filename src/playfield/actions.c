@@ -156,7 +156,6 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
-	if (!qdsPlayfieldGrounded(p)) return false;
 
 	EMIT_CANCELLABLE(p, onLock, false, p);
 

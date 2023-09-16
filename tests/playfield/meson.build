@@ -21,6 +21,7 @@
 tests_playfield = [
     ['testPlayfieldDrop', 'drop.c'],
     ['testPlayfieldInit', 'init.c'],
+    ['testPlayfieldLock', 'lock.c'],
     ['testPlayfieldMove', 'move.c'],
     ['testPlayfieldCanRotate', 'overlap.c'],
     ['testPlayfieldRotate', 'rotate.c'],
