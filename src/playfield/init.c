@@ -26,10 +26,24 @@
 #include <playfield.h>
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <mode.h>
 #include <rs.h>
+
+QDS_API qdsPlayfield *qdsPlayfieldAlloc()
+{
+	qdsPlayfield *p = malloc(sizeof(qdsPlayfield));
+	qdsPlayfieldInit(p);
+	return p;
+}
+
+QDS_API void qdsPlayfieldFree(qdsPlayfield *p)
+{
+	qdsPlayfieldCleanup(p);
+	free(p);
+}
 
 QDS_API void qdsPlayfieldInit(qdsPlayfield *p)
 {

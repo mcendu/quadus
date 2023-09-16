@@ -105,14 +105,13 @@ typedef void qdsTopOutCallback(qdsPlayfield *game);
 typedef int qdsCustomCall(qdsPlayfield *, unsigned long req, va_list ap);
 
 /**
- * Initialize the game state.
+ * Allocate and initialize a game state.
  */
-QDS_API void qdsPlayfieldInit(qdsPlayfield *);
-
+QDS_API qdsPlayfield *qdsPlayfieldAlloc();
 /**
- * Clean up the game state.
+ * Deallocate a game state.
  */
-QDS_API void qdsPlayfieldCleanup(qdsPlayfield *);
+QDS_API void qdsPlayfieldFree(qdsPlayfield *);
 
 /**
  * Advance the game state by one cycle.

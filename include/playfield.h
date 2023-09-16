@@ -65,6 +65,15 @@ typedef struct qdsPlayfield
 } qdsPlayfield;
 
 /**
+ * Initialize the game state.
+ */
+QDS_API void qdsPlayfieldInit(qdsPlayfield *);
+/**
+ * Clean up the game state.
+ */
+QDS_API void qdsPlayfieldCleanup(qdsPlayfield *);
+
+/**
  * Spawn a specified piece. If the specified piece is 0, draw from
  * the piece queue. Returns whether the newly spawned active piece
  * doesn't overlap the playfield.
