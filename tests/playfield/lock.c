@@ -109,6 +109,8 @@ START_TEST(lockOutOfBounds)
 	ck_assert(qdsPlayfieldLock(game));
 	/* without checking, the piece overflows into the last row */
 	ck_assert_mem_eq(playfield[9], emptyLine, sizeof(playfield[9]));
+	ck_assert_mem_eq(playfield[10], "\1\1\0\0\0\0\0\0\0\0", 10);
+	memset(playfield[10], 0, 10);
 
 	qdsPlayfieldSpawn(game, QDS_PIECE_I);
 	game->y = 10;
@@ -116,6 +118,7 @@ START_TEST(lockOutOfBounds)
 	ck_assert(qdsPlayfieldLock(game));
 	/* same for the next row */
 	ck_assert_mem_eq(playfield[11], emptyLine, sizeof(playfield[9]));
+	ck_assert_mem_eq(playfield[10], "\0\0\0\0\0\0\0\0\1\1", 10);
 
 	qdsPlayfieldSpawn(game, QDS_PIECE_I);
 	game->y = -1;
