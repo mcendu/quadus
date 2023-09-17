@@ -163,6 +163,7 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
 		int x = p->x + b->x;
 		int y = p->y + b->y;
+		if (x < 0 || x >= 10 || y < 0 || y >= 48) continue;
 		p->playfield[y][x] = p->piece; /* for piece coloring */
 
 		if (y > p->top) p->top = y;

@@ -54,10 +54,13 @@ const qdsTile lockedLine[10] = { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 START_TEST(lock)
 {
 	qdsPlayfieldSpawn(game, QDS_PIECE_I);
+	int x = game->x;
 	game->y = 0;
 	ck_assert_int_eq(rsData->lockCount, 0);
 	ck_assert_int_eq(modeData->lockCount, 0);
 	ck_assert(qdsPlayfieldLock(game));
+	ck_assert_int_eq(game->x, x);
+	ck_assert_int_eq(game->y, 0);
 	ck_assert_int_eq(game->piece, 0);
 	ck_assert_int_ne(rsData->lockCount, 0);
 	ck_assert_int_ne(modeData->lockCount, 0);
@@ -96,7 +99,37 @@ START_TEST(lockTerrain)
 }
 END_TEST
 
-/* locking partially/fully outside bounds is undefined behavior */
+START_TEST(lockOutOfBounds)
+{
+	qdsTile(*playfield)[10] = qdsPlayfieldGetPlayfield(game);
+
+	qdsPlayfieldSpawn(game, QDS_PIECE_I);
+	game->y = 10;
+	game->x = -1;
+	ck_assert(qdsPlayfieldLock(game));
+	/* without checking, the piece overflows into the last row */
+	ck_assert_mem_eq(playfield[9], emptyLine, sizeof(playfield[9]));
+
+	qdsPlayfieldSpawn(game, QDS_PIECE_I);
+	game->y = 10;
+	game->x = 9;
+	ck_assert(qdsPlayfieldLock(game));
+	/* same for the next row */
+	ck_assert_mem_eq(playfield[11], emptyLine, sizeof(playfield[9]));
+
+	qdsPlayfieldSpawn(game, QDS_PIECE_I);
+	game->y = -1;
+	ck_assert(qdsPlayfieldLock(game));
+	/* if something goes wrong, asan would abort at this point */
+
+	qdsPlayfieldSpawn(game, QDS_PIECE_I);
+	game->y = 48; /* above buffer zone */
+	game->x = 1;
+	ck_assert(qdsPlayfieldLock(game));
+	/* coordinates come immediately after the playfield in the struct */
+	ck_assert_int_eq(game->x, 1);
+	ck_assert_int_eq(game->y, 48);
+}
 
 const qdsTile quad[][10] = {
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
@@ -179,6 +212,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lock);
 	tcase_add_test(c, lockAir);
 	tcase_add_test(c, lockTerrain);
+	tcase_add_test(c, lockOutOfBounds);
 	tcase_add_test(c, fill);
 	tcase_add_test(c, fillSplit);
 	tcase_add_test(c, cancel);
