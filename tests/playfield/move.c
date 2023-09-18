@@ -34,9 +34,9 @@ static mockRulesetData *modeData;
 
 static void setup(void)
 {
-	qdsPlayfieldInit(game);
-	qdsPlayfieldSetRuleset(game, mockRuleset);
-	qdsPlayfieldSetMode(game, mockGamemode);
+	qdsInit(game);
+	qdsSetRuleset(game, mockRuleset);
+	qdsSetMode(game, mockGamemode);
 
 	rsData = game->rsData;
 	modeData = game->modeData;
@@ -44,12 +44,12 @@ static void setup(void)
 
 static void teardown(void)
 {
-	qdsPlayfieldCleanup(game);
+	qdsCleanup(game);
 }
 
 START_TEST(base)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 	ck_assert_int_eq(game->x, 4);
 
 	/*
@@ -59,7 +59,7 @@ START_TEST(base)
 	 */
 	ck_assert_int_eq(rsData->moveCount, 0);
 	ck_assert_int_eq(modeData->moveCount, 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 1);
+	ck_assert_int_eq(qdsMove(game, 1), 1);
 	ck_assert_int_eq(game->x, 5);
 	ck_assert_int_ne(rsData->moveCount, 0);
 	ck_assert_int_ne(modeData->moveCount, 0);
@@ -71,7 +71,7 @@ START_TEST(base)
 	 * |. . . . . [][]. . . | => |. . . . [][]. . . . |
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	ck_assert_int_eq(qdsPlayfieldMove(game, -1), -1);
+	ck_assert_int_eq(qdsMove(game, -1), -1);
 	ck_assert_int_eq(rsData->moveOffset, -1);
 	ck_assert_int_eq(modeData->moveOffset, -1);
 	ck_assert_int_eq(game->x, 4);
@@ -81,7 +81,7 @@ START_TEST(base)
 	 * |. . . . [][]. . . . | => |. . . . . . [][]. . |
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	ck_assert_int_eq(qdsPlayfieldMove(game, 2), 2);
+	ck_assert_int_eq(qdsMove(game, 2), 2);
 	ck_assert_int_eq(rsData->moveOffset, 2);
 	ck_assert_int_eq(modeData->moveOffset, 2);
 	ck_assert_int_eq(game->x, 6);
@@ -90,51 +90,51 @@ END_TEST
 
 START_TEST(cancel)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 	ck_assert(!rsData->blockMove);
 	ck_assert(!modeData->blockMove);
 	ck_assert_int_eq(game->x, 4);
 
 	rsData->blockMove = true;
-	ck_assert_int_eq(qdsPlayfieldMove(game, -1), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, -5), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 0);
+	ck_assert_int_eq(qdsMove(game, -1), 0);
+	ck_assert_int_eq(qdsMove(game, 1), 0);
+	ck_assert_int_eq(qdsMove(game, -5), 0);
+	ck_assert_int_eq(qdsMove(game, 10), 0);
 	ck_assert_int_eq(game->x, 4);
 	rsData->blockMove = false;
-	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 1);
+	ck_assert_int_eq(qdsMove(game, 1), 1);
 	ck_assert_int_eq(game->x, 5);
 
 	modeData->blockMove = true;
-	ck_assert_int_eq(qdsPlayfieldMove(game, -1), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, -5), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 0);
+	ck_assert_int_eq(qdsMove(game, -1), 0);
+	ck_assert_int_eq(qdsMove(game, 1), 0);
+	ck_assert_int_eq(qdsMove(game, -5), 0);
+	ck_assert_int_eq(qdsMove(game, 10), 0);
 	ck_assert_int_eq(game->x, 5);
 	modeData->blockMove = false;
-	ck_assert_int_eq(qdsPlayfieldMove(game, -1), -1);
+	ck_assert_int_eq(qdsMove(game, -1), -1);
 	ck_assert_int_eq(game->x, 4);
 }
 
 START_TEST(collision)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 
 	/*
 	 * |. . . . [][]. . . . |    |. . . . . . . . [][]|
 	 * |. . . . [][]. . . . | => |. . . . . . . . [][]|
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	ck_assert_int_eq(qdsPlayfieldMove(game, 4), 4);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 1), 0);
-	ck_assert_int_eq(qdsPlayfieldMove(game, 4), 0);
+	ck_assert_int_eq(qdsMove(game, 4), 4);
+	ck_assert_int_eq(qdsMove(game, 1), 0);
+	ck_assert_int_eq(qdsMove(game, 4), 0);
 
 	/*
 	 * |. . . . . . . . [][]|    |[][]. . . . . . . . |
 	 * |. . . . . . . . [][]| => |[][]. . . . . . . . |
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	ck_assert_int_eq(qdsPlayfieldMove(game, -15), -8);
+	ck_assert_int_eq(qdsMove(game, -15), -8);
 	ck_assert_int_eq(rsData->moveOffset, -8);
 	ck_assert_int_eq(modeData->moveOffset, -8);
 
@@ -143,15 +143,15 @@ START_TEST(collision)
 	 * |[][]. . . . []. . . | => |. . . . [][][]. . . |
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	qdsPlayfieldGetPlayfield(game)[game->y][6] = QDS_PIECE_I;
-	ck_assert_int_eq(qdsPlayfieldMove(game, 10), 4);
+	qdsGetPlayfield(game)[game->y][6] = QDS_PIECE_I;
+	ck_assert_int_eq(qdsMove(game, 10), 4);
 	ck_assert_int_eq(rsData->moveOffset, 4);
 	ck_assert_int_eq(modeData->moveOffset, 4);
 }
 
 Suite *createSuite(void)
 {
-	Suite *s = suite_create("qdsPlayfieldMove");
+	Suite *s = suite_create("qdsMove");
 
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);

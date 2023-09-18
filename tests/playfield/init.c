@@ -30,12 +30,12 @@ static qdsPlayfield *game = &gamed;
 
 void setup(void)
 {
-	qdsPlayfieldInit(game);
+	qdsInit(game);
 }
 
 void teardown(void)
 {
-	qdsPlayfieldCleanup(game);
+	qdsCleanup(game);
 }
 
 START_TEST(testInit)
@@ -52,7 +52,7 @@ END_TEST
 
 START_TEST(testSetRuleset)
 {
-	qdsPlayfieldSetRuleset(game, mockRuleset);
+	qdsSetRuleset(game, mockRuleset);
 	ck_assert_ptr_eq(game->rs, mockRuleset);
 	ck_assert_ptr_nonnull(game->rsData);
 }
@@ -60,7 +60,7 @@ END_TEST
 
 START_TEST(testSetGamemode)
 {
-	qdsPlayfieldSetMode(game, mockGamemode);
+	qdsSetMode(game, mockGamemode);
 	ck_assert_ptr_eq(game->mode, mockGamemode);
 	ck_assert_ptr_nonnull(game->modeData);
 }
@@ -68,7 +68,7 @@ END_TEST
 
 Suite *createSuite(void)
 {
-	Suite *s = suite_create("qdsPlayfieldInit");
+	Suite *s = suite_create("qdsInit");
 
 	TCase *cInit = tcase_create("init");
 	tcase_add_checked_fixture(cInit, setup, teardown);

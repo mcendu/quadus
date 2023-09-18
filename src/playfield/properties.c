@@ -32,17 +32,17 @@
 #include <mode.h>
 #include <rs.h>
 
-QDS_API qdsTile (*qdsPlayfieldGetPlayfield(qdsPlayfield *p))[10]
+QDS_API qdsTile (*qdsGetPlayfield(qdsPlayfield *p))[10]
 {
 	assert((p != NULL));
 	return p->playfield;
 }
 
-QDS_API void qdsPlayfieldGetActive(qdsPlayfield *p,
-								   int *x,
-								   int *y,
-								   int *type,
-								   unsigned *orientation)
+QDS_API void qdsGetActive(qdsPlayfield *p,
+						  int *x,
+						  int *y,
+						  int *type,
+						  unsigned *orientation)
 {
 	assert((p != NULL));
 	if (x) *x = p->x;
@@ -51,25 +51,25 @@ QDS_API void qdsPlayfieldGetActive(qdsPlayfield *p,
 	if (orientation) *orientation = p->orientation;
 }
 
-QDS_API int qdsPlayfieldGetNextPiece(qdsPlayfield *p, int pos)
+QDS_API int qdsGetNextPiece(qdsPlayfield *p, int pos)
 {
 	assert((p != NULL));
 	return p->rs->getPiece(p->rsData, pos);
 }
 
-QDS_API int qdsPlayfieldGetHeldPiece(qdsPlayfield *p)
+QDS_API int qdsGetHeldPiece(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->hold;
 }
 
-QDS_API const qdsRuleset *qdsPlayfieldGetRuleset(qdsPlayfield *p)
+QDS_API const qdsRuleset *qdsGetRuleset(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->rs;
 }
 
-QDS_API void qdsPlayfieldSetRuleset(qdsPlayfield *p, const qdsRuleset *rs)
+QDS_API void qdsSetRuleset(qdsPlayfield *p, const qdsRuleset *rs)
 {
 	assert((p != NULL));
 
@@ -78,19 +78,19 @@ QDS_API void qdsPlayfieldSetRuleset(qdsPlayfield *p, const qdsRuleset *rs)
 	p->rs = rs;
 }
 
-QDS_API void *qdsPlayfieldGetRulesetData(qdsPlayfield *p)
+QDS_API void *qdsGetRulesetData(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->rsData;
 }
 
-QDS_API const qdsGamemode *qdsPlayfieldGetMode(qdsPlayfield *p)
+QDS_API const qdsGamemode *qdsGetMode(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->mode;
 }
 
-QDS_API void qdsPlayfieldSetMode(qdsPlayfield *p, const qdsGamemode *mode)
+QDS_API void qdsSetMode(qdsPlayfield *p, const qdsGamemode *mode)
 {
 	assert((p != NULL));
 
@@ -99,13 +99,13 @@ QDS_API void qdsPlayfieldSetMode(qdsPlayfield *p, const qdsGamemode *mode)
 	p->mode = mode;
 }
 
-QDS_API void *qdsPlayfieldGetModeData(qdsPlayfield *p)
+QDS_API void *qdsGetModeData(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->modeData;
 }
 
-QDS_API int qdsPlayfieldCall(qdsPlayfield *p, unsigned long req, ...)
+QDS_API int qdsCall(qdsPlayfield *p, unsigned long req, ...)
 {
 	assert((p != NULL));
 

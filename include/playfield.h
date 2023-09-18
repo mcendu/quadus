@@ -67,49 +67,51 @@ typedef struct qdsPlayfield
 /**
  * Initialize the game state.
  */
-QDS_API void qdsPlayfieldInit(qdsPlayfield *);
+QDS_API void qdsInit(qdsPlayfield *);
 /**
  * Clean up the game state.
  */
-QDS_API void qdsPlayfieldCleanup(qdsPlayfield *);
+QDS_API void qdsCleanup(qdsPlayfield *);
 
 /**
  * Spawn a specified piece. If the specified piece is 0, draw from
  * the piece queue. Returns whether the newly spawned active piece
  * doesn't overlap the playfield.
  */
-QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *, int type);
+QDS_API bool qdsSpawn(qdsPlayfield *, int type);
 /**
  * Teleport the active mino by a specified offset. Returns whether
  * the teleportation succeeded.
  */
-QDS_API bool qdsPlayfieldTeleport(qdsPlayfield *, int x, int y);
+QDS_API bool qdsTeleport(qdsPlayfield *, int x, int y);
 /**
  * Horizontally move the active piece by up to a specified offset.
  * Returns the actual offset moved.
  */
-QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset);
+QDS_API int qdsMove(qdsPlayfield *p, int offset);
 /**
  * Drop the active piece by up to a specified number of tiles.
  * Returns the actual amount dropped.
+ *
+ * Specifying a negative distance is equivalent to specifying 0.
  */
-QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance);
+QDS_API int qdsDrop(qdsPlayfield *p, int type, int distance);
 /**
  * Rotate the active mino. Returns whether the rotation succeeded,
  * and whether the rotation is considered a twist.
  */
-QDS_API int qdsPlayfieldRotate(qdsPlayfield *, int rotation);
+QDS_API int qdsRotate(qdsPlayfield *, int rotation);
 /**
  * Locks the active mino and make it part of the playfield.
  * Returns whether the lock succeeded.
  */
-QDS_API bool qdsPlayfieldLock(qdsPlayfield *);
+QDS_API bool qdsLock(qdsPlayfield *);
 /**
  * Swaps the active mino with the held mino. If no mino is held, pull
  * from the piece queue instead. Returns whether holding succeeded and
  * whether the new active mino overlaps with the playfield.
  */
-QDS_API int qdsPlayfieldHold(qdsPlayfield *);
+QDS_API int qdsHold(qdsPlayfield *);
 /**
  * Clear a line from the playfieled if it is filled. Returns whether
  * the line is cleared.
@@ -117,41 +119,41 @@ QDS_API int qdsPlayfieldHold(qdsPlayfield *);
  * When clearing multiple lines, this function should be called top
  * line first to prevent off-by-one bugs.
  */
-QDS_API bool qdsPlayfieldClear(qdsPlayfield *, int y);
+QDS_API bool qdsClearLine(qdsPlayfield *, int y);
 
 /**
  * Check if the active mino does not overlap with the playfield after
  * moving and rotating.
  */
-QDS_API bool qdsPlayfieldCanRotate(qdsPlayfield *, int x, int y, int rotation);
+QDS_API bool qdsCanRotate(qdsPlayfield *, int x, int y, int rotation);
 /**
  * Check if the active mino does not overlap with the playfield after
  * moving.
  */
-#define qdsPlayfieldCanMove(p, x, y) (qdsPlayfieldCanRotate((p), (x), (y), 0))
+#define qdsCanMove(p, x, y) (qdsCanRotate((p), (x), (y), 0))
 /**
  * Check if the active mino overlaps the playfield.
  */
-#define qdsPlayfieldOverlaps(p) (!qdsPlayfieldCanRotate((p), 0, 0, 0))
+#define qdsOverlaps(p) (!qdsCanRotate((p), 0, 0, 0))
 /**
  * Get the vertical position of the ghost piece.
  */
-QDS_API int qdsPlayfieldGetGhostY(qdsPlayfield *);
+QDS_API int qdsGetGhostY(qdsPlayfield *);
 /**
  * Check if the active mino is grounded. The active mino is grounded
  * if it is unable to drop any further.
  */
-#define qdsPlayfieldGrounded(p) (!qdsPlayfieldCanRotate((p), 0, -1, 0))
+#define qdsGrounded(p) (!qdsCanRotate((p), 0, -1, 0))
 
 /**
  * Get a pointer to the ruleset's data.
  */
-QDS_API void *qdsPlayfieldGetRulesetData(qdsPlayfield *);
+QDS_API void *qdsGetRulesetData(qdsPlayfield *);
 
 /**
  * Get a pointer to the gamemode's data.
  */
-QDS_API void *qdsPlayfieldGetModeData(qdsPlayfield *);
+QDS_API void *qdsGetModeData(qdsPlayfield *);
 
 #ifdef __cplusplus
 }

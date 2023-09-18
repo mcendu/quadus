@@ -107,61 +107,61 @@ typedef int qdsCustomCall(qdsPlayfield *, unsigned long req, va_list ap);
 /**
  * Allocate and initialize a game state.
  */
-QDS_API qdsPlayfield *qdsPlayfieldAlloc();
+QDS_API qdsPlayfield *qdsAlloc();
 /**
  * Deallocate a game state.
  */
-QDS_API void qdsPlayfieldFree(qdsPlayfield *);
+QDS_API void qdsFree(qdsPlayfield *);
 
 /**
  * Advance the game state by one cycle.
  */
-QDS_API void qdsPlayfieldAdvance(qdsPlayfield *, unsigned int input);
+QDS_API void qdsRunCycle(qdsPlayfield *, unsigned int input);
 
 /**
  * Get the current ruleset.
  */
-QDS_API const qdsRuleset *qdsPlayfieldGetRuleset(qdsPlayfield *);
+QDS_API const qdsRuleset *qdsGetRuleset(qdsPlayfield *);
 /**
  * Set the game's ruleset.
  */
-QDS_API void qdsPlayfieldSetRuleset(qdsPlayfield *, const qdsRuleset *ruleset);
+QDS_API void qdsSetRuleset(qdsPlayfield *, const qdsRuleset *ruleset);
 
 /**
  * Get the current game mode.
  */
-QDS_API const qdsGamemode *qdsPlayfieldGetMode(qdsPlayfield *);
+QDS_API const qdsGamemode *qdsGetMode(qdsPlayfield *);
 /**
  * Set the game's mode.
  */
-QDS_API void qdsPlayfieldSetMode(qdsPlayfield *, const qdsGamemode *mode);
+QDS_API void qdsSetMode(qdsPlayfield *, const qdsGamemode *mode);
 
 /**
  * Get the playfield.
  */
-QDS_API qdsTile (*qdsPlayfieldGetPlayfield(qdsPlayfield *))[10];
+QDS_API qdsTile (*qdsGetPlayfield(qdsPlayfield *))[10];
 /**
  * Get the active piece.
  */
-QDS_API void qdsPlayfieldGetActive(qdsPlayfield *,
-								   int *x,
-								   int *y,
-								   int *type,
-								   unsigned *orientation);
+QDS_API void qdsGetActive(qdsPlayfield *,
+						  int *x,
+						  int *y,
+						  int *type,
+						  unsigned *orientation);
 /**
  * Get the piece at a specific position in the queue.
  */
-QDS_API int qdsPlayfieldGetNextPiece(qdsPlayfield *, int pos);
+QDS_API int qdsGetNextPiece(qdsPlayfield *, int pos);
 /**
  * Get the held piece.
  */
-QDS_API int qdsPlayfieldGetHeldPiece(qdsPlayfield *);
+QDS_API int qdsGetHeldPiece(qdsPlayfield *);
 
 /**
  * Call a ruleset-defined function. Returns 0 on success and non-zero
  * on failure.
  */
-QDS_API int qdsPlayfieldCall(qdsPlayfield *, unsigned long req, ...);
+QDS_API int qdsCall(qdsPlayfield *, unsigned long req, ...);
 
 #ifdef __cplusplus
 }

@@ -19,13 +19,13 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 tests_playfield = [
-    ['testPlayfieldDrop', 'drop.c'],
-    ['testPlayfieldInit', 'init.c'],
-    ['testPlayfieldLock', 'lock.c'],
-    ['testPlayfieldMove', 'move.c'],
-    ['testPlayfieldCanRotate', 'overlap.c'],
-    ['testPlayfieldRotate', 'rotate.c'],
-    ['testPlayfieldSpawn', 'spawn.c'],
+    ['qdsDrop', 'drop.c'],
+    ['qdsInit', 'init.c'],
+    ['qdsLock', 'lock.c'],
+    ['qdsMove', 'move.c'],
+    ['qdsCanRotate', 'overlap.c'],
+    ['qdsRotate', 'rotate.c'],
+    ['qdsSpawn', 'spawn.c'],
 ]
 
 foreach t : tests_playfield

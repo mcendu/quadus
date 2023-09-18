@@ -34,9 +34,9 @@ static mockRulesetData *modeData;
 
 static void setup(void)
 {
-	qdsPlayfieldInit(game);
-	qdsPlayfieldSetRuleset(game, mockRuleset);
-	qdsPlayfieldSetMode(game, mockGamemode);
+	qdsInit(game);
+	qdsSetRuleset(game, mockRuleset);
+	qdsSetMode(game, mockGamemode);
 
 	rsData = game->rsData;
 	modeData = game->modeData;
@@ -44,17 +44,17 @@ static void setup(void)
 
 static void teardown(void)
 {
-	qdsPlayfieldCleanup(game);
+	qdsCleanup(game);
 }
 
 START_TEST(drop)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 	int y = game->y;
 
 	ck_assert_int_eq(rsData->dropCount, 0);
 	ck_assert_int_eq(modeData->dropCount, 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
 	ck_assert_int_ne(rsData->dropCount, 0);
 	ck_assert_int_ne(modeData->dropCount, 0);
 	ck_assert_int_eq(game->y, y - 1);
@@ -62,11 +62,11 @@ START_TEST(drop)
 	ck_assert_int_eq(modeData->dropDistance, 1);
 
 	y = game->y;
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 0), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 0), 0);
 	ck_assert_int_eq(game->y, y);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, -1), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, -1), 0);
 	ck_assert_int_eq(game->y, y);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
@@ -75,16 +75,16 @@ END_TEST
 
 START_TEST(edgeCollision)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
-	ck_assert_int_ne(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 100);
+	qdsSpawn(game, QDS_PIECE_O);
+	ck_assert_int_ne(qdsDrop(game, QDS_DROP_GRAVITY, 100), 100);
 	ck_assert_int_eq(game->y, 0);
 	ck_assert_int_eq(rsData->dropDistance, 20);
 	ck_assert_int_eq(modeData->dropDistance, 20);
 
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 10), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
 }
@@ -93,18 +93,18 @@ END_TEST
 START_TEST(tileCollision)
 {
 #define tileY 9
-	qdsPlayfieldGetPlayfield(game)[tileY][4] = QDS_PIECE_I;
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsGetPlayfield(game)[tileY][4] = QDS_PIECE_I;
+	qdsSpawn(game, QDS_PIECE_O);
 
-	ck_assert_int_ne(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 100);
+	ck_assert_int_ne(qdsDrop(game, QDS_DROP_GRAVITY, 100), 100);
 	ck_assert_int_eq(game->y, tileY + 1);
 	ck_assert_int_eq(rsData->dropDistance, 20 - (tileY + 1));
 	ck_assert_int_eq(modeData->dropDistance, 20 - (tileY + 1));
 
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 10), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
 	ck_assert_int_eq(rsData->dropDistance, 0);
 	ck_assert_int_eq(modeData->dropDistance, 0);
 #undef tileY
@@ -113,30 +113,30 @@ END_TEST
 
 START_TEST(cancel)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	qdsSpawn(game, QDS_PIECE_O);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
 
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 	rsData->blockDrop = true;
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 10), 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
 	rsData->blockDrop = false;
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
 
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
+	qdsSpawn(game, QDS_PIECE_O);
 	modeData->blockDrop = true;
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 10), 0);
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
 	modeData->blockDrop = false;
-	ck_assert_int_eq(qdsPlayfieldDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
 }
 END_TEST
 
 Suite *createSuite(void)
 {
-	Suite *s = suite_create("qdsPlayfieldDrop");
+	Suite *s = suite_create("qdsDrop");
 
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);

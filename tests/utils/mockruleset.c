@@ -199,7 +199,7 @@ static const qdsCoords *getShape(int type, int o)
 
 static int rotationCheck(qdsPlayfield *p, int r, int *x, int *y)
 {
-	if (!qdsPlayfieldCanRotate(p, 0, 0, r)) return QDS_PLAYFIELD_ROTATE_FAILED;
+	if (!qdsCanRotate(p, 0, 0, r)) return QDS_PLAYFIELD_ROTATE_FAILED;
 
 	if (x) *x = 0;
 	if (y) *y = 0;

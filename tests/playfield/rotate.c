@@ -36,9 +36,9 @@ static mockRulesetData *modeData;
 
 static void setup(void)
 {
-	qdsPlayfieldInit(game);
-	qdsPlayfieldSetRuleset(game, mockRuleset);
-	qdsPlayfieldSetMode(game, mockGamemode);
+	qdsInit(game);
+	qdsSetRuleset(game, mockRuleset);
+	qdsSetMode(game, mockGamemode);
 
 	rsData = game->rsData;
 	modeData = game->modeData;
@@ -46,48 +46,48 @@ static void setup(void)
 
 static void teardown(void)
 {
-	qdsPlayfieldCleanup(game);
+	qdsCleanup(game);
 }
 
 START_TEST(rotate)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+	qdsSpawn(game, QDS_PIECE_T);
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_CC);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_CC);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 }
 END_TEST
 
 START_TEST(event)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+	qdsSpawn(game, QDS_PIECE_T);
 
 	ck_assert_int_eq(rsData->rotateCount, 0);
 	ck_assert_int_eq(modeData->rotateCount, 0);
 
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_ne(rsData->rotateCount, 0);
 	ck_assert_int_eq(rsData->rotation, QDS_ROTATE_CLOCKWISE);
 	ck_assert_int_ne(modeData->rotateCount, 0);
 	ck_assert_int_eq(modeData->rotation, QDS_ROTATE_CLOCKWISE);
 
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE));
 	ck_assert_int_eq(rsData->rotation, QDS_ROTATE_COUNTERCLOCKWISE);
 	ck_assert_int_eq(modeData->rotation, QDS_ROTATE_COUNTERCLOCKWISE);
 }
@@ -95,13 +95,13 @@ END_TEST
 
 START_TEST(collision)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+	qdsSpawn(game, QDS_PIECE_T);
 
 	game->y = 0;
-	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
+	ck_assert_int_eq(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_FAILED);
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
-	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
+	ck_assert_int_eq(qdsRotate(game, QDS_ROTATE_COUNTERCLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_FAILED);
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
 }
@@ -112,29 +112,29 @@ START_TEST(cancel)
 	ck_assert(!rsData->blockRotate);
 	ck_assert(!modeData->blockRotate);
 
-	qdsPlayfieldSpawn(game, QDS_PIECE_T);
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	qdsSpawn(game, QDS_PIECE_T);
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
 	rsData->blockRotate = true;
-	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
+	ck_assert_int_eq(qdsRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_FAILED);
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
 	rsData->blockRotate = false;
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
 	modeData->blockRotate = true;
-	ck_assert_int_eq(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE),
+	ck_assert_int_eq(qdsRotate(game, QDS_ROTATE_CLOCKWISE),
 					 QDS_PLAYFIELD_ROTATE_FAILED);
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_FLIP);
 	modeData->blockRotate = false;
-	ck_assert(qdsPlayfieldRotate(game, QDS_ROTATE_CLOCKWISE));
+	ck_assert(qdsRotate(game, QDS_ROTATE_CLOCKWISE));
 	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_CC);
 }
 END_TEST
 
 Suite *createSuite(void)
 {
-	Suite *s = suite_create("qdsPlayfieldRotate");
+	Suite *s = suite_create("qdsRotate");
 
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);

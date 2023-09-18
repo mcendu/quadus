@@ -32,14 +32,14 @@ static qdsPlayfield game[1];
 
 static void setup(void)
 {
-	qdsPlayfieldInit(game);
-	qdsPlayfieldSetRuleset(game, mockRuleset);
-	qdsPlayfieldSetMode(game, mockGamemode);
+	qdsInit(game);
+	qdsSetRuleset(game, mockRuleset);
+	qdsSetMode(game, mockGamemode);
 }
 
 static void teardown(void)
 {
-	qdsPlayfieldCleanup(game);
+	qdsCleanup(game);
 }
 
 START_TEST(inbounds)
@@ -52,78 +52,78 @@ START_TEST(inbounds)
 	 *  	(const coords[]){ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, END },
 	 *  };
 	 */
-	qdsTile(*playfield)[10] = qdsPlayfieldGetPlayfield(game);
+	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
 
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
-	ck_assert(!qdsPlayfieldOverlaps(game));
+	qdsSpawn(game, QDS_PIECE_O);
+	ck_assert(!qdsOverlaps(game));
 	game->x = 0;
 	game->y = 0;
-	ck_assert(!qdsPlayfieldOverlaps(game));
+	ck_assert(!qdsOverlaps(game));
 
 	/* set a single tile */
 	playfield[4][4] = 1;
 
-	ck_assert(qdsPlayfieldCanMove(game, 5, 5));
-	ck_assert(qdsPlayfieldCanMove(game, 5, 4));
-	ck_assert(qdsPlayfieldCanMove(game, 5, 3));
-	ck_assert(qdsPlayfieldCanMove(game, 5, 2));
-	ck_assert(qdsPlayfieldCanMove(game, 4, 2));
-	ck_assert(qdsPlayfieldCanMove(game, 3, 2));
-	ck_assert(qdsPlayfieldCanMove(game, 2, 2));
-	ck_assert(qdsPlayfieldCanMove(game, 2, 3));
-	ck_assert(qdsPlayfieldCanMove(game, 2, 4));
-	ck_assert(qdsPlayfieldCanMove(game, 2, 5));
-	ck_assert(qdsPlayfieldCanMove(game, 3, 5));
-	ck_assert(qdsPlayfieldCanMove(game, 4, 5));
+	ck_assert(qdsCanMove(game, 5, 5));
+	ck_assert(qdsCanMove(game, 5, 4));
+	ck_assert(qdsCanMove(game, 5, 3));
+	ck_assert(qdsCanMove(game, 5, 2));
+	ck_assert(qdsCanMove(game, 4, 2));
+	ck_assert(qdsCanMove(game, 3, 2));
+	ck_assert(qdsCanMove(game, 2, 2));
+	ck_assert(qdsCanMove(game, 2, 3));
+	ck_assert(qdsCanMove(game, 2, 4));
+	ck_assert(qdsCanMove(game, 2, 5));
+	ck_assert(qdsCanMove(game, 3, 5));
+	ck_assert(qdsCanMove(game, 4, 5));
 
-	ck_assert(!qdsPlayfieldCanMove(game, 4, 4));
-	ck_assert(!qdsPlayfieldCanMove(game, 3, 4));
-	ck_assert(!qdsPlayfieldCanMove(game, 3, 3));
-	ck_assert(!qdsPlayfieldCanMove(game, 4, 3));
+	ck_assert(!qdsCanMove(game, 4, 4));
+	ck_assert(!qdsCanMove(game, 3, 4));
+	ck_assert(!qdsCanMove(game, 3, 3));
+	ck_assert(!qdsCanMove(game, 4, 3));
 
-	ck_assert(qdsPlayfieldCanMove(game, 5, 6));
+	ck_assert(qdsCanMove(game, 5, 6));
 }
 END_TEST
 
 START_TEST(outofbounds)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_O);
-	ck_assert(!qdsPlayfieldOverlaps(game));
+	qdsSpawn(game, QDS_PIECE_O);
+	ck_assert(!qdsOverlaps(game));
 	game->x = 0;
 	game->y = 0;
-	ck_assert(!qdsPlayfieldOverlaps(game));
+	ck_assert(!qdsOverlaps(game));
 
 	/* below the ground */
-	ck_assert(!qdsPlayfieldCanMove(game, 4, -1));
+	ck_assert(!qdsCanMove(game, 4, -1));
 	/* the buffer zone has 48 lines */
-	ck_assert(qdsPlayfieldCanMove(game, 4, 46));
-	ck_assert(!qdsPlayfieldCanMove(game, 4, 48));
+	ck_assert(qdsCanMove(game, 4, 46));
+	ck_assert(!qdsCanMove(game, 4, 48));
 
 	/* left */
-	ck_assert(!qdsPlayfieldCanMove(game, -1, 0));
-	ck_assert(!qdsPlayfieldCanMove(game, -2, 0));
+	ck_assert(!qdsCanMove(game, -1, 0));
+	ck_assert(!qdsCanMove(game, -2, 0));
 	/* right */
-	ck_assert(qdsPlayfieldCanMove(game, 8, 0));
-	ck_assert(!qdsPlayfieldCanMove(game, 9, 0));
-	ck_assert(!qdsPlayfieldCanMove(game, 10, 0));
+	ck_assert(qdsCanMove(game, 8, 0));
+	ck_assert(!qdsCanMove(game, 9, 0));
+	ck_assert(!qdsCanMove(game, 10, 0));
 }
 END_TEST
 
 START_TEST(rotated)
 {
-	qdsPlayfieldSpawn(game, QDS_PIECE_T);
+	qdsSpawn(game, QDS_PIECE_T);
 	game->y = 0;
 
-	ck_assert(!qdsPlayfieldOverlaps(game));
-	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, QDS_ROTATE_CLOCKWISE));
-	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, QDS_ROTATE_COUNTERCLOCKWISE));
-	ck_assert(!qdsPlayfieldCanRotate(game, 0, 0, 2));
+	ck_assert(!qdsOverlaps(game));
+	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATE_CLOCKWISE));
+	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(!qdsCanRotate(game, 0, 0, 2));
 }
 END_TEST
 
 Suite *createSuite(void)
 {
-	Suite *s = suite_create("qdsPlayfieldCanRotate");
+	Suite *s = suite_create("qdsCanRotate");
 
 	TCase *c = tcase_create("base");
 	tcase_add_checked_fixture(c, setup, teardown);

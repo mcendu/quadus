@@ -58,7 +58,7 @@ static bool lineFilled(qdsPlayfield *p, int y)
 	return true;
 }
 
-QDS_API void qdsPlayfieldAdvance(qdsPlayfield *p, unsigned int input)
+QDS_API void qdsRunCycle(qdsPlayfield *p, unsigned int input)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -66,7 +66,7 @@ QDS_API void qdsPlayfieldAdvance(qdsPlayfield *p, unsigned int input)
 	p->rs->doGameCycle(p, input);
 }
 
-QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
+QDS_API bool qdsSpawn(qdsPlayfield *p, int type)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -81,23 +81,23 @@ QDS_API bool qdsPlayfieldSpawn(qdsPlayfield *p, int type)
 	p->x = p->rs->spawnX(p);
 	p->y = p->rs->spawnY(p);
 
-	bool overlaps = qdsPlayfieldOverlaps(p);
+	bool overlaps = qdsOverlaps(p);
 	if (overlaps) EMIT(p, onTopOut, p);
 
 	return !overlaps;
 }
 
-QDS_API bool qdsPlayfieldTeleport(qdsPlayfield *p, int x, int y)
+QDS_API bool qdsTeleport(qdsPlayfield *p, int x, int y)
 {
 	assert((p != NULL));
-	if (!qdsPlayfieldCanMove(p, x, y)) return false;
+	if (!qdsCanMove(p, x, y)) return false;
 
 	p->x += x;
 	p->y += y;
 	return true;
 }
 
-QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset)
+QDS_API int qdsMove(qdsPlayfield *p, int offset)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -105,11 +105,11 @@ QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset)
 	int i;
 	if (offset < 0) {
 		for (i = 0; i > offset; --i) {
-			if (!qdsPlayfieldCanMove(p, i - 1, 0)) break;
+			if (!qdsCanMove(p, i - 1, 0)) break;
 		}
 	} else {
 		for (i = 0; i < offset; ++i) {
-			if (!qdsPlayfieldCanMove(p, i + 1, 0)) break;
+			if (!qdsCanMove(p, i + 1, 0)) break;
 		}
 	}
 
@@ -118,14 +118,14 @@ QDS_API int qdsPlayfieldMove(qdsPlayfield *p, int offset)
 	return i;
 }
 
-QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance)
+QDS_API int qdsDrop(qdsPlayfield *p, int type, int distance)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 	int i;
 	for (i = 0; i < distance; ++i) {
-		if (!qdsPlayfieldCanMove(p, 0, -(i + 1))) break;
+		if (!qdsCanMove(p, 0, -(i + 1))) break;
 	}
 
 	EMIT_CANCELLABLE(p, onDrop, 0, p, type, i);
@@ -133,7 +133,7 @@ QDS_API int qdsPlayfieldDrop(qdsPlayfield *p, int type, int distance)
 	return i;
 }
 
-QDS_API int qdsPlayfieldRotate(qdsPlayfield *p, int rotation)
+QDS_API int qdsRotate(qdsPlayfield *p, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -151,7 +151,7 @@ QDS_API int qdsPlayfieldRotate(qdsPlayfield *p, int rotation)
 	return result;
 }
 
-QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
+QDS_API bool qdsLock(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -175,7 +175,7 @@ QDS_API bool qdsPlayfieldLock(qdsPlayfield *p)
 	return true;
 }
 
-QDS_API int qdsPlayfieldHold(qdsPlayfield *p)
+QDS_API int qdsHold(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -184,14 +184,14 @@ QDS_API int qdsPlayfieldHold(qdsPlayfield *p)
 
 	int active = p->piece;
 	/* spawn already draws from the queue when hold is empty */
-	bool overlaps = !qdsPlayfieldSpawn(p, p->hold);
+	bool overlaps = !qdsSpawn(p, p->hold);
 	p->hold = active;
 
 	if (overlaps) return QDS_PLAYFIELD_HOLD_TOPOUT;
 	return QDS_PLAYFIELD_HOLD_SUCCESS;
 }
 
-QDS_API bool qdsPlayfieldClear(qdsPlayfield *p, int y)
+QDS_API bool qdsClearLine(qdsPlayfield *p, int y)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -205,7 +205,7 @@ QDS_API bool qdsPlayfieldClear(qdsPlayfield *p, int y)
 	return true;
 }
 
-QDS_API bool qdsPlayfieldCanRotate(qdsPlayfield *p, int x, int y, int rotation)
+QDS_API bool qdsCanRotate(qdsPlayfield *p, int x, int y, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -230,6 +230,6 @@ QDS_API int qdsPlayfieldGetGhostY(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	int i = 0;
-	while (qdsPlayfieldCanMove(p, 0, i - 1)) i -= 1;
+	while (qdsCanMove(p, 0, i - 1)) i -= 1;
 	return p->y + i;
 }
