@@ -48,7 +48,7 @@
 		body                                             \
 	}
 
-static void *init()
+static void *init(void)
 {
 	struct mockRulesetData *data = calloc(1, sizeof(struct mockRulesetData));
 	return data;

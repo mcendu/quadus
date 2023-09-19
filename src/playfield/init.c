@@ -32,7 +32,7 @@
 #include <mode.h>
 #include <rs.h>
 
-QDS_API qdsPlayfield *qdsAlloc()
+QDS_API qdsPlayfield *qdsAlloc(void)
 {
 	qdsPlayfield *p = malloc(sizeof(qdsPlayfield));
 	qdsInit(p);
