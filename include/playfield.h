@@ -39,11 +39,11 @@ extern "C" {
  */
 
 /** Swapping minos succeeded. */
-#define QDS_PLAYFIELD_HOLD_SUCCESS 0
+#define QDS_HOLD_SUCCESS 0
 /** The swap was blocked. */
-#define QDS_PLAYFIELD_HOLD_BLOCKED -1
+#define QDS_HOLD_BLOCKED -1
 /** The swapped mino overlapped with the playfield. */
-#define QDS_PLAYFIELD_HOLD_TOPOUT 1
+#define QDS_HOLD_TOPOUT 1
 
 /**
  * Definition of qdsPlayfield.

@@ -201,11 +201,11 @@ static const qdsCoords *getShape(int type, int o)
 
 static int rotationCheck(qdsPlayfield *p, int r, int *x, int *y)
 {
-	if (!qdsCanRotate(p, 0, 0, r)) return QDS_PLAYFIELD_ROTATE_FAILED;
+	if (!qdsCanRotate(p, 0, 0, r)) return QDS_ROTATE_FAILED;
 
 	if (x) *x = 0;
 	if (y) *y = 0;
-	return QDS_PLAYFIELD_ROTATE_NORMAL;
+	return QDS_ROTATE_NORMAL;
 }
 
 const qdsRuleset *mockRuleset = &(const qdsRuleset){

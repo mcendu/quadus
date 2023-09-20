@@ -45,9 +45,9 @@ extern "C" {
 #define QDS_DROP_HARD 1
 #define QDS_DROP_SOFT 2
 
-#define QDS_ROTATE_NONE 0
-#define QDS_ROTATE_CLOCKWISE 1
-#define QDS_ROTATE_COUNTERCLOCKWISE -1
+#define QDS_ROTATION_NONE 0
+#define QDS_ROTATION_CLOCKWISE 1
+#define QDS_ROTATION_COUNTERCLOCKWISE -1
 
 #define QDS_ORIENTATION_BASE 0
 #define QDS_ORIENTATION_C 1
@@ -59,13 +59,13 @@ extern "C" {
  */
 
 /** The rotation failed. */
-#define QDS_PLAYFIELD_ROTATE_FAILED 0
+#define QDS_ROTATE_FAILED 0
 /** The rotation succeeded. */
-#define QDS_PLAYFIELD_ROTATE_NORMAL 1
+#define QDS_ROTATE_NORMAL 1
 /** The rotation succeeded and is recognized as a twist. */
-#define QDS_PLAYFIELD_ROTATE_TWIST 2
+#define QDS_ROTATE_TWIST 2
 /** The rotation succeeded and is recognized as a mini twist. */
-#define QDS_PLAYFIELD_ROTATE_TWIST_MINI 3
+#define QDS_ROTATE_TWIST_MINI 3
 
 /**
  * A tile on the playfield.

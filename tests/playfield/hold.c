@@ -92,7 +92,7 @@ START_TEST(topout)
 	ck_assert_int_eq(modeData->topOutCount, 0);
 
 	game->playfield[20][4] = QDS_PIECE_I;
-	ck_assert_int_eq(qdsHold(game), QDS_PLAYFIELD_HOLD_TOPOUT);
+	ck_assert_int_eq(qdsHold(game), QDS_HOLD_TOPOUT);
 
 	ck_assert_int_ne(rsData->topOutCount, 0);
 	ck_assert_int_ne(modeData->topOutCount, 0);
@@ -103,13 +103,13 @@ START_TEST(cancel)
 {
 	qdsSpawn(game, QDS_PIECE_I);
 	rsData->blockHold = true;
-	ck_assert_int_eq(qdsHold(game), QDS_PLAYFIELD_HOLD_BLOCKED);
+	ck_assert_int_eq(qdsHold(game), QDS_HOLD_BLOCKED);
 	ck_assert_int_eq(game->hold, 0);
 	ck_assert_int_eq(game->piece, QDS_PIECE_I);
 	rsData->blockHold = false;
 
 	modeData->blockHold = true;
-	ck_assert_int_eq(qdsHold(game), QDS_PLAYFIELD_HOLD_BLOCKED);
+	ck_assert_int_eq(qdsHold(game), QDS_HOLD_BLOCKED);
 	ck_assert_int_eq(game->hold, 0);
 	ck_assert_int_eq(game->piece, QDS_PIECE_I);
 	modeData->blockHold = false;

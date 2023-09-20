@@ -115,8 +115,8 @@ START_TEST(rotated)
 	game->y = 0;
 
 	ck_assert(!qdsOverlaps(game));
-	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATE_CLOCKWISE));
-	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATE_COUNTERCLOCKWISE));
+	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATION_CLOCKWISE));
+	ck_assert(!qdsCanRotate(game, 0, 0, QDS_ROTATION_COUNTERCLOCKWISE));
 	ck_assert(!qdsCanRotate(game, 0, 0, 2));
 }
 END_TEST

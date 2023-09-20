@@ -140,10 +140,9 @@ QDS_API int qdsRotate(qdsPlayfield *p, int rotation)
 	assert((p->mode != NULL));
 	int x, y;
 	int result = p->rs->canRotate(p, rotation, &x, &y);
-	if (result == QDS_PLAYFIELD_ROTATE_FAILED)
-		return QDS_PLAYFIELD_ROTATE_FAILED;
+	if (result == QDS_ROTATE_FAILED) return QDS_ROTATE_FAILED;
 
-	EMIT_CANCELLABLE(p, onRotate, QDS_PLAYFIELD_ROTATE_FAILED, p, rotation);
+	EMIT_CANCELLABLE(p, onRotate, QDS_ROTATE_FAILED, p, rotation);
 
 	p->x += x;
 	p->y += y;
@@ -180,15 +179,15 @@ QDS_API int qdsHold(qdsPlayfield *p)
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
-	EMIT_CANCELLABLE(p, onHold, QDS_PLAYFIELD_HOLD_BLOCKED, p, p->piece);
+	EMIT_CANCELLABLE(p, onHold, QDS_HOLD_BLOCKED, p, p->piece);
 
 	int active = p->piece;
 	/* spawn already draws from the queue when hold is empty */
 	bool overlaps = !qdsSpawn(p, p->hold);
 	p->hold = active;
 
-	if (overlaps) return QDS_PLAYFIELD_HOLD_TOPOUT;
-	return QDS_PLAYFIELD_HOLD_SUCCESS;
+	if (overlaps) return QDS_HOLD_TOPOUT;
+	return QDS_HOLD_SUCCESS;
 }
 
 QDS_API bool qdsClearLine(qdsPlayfield *p, int y)
