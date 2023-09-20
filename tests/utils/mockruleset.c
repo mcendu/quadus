@@ -124,10 +124,12 @@ EVENT_HANDLER(
 	bool,
 	{
 		data->holdCount++;
+		data->holdPiece = piece;
 		return !data->blockHold;
 	},
 	game,
-	qdsPlayfield *game)
+	qdsPlayfield *game,
+	int piece)
 
 EVENT_HANDLER(
 	onLineFill,
@@ -178,9 +180,9 @@ static int getPiece(void *d, int pos)
 	return QDS_PIECE_O;
 }
 
-static int shiftPiece(void *data)
+static int shiftPiece(struct mockRulesetData *data)
 {
-	++((struct mockRulesetData *)data)->shiftCount;
+	++data->shiftCount;
 	return QDS_PIECE_O;
 }
 
@@ -222,7 +224,7 @@ const qdsRuleset *mockRuleset = &(const qdsRuleset){
 	.spawnX = spawnX,
 	.spawnY = spawnY,
 	.getPiece = getPiece,
-	.shiftPiece = shiftPiece,
+	.shiftPiece = (int (*)(void *))shiftPiece,
 	.getShape = getShape,
 	.canRotate = rotationCheck,
 };
@@ -234,7 +236,7 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.spawnX = spawnX,
 	.spawnY = spawnY,
 	.getPiece = getPiece,
-	.shiftPiece = shiftPiece,
+	.shiftPiece = (int (*)(void *))shiftPiece,
 	.getShape = getShape,
 	.canRotate = rotationCheck,
 };

@@ -28,7 +28,7 @@
 #include <game.h>
 #include <playfield.h>
 
-static qdsPlayfield *game = &(qdsPlayfield){};
+static qdsPlayfield *game = &(qdsPlayfield){ 0 };
 static mockRulesetData *rsData;
 static mockRulesetData *modeData;
 
@@ -114,6 +114,7 @@ END_TEST
 START_TEST(cancel)
 {
 	qdsSpawn(game, QDS_PIECE_O);
+	int y = game->y;
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
 
 	qdsSpawn(game, QDS_PIECE_O);
@@ -121,16 +122,21 @@ START_TEST(cancel)
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 0);
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(game->y, y);
 	rsData->blockDrop = false;
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	ck_assert_int_ne(game->y, y);
 
 	qdsSpawn(game, QDS_PIECE_O);
+	y = game->y;
 	modeData->blockDrop = true;
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 0);
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 10), 0);
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 100), 0);
+	ck_assert_int_eq(game->y, y);
 	modeData->blockDrop = false;
 	ck_assert_int_eq(qdsDrop(game, QDS_DROP_GRAVITY, 1), 1);
+	ck_assert_int_ne(game->y, y);
 }
 END_TEST
 

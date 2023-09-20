@@ -180,7 +180,7 @@ QDS_API int qdsHold(qdsPlayfield *p)
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
-	EMIT_CANCELLABLE(p, onHold, QDS_PLAYFIELD_HOLD_BLOCKED, p);
+	EMIT_CANCELLABLE(p, onHold, QDS_PLAYFIELD_HOLD_BLOCKED, p, p->piece);
 
 	int active = p->piece;
 	/* spawn already draws from the queue when hold is empty */

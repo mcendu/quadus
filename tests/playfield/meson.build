@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 tests_playfield = [
     ['qdsDrop', 'drop.c'],
+    ['qdsHold', 'hold.c'],
     ['qdsInit', 'init.c'],
     ['qdsLock', 'lock.c'],
     ['qdsMove', 'move.c'],
@@ -36,5 +37,5 @@ foreach t : tests_playfield
         dependencies: check_dep,
         link_with: [quaduscore_lib, testutils_lib]
     )
-    test(t[0], bin)
+    test(t[0], bin, protocol: 'tap')
 endforeach

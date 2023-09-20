@@ -31,8 +31,9 @@ int main(void)
 	int fails;
 	Suite *suite = createSuite();
 	SRunner *runner = srunner_create(suite);
+	srunner_set_tap(runner, "-");
 
-	srunner_run_all(runner, CK_NORMAL);
+	srunner_run_all(runner, CK_SILENT);
 	fails = srunner_ntests_failed(runner);
 	srunner_free(runner);
 	if (fails != 0) return EXIT_FAILURE;

@@ -90,7 +90,7 @@ typedef bool qdsMoveCallback(qdsPlayfield *game, int offset);
 typedef bool qdsRotateCallback(qdsPlayfield *game, int rotation);
 typedef bool qdsDropCallback(qdsPlayfield *game, int type, int distance);
 typedef bool qdsLockCallback(qdsPlayfield *game);
-typedef bool qdsHoldCallback(qdsPlayfield *game);
+typedef bool qdsHoldCallback(qdsPlayfield *game, int piece);
 typedef void qdsLineFilledCallback(qdsPlayfield *game, int y);
 typedef bool qdsLineClearCallback(qdsPlayfield *game, int y);
 typedef void qdsTopOutCallback(qdsPlayfield *game);
