@@ -64,6 +64,7 @@ typedef struct qdsPiecedef
 QDS_API extern const qdsPiecedef qdsPieceNone;
 
 #define QDS_PIECE_NONE 0
+#define QDS_PIECE_GARBAGE 8
 
 /*
  * Tetromino identifiers.
