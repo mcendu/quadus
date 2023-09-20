@@ -179,6 +179,28 @@ START_TEST(fillSplit)
 }
 END_TEST
 
+START_TEST(heightTracking)
+{
+	ck_assert_int_eq(game->top, -1);
+	ck_assert(qdsSpawn(game, QDS_PIECE_L));
+	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
+	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
+	ck_assert(qdsLock(game));
+	ck_assert_int_eq(game->top, 2);
+	ck_assert(qdsSpawn(game, QDS_PIECE_I));
+	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
+	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
+	ck_assert(qdsLock(game));
+	ck_assert_int_eq(game->top, 4);
+
+	ck_assert(qdsSpawn(game, QDS_PIECE_I));
+	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
+	game->y = 4;
+	ck_assert(qdsLock(game));
+	ck_assert_int_eq(game->top, 5);
+}
+END_TEST
+
 START_TEST(cancel)
 {
 	qdsSpawn(game, QDS_PIECE_I);
@@ -217,6 +239,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lockOutOfBounds);
 	tcase_add_test(c, fill);
 	tcase_add_test(c, fillSplit);
+	tcase_add_test(c, heightTracking);
 	tcase_add_test(c, cancel);
 	suite_add_tcase(s, c);
 
