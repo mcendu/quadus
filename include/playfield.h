@@ -143,7 +143,8 @@ QDS_API int qdsGetGhostY(qdsPlayfield *);
  * Check if the active mino is grounded. The active mino is grounded
  * if it is unable to drop any further.
  */
-#define qdsGrounded(p) (!qdsCanRotate((p), 0, -1, 0))
+#define qdsGrounded(p) \
+	(!qdsCanRotate((p), 0, -1, 0) || !qdsCanRotate((p), 0, 0, 0))
 
 /**
  * Get a pointer to the ruleset's data.

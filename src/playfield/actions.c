@@ -156,6 +156,7 @@ QDS_API bool qdsLock(qdsPlayfield *p)
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 
+	if (!qdsGrounded(p)) return false;
 	EMIT_CANCELLABLE(p, onLock, false, p);
 
 	const qdsCoords *shape = p->rs->getShape(p->piece, p->orientation);

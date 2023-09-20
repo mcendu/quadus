@@ -70,17 +70,15 @@ START_TEST(lock)
 	ck_assert_mem_eq(playfield[1], emptyLine, sizeof(playfield[1]));
 }
 
-/* locking is allowed mid-air */
+/* locking is not allowed mid-air */
 START_TEST(lockAir)
 {
 	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
-	ck_assert_mem_eq(
-		playfield[9], (const qdsTile[3][10]){}, sizeof(qdsTile[3][10]));
-	ck_assert(qdsLock(game));
-	ck_assert_mem_eq(playfield[10], lockedLine, sizeof(playfield[10]));
+	ck_assert(!qdsLock(game));
+	ck_assert_mem_eq(playfield[10], emptyLine, sizeof(playfield[10]));
 }
 END_TEST
 
@@ -99,6 +97,7 @@ START_TEST(lockTerrain)
 }
 END_TEST
 
+/* locking out of bounds deletes out of bounds tiles */
 START_TEST(lockOutOfBounds)
 {
 	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
