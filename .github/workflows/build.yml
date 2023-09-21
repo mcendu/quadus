@@ -20,20 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Meson and dependencies
-        run: sudo apt-get install meson ninja check
+        run: |
+          sudo apt-get install meson ninja-build check
+      - name: Install clang
+        if: matrix.cc == 'clang'
+        run: |
+          sudo apt-get install clang
       - name: Configure project
         run: |
           mkdir builddir
-          CC={{ matrix.cc }} \
+          CC=${{ matrix.cc }} \
             meson setup \
             --backend=ninja \
             --debug \
-            --optimization={{ matrix.O }}
+            --optimization=${{ matrix.O }} \
             --prefix=/usr \
             --strip \
-            -Db_pie=true
-            -Db_sanitize={{ matrix.sanitize }}
-            -Denable_tests=true
+            -Db_pie=true \
+            -Db_sanitize=${{ matrix.sanitize }} \
+            -Denable_tests=true \
             builddir
       - name: Build
         run: ninja -v -C builddir all
@@ -42,4 +47,4 @@ jobs:
       - name: Install
         run: |
           mkdir install_tree
-          meson install --destdir=install_tree
+          meson install -C builddir --destdir=install_tree
