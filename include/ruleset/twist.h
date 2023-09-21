@@ -20,34 +20,29 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/*
+ * Utilities for checking for twists.
+ */
+#ifndef QDS__RULESET_TWIST_H
+#define QDS__RULESET_TWIST_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <quadus.h>
-#include <ruleset.h>
-#include <ruleset/twist.h>
 
-#include <stdbool.h>
+/**
+ * Check for a twist via the immobile method.
+ */
+QDS_API bool qdsCheckTwistImmobile(qdsGame *game);
+/**
+ * Check for a twist via the three-corner method.
+ */
+QDS_API bool qdsCheckTwistThreeCorner(qdsGame *game);
 
-QDS_API bool qdsCheckTwistImmobile(qdsGame *game)
-{
-	return !qdsCanMove(game, 0, -1) && !qdsCanMove(game, 0, 1)
-		   && !qdsCanMove(game, -1, 0) && !qdsCanMove(game, 1, 0);
+#ifdef __cplusplus
 }
+#endif
 
-QDS_API bool qdsCheckTwistThreeCorner(qdsGame *game)
-{
-	int x, y, corners = 0;
-	qdsGetActivePosition(game, &x, &y);
-	switch (qdsGetActivePieceType(game)) {
-		case QDS_PIECE_J:
-		case QDS_PIECE_L:
-		case QDS_PIECE_T:
-		case QDS_PIECE_S:
-		case QDS_PIECE_Z:
-			if (qdsGetTile(game, x - 1, y - 1)) ++corners;
-			if (qdsGetTile(game, x - 1, y + 1)) ++corners;
-			if (qdsGetTile(game, x + 1, y - 1)) ++corners;
-			if (qdsGetTile(game, x + 1, y + 1)) ++corners;
-			return corners >= 3;
-		default:
-			return false;
-	}
-}
+#endif /* !QDS__RULESET_TWIST_H */

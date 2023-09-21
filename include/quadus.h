@@ -141,7 +141,7 @@ QDS_API void qdsSetMode(qdsGame *, const qdsGamemode *mode);
  */
 QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
 /**
- * Get a tile in the playfield. Effectively qdsGetPlayfield(game)[y][x]
+ * Get a tile in the playfield. Effectively `qdsGetPlayfield(game)[y][x]`
  * with bounds checking.
  */
 QDS_API qdsTile qdsGetTile(qdsGame *, int x, int y);
