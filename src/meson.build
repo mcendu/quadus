@@ -21,7 +21,7 @@
 quaduscore_src = []
 
 subdir('game')
-subdir('utils')
+subdir('rulesets')
 
 quaduscore_internal_include = include_directories('include')
 
