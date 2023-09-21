@@ -183,23 +183,23 @@ END_TEST
 
 START_TEST(heightTracking)
 {
-	ck_assert_int_eq(game->top, -1);
+	ck_assert_int_eq(game->height, 0);
 	ck_assert(qdsSpawn(game, QDS_PIECE_L));
 	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
 	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
 	ck_assert(qdsLock(game));
-	ck_assert_int_eq(game->top, 2);
+	ck_assert_int_eq(game->height, 3);
 	ck_assert(qdsSpawn(game, QDS_PIECE_I));
 	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
 	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
 	ck_assert(qdsLock(game));
-	ck_assert_int_eq(game->top, 4);
+	ck_assert_int_eq(game->height, 5);
 
 	ck_assert(qdsSpawn(game, QDS_PIECE_I));
 	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
 	game->y = 4;
 	ck_assert(qdsLock(game));
-	ck_assert_int_eq(game->top, 5);
+	ck_assert_int_eq(game->height, 6);
 }
 END_TEST
 

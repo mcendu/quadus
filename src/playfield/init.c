@@ -35,6 +35,7 @@
 QDS_API qdsGame *qdsAlloc(void)
 {
 	qdsGame *p = malloc(sizeof(qdsGame));
+	if (!p) return p;
 	qdsInit(p);
 	return p;
 }
@@ -51,7 +52,7 @@ QDS_API void qdsInit(qdsGame *p)
 	memset(p->playfield, 0, sizeof(p->playfield));
 	p->piece = QDS_PIECE_NONE;
 	p->orientation = QDS_ORIENTATION_BASE;
-	p->top = -1; /* no lines */
+	p->height = 0;
 	p->hold = 0;
 	p->rs = NULL;
 	p->rsData = NULL;

@@ -57,7 +57,7 @@ typedef struct qdsGame
 	int y;
 	int piece;
 	unsigned orientation;
-	int top;
+	int height;
 	int hold;
 
 	const qdsRuleset *rs;

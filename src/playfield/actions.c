@@ -166,7 +166,7 @@ QDS_API bool qdsLock(qdsGame *p)
 		if (x < 0 || x >= 10 || y < 0 || y >= 48) continue;
 		p->playfield[y][x] = p->piece; /* for piece coloring */
 
-		if (y > p->top) p->top = y;
+		if (y >= p->height) p->height = y + 1;
 
 		if (lineFilled(p, y)) EMIT(p, onLineFilled, p, y);
 	}
@@ -196,11 +196,12 @@ QDS_API bool qdsClearLine(qdsGame *p, int y)
 	assert((p != NULL));
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
-	if (!lineFilled(p, y)) return false;
 	EMIT_CANCELLABLE(p, onLineClear, false, p, y);
 
-	int lineNum = (p->top)-- - y;
+	if (y >= p->height) return true;
+	int lineNum = p->height-- - y - 1;
 	memmove(p->playfield[y], p->playfield[y + 1], lineNum * sizeof(qdsLine));
+	memset(p->playfield[p->height], 0, sizeof(qdsLine));
 	return true;
 }
 

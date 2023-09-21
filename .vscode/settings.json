@@ -7,6 +7,7 @@
     "--header-insertion=iwyu"
   ],
   "files.associations": {
-    ".clangd": "yaml"
+    ".clangd": "yaml",
+    "*.h": "c",
   }
 }

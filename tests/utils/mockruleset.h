@@ -86,6 +86,7 @@ typedef struct mockRulesetData
 	int dropType;
 	int dropDistance;
 	int holdPiece;
+	int lineCleared;
 } mockRulesetData;
 
 #endif /* !MOCKRULESET_H */

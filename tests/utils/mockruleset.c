@@ -35,6 +35,10 @@
  *
  * WARNING: This is a hack. the comma operator should always be wrapped
  * in parentheses. Do not insert a semicolon after this macro.
+ *
+ * Unfortunately the only alternative for this macro is to declare
+ * multiple handlers with nearly identical code, which is tedious and
+ * can lend to more issues than this inelegant thing.
  */
 #define EVENT_HANDLER(name, rettype, body, game, ...)    \
 	static rettype name##Rs(__VA_ARGS__)                 \
@@ -144,6 +148,7 @@ EVENT_HANDLER(
 	bool,
 	{
 		data->lineClearCount++;
+		data->lineCleared = y;
 		return !data->blockLineClear;
 	},
 	game,
