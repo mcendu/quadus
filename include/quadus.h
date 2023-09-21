@@ -102,7 +102,7 @@ typedef void qdsTopOutCallback(qdsGame *game);
  * is returned and ap is not modified. Otherwise, the state of ap is
  * undefined. In both cases, the caller should free ap using va_end().
  */
-typedef int qdsCustomCall(qdsGame *, unsigned long req, va_list ap);
+typedef int qdsCustomCall(qdsGame *, unsigned long req, void *argp);
 
 /**
  * Allocate and initialize a game state.
@@ -173,7 +173,7 @@ QDS_API int qdsGetHeldPiece(qdsGame *);
  * Call a ruleset-defined function. Returns 0 on success and non-zero
  * on failure.
  */
-QDS_API int qdsCall(qdsGame *, unsigned long req, ...);
+QDS_API int qdsCall(qdsGame *, unsigned long req, void *argp);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,6 @@
 quaduscore_src_utils = [
     'piece.c',
+    'twist.c',
 ]
 
 foreach src : quaduscore_src_utils
