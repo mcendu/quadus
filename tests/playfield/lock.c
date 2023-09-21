@@ -48,8 +48,8 @@ static void teardown(void)
 	qdsCleanup(game);
 }
 
-const qdsTile emptyLine[10] = {};
-const qdsTile lockedLine[10] = { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
+const qdsLine emptyLine = {};
+const qdsLine lockedLine = { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 
 START_TEST(lock)
 {
@@ -65,34 +65,34 @@ START_TEST(lock)
 	ck_assert_int_ne(rsData->lockCount, 0);
 	ck_assert_int_ne(modeData->lockCount, 0);
 
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
-	ck_assert_mem_eq(playfield[0], lockedLine, sizeof(playfield[0]));
-	ck_assert_mem_eq(playfield[1], emptyLine, sizeof(playfield[1]));
+	qdsLine *playfield = qdsGetPlayfield(game);
+	ck_assert_mem_eq(playfield[0], lockedLine, sizeof(qdsLine));
+	ck_assert_mem_eq(playfield[1], emptyLine, sizeof(qdsLine));
 }
 
 /* locking is not allowed mid-air */
 START_TEST(lockAir)
 {
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
+	qdsLine *playfield = qdsGetPlayfield(game);
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
 	ck_assert(!qdsLock(game));
-	ck_assert_mem_eq(playfield[10], emptyLine, sizeof(playfield[10]));
+	ck_assert_mem_eq(playfield[10], emptyLine, sizeof(qdsLine));
 }
 END_TEST
 
 /* locking is allowed while overlapping terrain */
 START_TEST(lockTerrain)
 {
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
+	qdsLine *playfield = qdsGetPlayfield(game);
 	playfield[0][4] = SCHAR_MAX;
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 0;
 	ck_assert(qdsOverlaps(game));
 	ck_assert(qdsLock(game));
-	ck_assert_mem_eq(playfield[0], lockedLine, sizeof(playfield[0]));
+	ck_assert_mem_eq(playfield[0], lockedLine, sizeof(qdsLine));
 	ck_assert_int_eq(playfield[0][4], QDS_PIECE_I);
 }
 END_TEST
@@ -100,14 +100,14 @@ END_TEST
 /* locking out of bounds deletes out of bounds tiles */
 START_TEST(lockOutOfBounds)
 {
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
+	qdsLine *playfield = qdsGetPlayfield(game);
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
 	game->x = -1;
 	ck_assert(qdsLock(game));
 	/* without checking, the piece overflows into the last row */
-	ck_assert_mem_eq(playfield[9], emptyLine, sizeof(playfield[9]));
+	ck_assert_mem_eq(playfield[9], emptyLine, sizeof(qdsLine));
 	ck_assert_mem_eq(playfield[10], "\1\1\0\0\0\0\0\0\0\0", 10);
 	memset(playfield[10], 0, 10);
 
@@ -116,7 +116,7 @@ START_TEST(lockOutOfBounds)
 	game->x = 9;
 	ck_assert(qdsLock(game));
 	/* same for the next row */
-	ck_assert_mem_eq(playfield[11], emptyLine, sizeof(playfield[9]));
+	ck_assert_mem_eq(playfield[11], emptyLine, sizeof(qdsLine));
 	ck_assert_mem_eq(playfield[10], "\0\0\0\0\0\0\0\0\1\1", 10);
 
 	qdsSpawn(game, QDS_PIECE_I);
@@ -142,7 +142,7 @@ const qdsTile quad[][10] = {
 
 START_TEST(fill)
 {
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
+	qdsLine *playfield = qdsGetPlayfield(game);
 	memcpy(playfield, quad, sizeof(quad));
 
 	qdsSpawn(game, QDS_PIECE_I);
@@ -161,7 +161,7 @@ END_TEST
 
 START_TEST(fillSplit)
 {
-	qdsTile(*playfield)[10] = qdsGetPlayfield(game);
+	qdsLine *playfield = qdsGetPlayfield(game);
 	memcpy(playfield, quad, sizeof(quad));
 	playfield[1][3] = 0;
 
@@ -207,22 +207,22 @@ START_TEST(cancel)
 	game->y = 0;
 	rsData->blockLock = true;
 	ck_assert(!qdsLock(game));
-	ck_assert_mem_eq(game->playfield[0], emptyLine, sizeof(qdsTile[10]));
+	ck_assert_mem_eq(game->playfield[0], emptyLine, sizeof(qdsLine));
 	ck_assert_int_eq(game->piece, QDS_PIECE_I);
 	rsData->blockLock = false;
 	ck_assert(qdsLock(game));
-	ck_assert_mem_eq(game->playfield[0], lockedLine, sizeof(qdsTile[10]));
+	ck_assert_mem_eq(game->playfield[0], lockedLine, sizeof(qdsLine));
 	ck_assert_int_eq(game->piece, 0);
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 1;
 	modeData->blockLock = true;
 	ck_assert(!qdsLock(game));
-	ck_assert_mem_eq(game->playfield[1], emptyLine, sizeof(qdsTile[10]));
+	ck_assert_mem_eq(game->playfield[1], emptyLine, sizeof(qdsLine));
 	ck_assert_int_eq(game->piece, QDS_PIECE_I);
 	modeData->blockLock = false;
 	ck_assert(qdsLock(game));
-	ck_assert_mem_eq(game->playfield[1], lockedLine, sizeof(qdsTile[10]));
+	ck_assert_mem_eq(game->playfield[1], lockedLine, sizeof(qdsLine));
 	ck_assert_int_eq(game->piece, 0);
 }
 END_TEST

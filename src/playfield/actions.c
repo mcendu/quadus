@@ -200,8 +200,7 @@ QDS_API bool qdsClearLine(qdsPlayfield *p, int y)
 	EMIT_CANCELLABLE(p, onLineClear, false, p, y);
 
 	int lineNum = (p->top)-- - y;
-	memmove(
-		p->playfield[y], p->playfield[y + 1], lineNum * sizeof(qdsTile[10]));
+	memmove(p->playfield[y], p->playfield[y + 1], lineNum * sizeof(qdsLine));
 	return true;
 }
 

@@ -32,7 +32,7 @@
 #include <mode.h>
 #include <rs.h>
 
-QDS_API qdsTile (*qdsGetPlayfield(qdsPlayfield *p))[10]
+QDS_API qdsLine *qdsGetPlayfield(qdsPlayfield *p)
 {
 	assert((p != NULL));
 	return p->playfield;

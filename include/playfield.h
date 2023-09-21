@@ -50,7 +50,7 @@ extern "C" {
  */
 typedef struct qdsPlayfield
 {
-	qdsTile playfield[48][10];
+	qdsLine playfield[48];
 	int x;
 	int y;
 	int piece;

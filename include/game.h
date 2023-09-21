@@ -71,6 +71,10 @@ extern "C" {
  * A tile on the playfield.
  */
 typedef unsigned char qdsTile;
+/**
+ * A line in the playfield.
+ */
+typedef qdsTile qdsLine[10];
 
 /**
  * The game state of Quadus.
@@ -139,7 +143,7 @@ QDS_API void qdsSetMode(qdsPlayfield *, const qdsGamemode *mode);
 /**
  * Get the playfield.
  */
-QDS_API qdsTile (*qdsGetPlayfield(qdsPlayfield *))[10];
+QDS_API qdsLine *qdsGetPlayfield(qdsPlayfield *);
 /**
  * Get the active piece.
  */
