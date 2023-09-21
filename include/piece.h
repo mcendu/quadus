@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
+#include "quadus.h"
 #include <limits.h>
-#include <quadus.h>
 
 /**
  * Coordinates inside a piece definition.

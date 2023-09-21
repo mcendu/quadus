@@ -32,7 +32,7 @@ extern "C" {
 
 #include <stdbool.h>
 
-#include <quadus.h>
+#include "quadus.h"
 
 typedef struct qdsGamemode
 {

@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-#include <quadus.h>
+#include "../quadus.h"
 
 /**
  * Check for a twist via the immobile method.
