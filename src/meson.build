@@ -18,12 +18,10 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-quaduscore_src = [
-    'piece.c',
-    'playfield/actions.c',
-    'playfield/init.c',
-    'playfield/properties.c',
-]
+quaduscore_src = []
+
+subdir('game')
+subdir('utils')
 
 quaduscore_internal_include = include_directories('include')
 
