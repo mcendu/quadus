@@ -180,8 +180,9 @@ static int spawnY(qdsGame *game)
 	return 20;
 }
 
-static int getPiece(void *d, int pos)
+static int getPiece(struct mockRulesetData *data, int pos)
 {
+	data->queuePos = pos;
 	return QDS_PIECE_O;
 }
 
@@ -228,7 +229,7 @@ const qdsRuleset *mockRuleset = &(const qdsRuleset){
 	.doGameCycle = mockGameCycle,
 	.spawnX = spawnX,
 	.spawnY = spawnY,
-	.getPiece = getPiece,
+	.getPiece = (int (*)(void *, int))getPiece,
 	.shiftPiece = (int (*)(void *))shiftPiece,
 	.getShape = getShape,
 	.canRotate = rotationCheck,
@@ -240,7 +241,7 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.doGameCycle = mockGameCycle,
 	.spawnX = spawnX,
 	.spawnY = spawnY,
-	.getPiece = getPiece,
+	.getPiece = (int (*)(void *, int))getPiece,
 	.shiftPiece = (int (*)(void *))shiftPiece,
 	.getShape = getShape,
 	.canRotate = rotationCheck,

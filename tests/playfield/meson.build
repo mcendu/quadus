@@ -26,6 +26,7 @@ tests_playfield = [
     ['qdsLock', 'lock.c'],
     ['qdsMove', 'move.c'],
     ['qdsCanRotate', 'overlap.c'],
+    ['qdsGame', 'properties.c'],
     ['qdsRotate', 'rotate.c'],
     ['qdsSpawn', 'spawn.c'],
 ]

@@ -38,17 +38,23 @@ QDS_API qdsLine *qdsGetPlayfield(qdsGame *p)
 	return p->playfield;
 }
 
-QDS_API void qdsGetActive(qdsGame *p,
-						  int *x,
-						  int *y,
-						  int *type,
-						  unsigned *orientation)
+QDS_API void qdsGetActivePosition(qdsGame *p, int *x, int *y)
 {
 	assert((p != NULL));
 	if (x) *x = p->x;
 	if (y) *y = p->y;
-	if (type) *type = p->piece;
-	if (orientation) *orientation = p->orientation;
+}
+
+QDS_API int qdsGetActiveX(qdsGame *p)
+{
+	assert((p != NULL));
+	return p->x;
+}
+
+QDS_API int qdsGetActiveY(qdsGame *p)
+{
+	assert((p != NULL));
+	return p->y;
 }
 
 QDS_API int qdsGetNextPiece(qdsGame *p, int pos)

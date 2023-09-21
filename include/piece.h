@@ -36,9 +36,7 @@ extern "C" {
  * Coordinates inside a piece definition.
  */
 typedef struct
-#if __STDC_VERSION__ > 201710L
-	[[gnu::aligned(2)]]
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
 	__attribute__((aligned(2)))
 #endif
 	qdsCoords

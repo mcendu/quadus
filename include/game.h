@@ -145,13 +145,25 @@ QDS_API void qdsSetMode(qdsGame *, const qdsGamemode *mode);
  */
 QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
 /**
- * Get the active piece.
+ * Get the active piece's type.
  */
-QDS_API void qdsGetActive(qdsGame *,
-						  int *x,
-						  int *y,
-						  int *type,
-						  unsigned *orientation);
+QDS_API int qdsGetActivePieceType(qdsGame *);
+/**
+ * Get the position of the active piece.
+ */
+QDS_API void qdsGetActivePosition(qdsGame *, int *x, int *y);
+/**
+ * Get the horizontal position of the active piece.
+ */
+QDS_API int qdsGetActiveX(qdsGame *);
+/**
+ * Get the vertical position of the active piece.
+ */
+QDS_API int qdsGetActiveY(qdsGame *);
+/**
+ * Get the orientation of the active piece.
+ */
+QDS_API int qdsGetActiveOrientation(qdsGame *);
 /**
  * Get the piece at a specific position in the queue.
  */
