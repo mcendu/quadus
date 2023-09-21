@@ -30,7 +30,8 @@
 extern "C" {
 #endif
 
-#include <qdsbuild.h>
+#include <limits.h>
+#include <quadus.h>
 
 /**
  * Coordinates inside a piece definition.
@@ -63,6 +64,7 @@ QDS_API extern const qdsPiecedef qdsPieceNone;
 
 #define QDS_PIECE_NONE 0
 #define QDS_PIECE_GARBAGE 8
+#define QDS_PIECE_WALL UCHAR_MAX
 
 /*
  * Tetromino identifiers.

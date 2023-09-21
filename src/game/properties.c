@@ -37,6 +37,12 @@ QDS_API qdsLine *qdsGetPlayfield(qdsGame *p)
 	return p->playfield;
 }
 
+QDS_API qdsTile qdsGetTile(qdsGame *p, int x, int y)
+{
+	if (x < 0 || x >= 10 || y < 0 || y >= 48) return QDS_PIECE_WALL;
+	return p->playfield[y][x];
+}
+
 QDS_API void qdsGetActivePosition(qdsGame *p, int *x, int *y)
 {
 	assert((p != NULL));

@@ -22,6 +22,8 @@
  */
 #include <check.h>
 
+#include <limits.h>
+
 #include "mockruleset.h"
 #include <game.h>
 #include <quadus.h>
@@ -47,6 +49,23 @@ START_TEST(getPlayfield)
 {
 	void *p = qdsGetPlayfield(game);
 	ck_assert_ptr_eq(p, &game->playfield);
+}
+END_TEST
+
+START_TEST(getTile)
+{
+	game->playfield[5][9] = 8;
+	ck_assert_int_eq(qdsGetTile(game, 9, 5), 8);
+
+	/* qdsGetTile bound checks */
+	ck_assert_int_eq(qdsGetTile(game, 2, -1), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, 2, 48), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, 2, INT_MIN), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, 2, INT_MAX), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, -1, 3), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, 10, 3), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, INT_MIN, 3), QDS_PIECE_WALL);
+	ck_assert_int_eq(qdsGetTile(game, INT_MAX, 3), QDS_PIECE_WALL);
 }
 END_TEST
 
@@ -94,6 +113,7 @@ Suite *createSuite(void)
 	TCase *c = tcase_create("properties");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, getPlayfield);
+	tcase_add_test(c, getTile);
 	tcase_add_test(c, getActivePosition);
 	tcase_add_test(c, getNextPiece);
 	tcase_add_test(c, getHeldPiece);
