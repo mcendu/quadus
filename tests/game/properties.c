@@ -82,6 +82,22 @@ START_TEST(getActivePosition)
 }
 END_TEST
 
+START_TEST(getActivePieceType)
+{
+	game->piece = QDS_PIECE_I;
+	ck_assert_int_eq(qdsGetActivePieceType(game), game->piece);
+}
+END_TEST
+
+START_TEST(getActiveOrientation)
+{
+	game->orientation = 1;
+	ck_assert_int_eq(qdsGetActiveOrientation(game), 1);
+	game->orientation = -1;
+	ck_assert_int_eq(qdsGetActiveOrientation(game), 3);
+}
+END_TEST
+
 START_TEST(getNextPiece)
 {
 	ck_assert_int_eq(qdsGetNextPiece(game, 0), QDS_PIECE_O);
@@ -115,6 +131,8 @@ Suite *createSuite(void)
 	tcase_add_test(c, getPlayfield);
 	tcase_add_test(c, getTile);
 	tcase_add_test(c, getActivePosition);
+	tcase_add_test(c, getActivePieceType);
+	tcase_add_test(c, getActiveOrientation);
 	tcase_add_test(c, getNextPiece);
 	tcase_add_test(c, getHeldPiece);
 	tcase_add_test(c, getData);

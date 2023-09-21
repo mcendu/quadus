@@ -62,6 +62,18 @@ QDS_API int qdsGetActiveY(qdsGame *p)
 	return p->y;
 }
 
+QDS_API int qdsGetActivePieceType(qdsGame *p)
+{
+	assert((p != NULL));
+	return p->piece;
+}
+
+QDS_API int qdsGetActiveOrientation(qdsGame *p)
+{
+	assert((p != NULL));
+	return p->orientation % 4;
+}
+
 QDS_API int qdsGetNextPiece(qdsGame *p, int pos)
 {
 	assert((p != NULL));
