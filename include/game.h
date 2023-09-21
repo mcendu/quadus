@@ -74,7 +74,7 @@ typedef unsigned char qdsTile;
 /**
  * A line in the playfield.
  */
-typedef qdsTile qdsLine[10];
+typedef qdsTile qdsLine[16];
 
 /**
  * The game state of Quadus.

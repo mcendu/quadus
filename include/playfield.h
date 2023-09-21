@@ -30,6 +30,8 @@
 extern "C" {
 #endif
 
+#include <stdalign.h>
+
 #include <mode.h>
 #include <qdsbuild.h>
 #include <rs.h>
@@ -50,7 +52,7 @@ extern "C" {
  */
 typedef struct qdsGame
 {
-	qdsLine playfield[48];
+	alignas(sizeof(qdsLine)) qdsLine playfield[48];
 	int x;
 	int y;
 	int piece;

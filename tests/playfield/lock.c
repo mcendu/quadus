@@ -23,6 +23,7 @@
 #include <check.h>
 
 #include <limits.h>
+#include <stdalign.h>
 #include <string.h>
 
 #include "mockruleset.h"
@@ -48,8 +49,9 @@ static void teardown(void)
 	qdsCleanup(game);
 }
 
-const qdsLine emptyLine = {};
-const qdsLine lockedLine = { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
+const alignas(sizeof(qdsLine)) qdsLine emptyLine = {};
+const alignas(sizeof(qdsLine)) qdsLine lockedLine
+	= { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 
 START_TEST(lock)
 {
@@ -100,6 +102,8 @@ END_TEST
 /* locking out of bounds deletes out of bounds tiles */
 START_TEST(lockOutOfBounds)
 {
+	const qdsLine leftCutoff = "\1\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+	const qdsLine rightCutoff = "\0\0\0\0\0\0\0\0\1\1\0\0\0\0\0\0";
 	qdsLine *playfield = qdsGetPlayfield(game);
 
 	qdsSpawn(game, QDS_PIECE_I);
@@ -108,16 +112,15 @@ START_TEST(lockOutOfBounds)
 	ck_assert(qdsLock(game));
 	/* without checking, the piece overflows into the last row */
 	ck_assert_mem_eq(playfield[9], emptyLine, sizeof(qdsLine));
-	ck_assert_mem_eq(playfield[10], "\1\1\0\0\0\0\0\0\0\0", 10);
-	memset(playfield[10], 0, 10);
+	ck_assert_mem_eq(playfield[10], leftCutoff, sizeof(qdsLine));
+	memset(playfield[10], 0, sizeof(qdsLine));
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
 	game->x = 9;
 	ck_assert(qdsLock(game));
-	/* same for the next row */
-	ck_assert_mem_eq(playfield[11], emptyLine, sizeof(qdsLine));
-	ck_assert_mem_eq(playfield[10], "\0\0\0\0\0\0\0\0\1\1", 10);
+	/* without checking, overflows into padding for the next row */
+	ck_assert_mem_eq(playfield[10], rightCutoff, sizeof(qdsLine));
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = -1;
@@ -133,7 +136,7 @@ START_TEST(lockOutOfBounds)
 	ck_assert_int_eq(game->y, 48);
 }
 
-const qdsTile quad[][10] = {
+const qdsLine quad[] = {
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
@@ -142,13 +145,12 @@ const qdsTile quad[][10] = {
 
 START_TEST(fill)
 {
-	qdsLine *playfield = qdsGetPlayfield(game);
-	memcpy(playfield, quad, sizeof(quad));
+	memcpy(qdsGetPlayfield(game), quad, sizeof(quad));
 
 	qdsSpawn(game, QDS_PIECE_I);
 	ck_assert(qdsRotate(game, 1));
 	ck_assert(qdsMove(game, 5));
-	ck_assert(qdsDrop(game, QDS_DROP_HARD, 20));
+	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
 	ck_assert_int_lt(game->y, 4);
 
 	rsData->lineFillCount = 0;
@@ -168,7 +170,7 @@ START_TEST(fillSplit)
 	qdsSpawn(game, QDS_PIECE_I);
 	ck_assert(qdsRotate(game, 1));
 	ck_assert(qdsMove(game, 5));
-	ck_assert(qdsDrop(game, QDS_DROP_HARD, 20));
+	ck_assert(qdsDrop(game, QDS_DROP_HARD, 48));
 	ck_assert_int_lt(game->y, 4);
 
 	rsData->lineFillCount = 0;
