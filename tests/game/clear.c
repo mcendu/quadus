@@ -26,7 +26,7 @@
 
 #include "mockruleset.h"
 #include <game.h>
-#include <playfield.h>
+#include <quadus.h>
 #include <string.h>
 
 static qdsGame *game = &(qdsGame){ 0 };

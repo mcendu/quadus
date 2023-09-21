@@ -20,15 +20,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "mockruleset.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 
 #include <piece.h>
-#include <playfield.h>
-#include <rs.h>
-
-#include "game.h"
-#include "mockruleset.h"
+#include <quadus.h>
+#include <ruleset.h>
 
 /**
  * Define mock ruleset and gamemode event handlers.
@@ -40,16 +39,16 @@
  * multiple handlers with nearly identical code, which is tedious and
  * can lend to more issues than this inelegant thing.
  */
-#define EVENT_HANDLER(name, rettype, body, game, ...)    \
-	static rettype name##Rs(__VA_ARGS__)                 \
-	{                                                    \
-		struct mockRulesetData *data = (game)->rsData;   \
-		body                                             \
-	}                                                    \
-	static rettype name##Mode(__VA_ARGS__)               \
-	{                                                    \
-		struct mockRulesetData *data = (game)->modeData; \
-		body                                             \
+#define EVENT_HANDLER(name, rettype, body, game, ...)           \
+	static rettype name##Rs(__VA_ARGS__)                        \
+	{                                                           \
+		struct mockRulesetData *data = qdsGetRulesetData(game); \
+		body                                                    \
+	}                                                           \
+	static rettype name##Mode(__VA_ARGS__)                      \
+	{                                                           \
+		struct mockRulesetData *data = qdsGetModeData(game);    \
+		body                                                    \
 	}
 
 static void *init(void)
@@ -164,7 +163,7 @@ EVENT_HANDLER(
 
 static void mockGameCycle(qdsGame *game, unsigned int input)
 {
-	struct mockRulesetData *data = game->rsData;
+	struct mockRulesetData *data = qdsGetRulesetData(game);
 
 	data->cycleCount += 1;
 	data->lastInput = input;

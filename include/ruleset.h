@@ -21,50 +21,76 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * Low level playfield actions for consumption by rulesets.
+ * Interface definition for Quadus rulesets.
  */
-#ifndef QDS__PLAYFIELD_H
-#define QDS__PLAYFIELD_H
+#ifndef QDS__RS_H
+#define QDS__RS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdalign.h>
+#include <stdbool.h>
 
-#include <mode.h>
-#include <qdsbuild.h>
-#include <rs.h>
+#include <piece.h>
+#include <quadus.h>
 
-/*
- * Return values of qdsPlayfieldHold.
- */
-
-/** Swapping minos succeeded. */
-#define QDS_HOLD_SUCCESS 0
-/** The swap was blocked. */
-#define QDS_HOLD_BLOCKED -1
-/** The swapped mino overlapped with the playfield. */
-#define QDS_HOLD_TOPOUT 1
-
-/**
- * Definition of qdsPlayfield.
- */
-typedef struct qdsGame
+typedef struct qdsRuleset
 {
-	alignas(sizeof(qdsLine)) qdsLine playfield[48];
-	int x;
-	int y;
-	int piece;
-	unsigned orientation;
-	int height;
-	int hold;
+	/**
+	 * Allocate and initialize data used by the ruleset.
+	 */
+	void *(*init)();
+	/**
+	 * Deallocate data used by the ruleset.
+	 */
+	void (*destroy)(void *rsData);
 
-	const qdsRuleset *rs;
-	void *rsData;
-	const qdsGamemode *mode;
-	void *modeData;
-} qdsGame;
+	qdsSpawnCallback *onSpawn;
+	qdsMoveCallback *onMove;
+	qdsRotateCallback *onRotate;
+	qdsDropCallback *onDrop;
+	qdsLockCallback *onLock;
+	qdsHoldCallback *onHold;
+	qdsLineFilledCallback *onLineFilled;
+	qdsLineClearCallback *onLineClear;
+	qdsTopOutCallback *onTopOut;
+
+	qdsCustomCall *call;
+
+	/**
+	 * Advance the game state by one cycle.
+	 */
+	void (*doGameCycle)(qdsGame *game, unsigned int input);
+
+	/**
+	 * Get the horizontal spawn position.
+	 */
+	int (*spawnX)(qdsGame *game);
+	/**
+	 * Get the vertical spawn position.
+	 */
+	int (*spawnY)(qdsGame *game);
+
+	/**
+	 * Get a piece in the piece queue.
+	 */
+	int (*getPiece)(void *rsData, int position);
+	/**
+	 * Remove and return the topmost piece from the piece queue.
+	 */
+	int (*shiftPiece)(void *rsData);
+
+	/**
+	 * Get the shape of a piece.
+	 */
+	const qdsCoords *(*getShape)(int type, int orientation);
+	/**
+	 * Check if a piece can be rotated. The kick offset is
+	 * returned in x and y.
+	 */
+	int (*canRotate)(qdsGame *game, int rotation, int *x, int *y);
+} qdsRuleset;
 
 /**
  * Initialize the game state.
@@ -153,13 +179,8 @@ QDS_API int qdsGetGhostY(qdsGame *);
  */
 QDS_API void *qdsGetRulesetData(qdsGame *);
 
-/**
- * Get a pointer to the gamemode's data.
- */
-QDS_API void *qdsGetModeData(qdsGame *);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__PLAYFIELD_H */
+#endif /* !QDS__RS_H */

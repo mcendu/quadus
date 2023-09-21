@@ -28,7 +28,7 @@
 #include "mockruleset.h"
 #include <game.h>
 #include <piece.h>
-#include <playfield.h>
+#include <quadus.h>
 
 static qdsGame game[1];
 static mockRulesetData *rsData;

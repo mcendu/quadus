@@ -27,4 +27,4 @@ if not check_dep.found()
 endif
 
 subdir('utils')
-subdir('playfield')
+subdir('game')

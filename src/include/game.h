@@ -21,50 +21,41 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * Interface definition for Quadus gamemodes.
+ * Low level playfield actions for consumption by rulesets.
  */
-#ifndef QDS__MODE_H
-#define QDS__MODE_H
+#ifndef QDS__PLAYFIELD_H
+#define QDS__PLAYFIELD_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdbool.h>
+#include <stdalign.h>
 
-#include <quadus.h>
-
-typedef struct qdsGamemode
-{
-	/**
-	 * Allocate and initialize data used by the game mode.
-	 */
-	void *(*init)();
-	/**
-	 * Deallocate data used by the game mode.
-	 */
-	void (*destroy)(void *modeData);
-
-	qdsSpawnCallback *onSpawn;
-	qdsMoveCallback *onMove;
-	qdsRotateCallback *onRotate;
-	qdsDropCallback *onDrop;
-	qdsLockCallback *onLock;
-	qdsHoldCallback *onHold;
-	qdsLineFilledCallback *onLineFilled;
-	qdsLineClearCallback *onLineClear;
-	qdsTopOutCallback *onTopOut;
-
-	qdsCustomCall *call;
-} qdsGamemode;
+#include <mode.h>
+#include <ruleset.h>
 
 /**
- * Get a pointer to the gamemode's data.
+ * Definition of qdsPlayfield.
  */
-QDS_API void *qdsGetModeData(qdsGame *);
+struct qdsGame
+{
+	alignas(sizeof(qdsLine)) qdsLine playfield[48];
+	int x;
+	int y;
+	int piece;
+	unsigned orientation;
+	int height;
+	int hold;
+
+	const qdsRuleset *rs;
+	void *rsData;
+	const qdsGamemode *mode;
+	void *modeData;
+};
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__MODE_H */
+#endif /* !QDS__PLAYFIELD_H */

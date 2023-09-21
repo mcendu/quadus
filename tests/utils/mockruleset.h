@@ -26,7 +26,7 @@
 #include <stdbool.h>
 
 #include <mode.h>
-#include <rs.h>
+#include <ruleset.h>
 
 /**
  * Ruleset for mocking in unit tests.

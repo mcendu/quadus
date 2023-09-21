@@ -23,14 +23,14 @@
 #include <qdsbuild.h>
 
 #include <game.h>
-#include <playfield.h>
+#include <quadus.h>
 
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
 #include <mode.h>
-#include <rs.h>
+#include <ruleset.h>
 #include <threads.h>
 
 #define EMIT(p, e, ...)                            \

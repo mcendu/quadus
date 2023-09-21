@@ -54,18 +54,14 @@ extern "C" {
 #define QDS_ORIENTATION_FLIP 2
 #define QDS_ORIENTATION_CC 3
 
-/*
- * Results for rotation.
- */
-
-/** The rotation failed. */
 #define QDS_ROTATE_FAILED 0
-/** The rotation succeeded. */
 #define QDS_ROTATE_NORMAL 1
-/** The rotation succeeded and is recognized as a twist. */
 #define QDS_ROTATE_TWIST 2
-/** The rotation succeeded and is recognized as a mini twist. */
 #define QDS_ROTATE_TWIST_MINI 3
+
+#define QDS_HOLD_SUCCESS 0
+#define QDS_HOLD_BLOCKED -1
+#define QDS_HOLD_TOPOUT 1
 
 /**
  * A tile on the playfield.

@@ -23,9 +23,9 @@
 #include "mockruleset.h"
 #include "piece.h"
 #include <check.h>
+#include <game.h>
 #include <mode.h>
-#include <playfield.h>
-#include <rs.h>
+#include <ruleset.h>
 #include <stdbool.h>
 
 static qdsGame gamed;

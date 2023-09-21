@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <game.h>
-#include <playfield.h>
+#include <quadus.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -30,7 +30,7 @@
 #include <string.h>
 
 #include <mode.h>
-#include <rs.h>
+#include <ruleset.h>
 
 QDS_API qdsLine *qdsGetPlayfield(qdsGame *p)
 {
