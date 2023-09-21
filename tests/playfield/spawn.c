@@ -28,8 +28,8 @@
 #include <rs.h>
 #include <stdbool.h>
 
-static qdsPlayfield gamed;
-static qdsPlayfield *game = &gamed;
+static qdsGame gamed;
+static qdsGame *game = &gamed;
 static mockRulesetData *rsData;
 static mockRulesetData *modeData;
 

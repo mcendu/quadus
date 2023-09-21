@@ -79,7 +79,7 @@ typedef qdsTile qdsLine[10];
 /**
  * The game state of Quadus.
  */
-typedef struct qdsPlayfield qdsPlayfield;
+typedef struct qdsGame qdsGame;
 /**
  * Defines the rules of Quadus.
  */
@@ -89,15 +89,15 @@ typedef struct qdsRuleset qdsRuleset;
  */
 typedef struct qdsGamemode qdsGamemode;
 
-typedef bool qdsSpawnCallback(qdsPlayfield *game, int piece);
-typedef bool qdsMoveCallback(qdsPlayfield *game, int offset);
-typedef bool qdsRotateCallback(qdsPlayfield *game, int rotation);
-typedef bool qdsDropCallback(qdsPlayfield *game, int type, int distance);
-typedef bool qdsLockCallback(qdsPlayfield *game);
-typedef bool qdsHoldCallback(qdsPlayfield *game, int piece);
-typedef void qdsLineFilledCallback(qdsPlayfield *game, int y);
-typedef bool qdsLineClearCallback(qdsPlayfield *game, int y);
-typedef void qdsTopOutCallback(qdsPlayfield *game);
+typedef bool qdsSpawnCallback(qdsGame *game, int piece);
+typedef bool qdsMoveCallback(qdsGame *game, int offset);
+typedef bool qdsRotateCallback(qdsGame *game, int rotation);
+typedef bool qdsDropCallback(qdsGame *game, int type, int distance);
+typedef bool qdsLockCallback(qdsGame *game);
+typedef bool qdsHoldCallback(qdsGame *game, int piece);
+typedef void qdsLineFilledCallback(qdsGame *game, int y);
+typedef bool qdsLineClearCallback(qdsGame *game, int y);
+typedef void qdsTopOutCallback(qdsGame *game);
 
 /**
  * Call a ruleset or gamemode defined function.
@@ -106,48 +106,48 @@ typedef void qdsTopOutCallback(qdsPlayfield *game);
  * is returned and ap is not modified. Otherwise, the state of ap is
  * undefined. In both cases, the caller should free ap using va_end().
  */
-typedef int qdsCustomCall(qdsPlayfield *, unsigned long req, va_list ap);
+typedef int qdsCustomCall(qdsGame *, unsigned long req, va_list ap);
 
 /**
  * Allocate and initialize a game state.
  */
-QDS_API qdsPlayfield *qdsAlloc();
+QDS_API qdsGame *qdsAlloc();
 /**
  * Deallocate a game state.
  */
-QDS_API void qdsFree(qdsPlayfield *);
+QDS_API void qdsFree(qdsGame *);
 
 /**
  * Advance the game state by one cycle.
  */
-QDS_API void qdsRunCycle(qdsPlayfield *, unsigned int input);
+QDS_API void qdsRunCycle(qdsGame *, unsigned int input);
 
 /**
  * Get the current ruleset.
  */
-QDS_API const qdsRuleset *qdsGetRuleset(qdsPlayfield *);
+QDS_API const qdsRuleset *qdsGetRuleset(qdsGame *);
 /**
  * Set the game's ruleset.
  */
-QDS_API void qdsSetRuleset(qdsPlayfield *, const qdsRuleset *ruleset);
+QDS_API void qdsSetRuleset(qdsGame *, const qdsRuleset *ruleset);
 
 /**
  * Get the current game mode.
  */
-QDS_API const qdsGamemode *qdsGetMode(qdsPlayfield *);
+QDS_API const qdsGamemode *qdsGetMode(qdsGame *);
 /**
  * Set the game's mode.
  */
-QDS_API void qdsSetMode(qdsPlayfield *, const qdsGamemode *mode);
+QDS_API void qdsSetMode(qdsGame *, const qdsGamemode *mode);
 
 /**
  * Get the playfield.
  */
-QDS_API qdsLine *qdsGetPlayfield(qdsPlayfield *);
+QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
 /**
  * Get the active piece.
  */
-QDS_API void qdsGetActive(qdsPlayfield *,
+QDS_API void qdsGetActive(qdsGame *,
 						  int *x,
 						  int *y,
 						  int *type,
@@ -155,17 +155,17 @@ QDS_API void qdsGetActive(qdsPlayfield *,
 /**
  * Get the piece at a specific position in the queue.
  */
-QDS_API int qdsGetNextPiece(qdsPlayfield *, int pos);
+QDS_API int qdsGetNextPiece(qdsGame *, int pos);
 /**
  * Get the held piece.
  */
-QDS_API int qdsGetHeldPiece(qdsPlayfield *);
+QDS_API int qdsGetHeldPiece(qdsGame *);
 
 /**
  * Call a ruleset-defined function. Returns 0 on success and non-zero
  * on failure.
  */
-QDS_API int qdsCall(qdsPlayfield *, unsigned long req, ...);
+QDS_API int qdsCall(qdsGame *, unsigned long req, ...);
 
 #ifdef __cplusplus
 }

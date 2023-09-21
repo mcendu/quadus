@@ -68,7 +68,7 @@ EVENT_HANDLER(
 		return !data->blockSpawn;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int type)
 
 EVENT_HANDLER(
@@ -80,7 +80,7 @@ EVENT_HANDLER(
 		return !data->blockMove;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int offset)
 
 EVENT_HANDLER(
@@ -92,7 +92,7 @@ EVENT_HANDLER(
 		return !data->blockRotate;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int rotation)
 
 EVENT_HANDLER(
@@ -105,7 +105,7 @@ EVENT_HANDLER(
 		return !data->blockDrop;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int type,
 	int distance)
 
@@ -117,7 +117,7 @@ EVENT_HANDLER(
 		return !data->blockLock;
 	},
 	game,
-	qdsPlayfield *game)
+	qdsGame *game)
 
 EVENT_HANDLER(
 	onHold,
@@ -128,7 +128,7 @@ EVENT_HANDLER(
 		return !data->blockHold;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int piece)
 
 EVENT_HANDLER(
@@ -136,7 +136,7 @@ EVENT_HANDLER(
 	void,
 	{ data->lineFillCount++; },
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int y)
 
 EVENT_HANDLER(
@@ -147,7 +147,7 @@ EVENT_HANDLER(
 		return !data->blockLineClear;
 	},
 	game,
-	qdsPlayfield *game,
+	qdsGame *game,
 	int y);
 
 EVENT_HANDLER(
@@ -155,9 +155,9 @@ EVENT_HANDLER(
 	void,
 	{ data->topOutCount++; },
 	game,
-	qdsPlayfield *game);
+	qdsGame *game);
 
-static void mockGameCycle(qdsPlayfield *game, unsigned int input)
+static void mockGameCycle(qdsGame *game, unsigned int input)
 {
 	struct mockRulesetData *data = game->rsData;
 
@@ -165,12 +165,12 @@ static void mockGameCycle(qdsPlayfield *game, unsigned int input)
 	data->lastInput = input;
 }
 
-static int spawnX(qdsPlayfield *game)
+static int spawnX(qdsGame *game)
 {
 	return 4;
 }
 
-static int spawnY(qdsPlayfield *game)
+static int spawnY(qdsGame *game)
 {
 	return 20;
 }
@@ -199,7 +199,7 @@ static const qdsCoords *getShape(int type, int o)
 	return ((const qdsCoords **)def)[o];
 }
 
-static int rotationCheck(qdsPlayfield *p, int r, int *x, int *y)
+static int rotationCheck(qdsGame *p, int r, int *x, int *y)
 {
 	if (!qdsCanRotate(p, 0, 0, r)) return QDS_ROTATE_FAILED;
 

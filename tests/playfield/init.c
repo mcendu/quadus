@@ -25,8 +25,8 @@
 #include <check.h>
 #include <playfield.h>
 
-static qdsPlayfield gamed;
-static qdsPlayfield *game = &gamed;
+static qdsGame gamed;
+static qdsGame *game = &gamed;
 
 void setup(void)
 {

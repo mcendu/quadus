@@ -28,7 +28,7 @@
 #include <playfield.h>
 #include <string.h>
 
-static qdsPlayfield game[1];
+static qdsGame game[1];
 
 static void setup(void)
 {

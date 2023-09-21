@@ -29,7 +29,7 @@
 #include <game.h>
 #include <playfield.h>
 
-static qdsPlayfield *game = &(qdsPlayfield){};
+static qdsGame *game = &(qdsGame){};
 static mockRulesetData *rsData;
 static mockRulesetData *modeData;
 

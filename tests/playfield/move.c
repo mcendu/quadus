@@ -28,7 +28,7 @@
 #include <game.h>
 #include <playfield.h>
 
-static qdsPlayfield game[1];
+static qdsGame game[1];
 static mockRulesetData *rsData;
 static mockRulesetData *modeData;
 

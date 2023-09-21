@@ -61,16 +61,16 @@ typedef struct qdsRuleset
 	/**
 	 * Advance the game state by one cycle.
 	 */
-	void (*doGameCycle)(qdsPlayfield *game, unsigned int input);
+	void (*doGameCycle)(qdsGame *game, unsigned int input);
 
 	/**
 	 * Get the horizontal spawn position.
 	 */
-	int (*spawnX)(qdsPlayfield *game);
+	int (*spawnX)(qdsGame *game);
 	/**
 	 * Get the vertical spawn position.
 	 */
-	int (*spawnY)(qdsPlayfield *game);
+	int (*spawnY)(qdsGame *game);
 
 	/**
 	 * Get a piece in the piece queue.
@@ -89,7 +89,7 @@ typedef struct qdsRuleset
 	 * Check if a piece can be rotated. The kick offset is
 	 * returned in x and y.
 	 */
-	int (*canRotate)(qdsPlayfield *game, int rotation, int *x, int *y);
+	int (*canRotate)(qdsGame *game, int rotation, int *x, int *y);
 } qdsRuleset;
 
 #ifdef __cplusplus

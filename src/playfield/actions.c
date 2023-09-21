@@ -49,7 +49,7 @@
 		}                                                 \
 	} while (0)
 
-static bool lineFilled(qdsPlayfield *p, int y)
+static bool lineFilled(qdsGame *p, int y)
 {
 	for (int i = 0; i < 10; ++i) {
 		if (p->playfield[y][i] == 0) return false;
@@ -58,7 +58,7 @@ static bool lineFilled(qdsPlayfield *p, int y)
 	return true;
 }
 
-QDS_API void qdsRunCycle(qdsPlayfield *p, unsigned int input)
+QDS_API void qdsRunCycle(qdsGame *p, unsigned int input)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -66,7 +66,7 @@ QDS_API void qdsRunCycle(qdsPlayfield *p, unsigned int input)
 	p->rs->doGameCycle(p, input);
 }
 
-QDS_API bool qdsSpawn(qdsPlayfield *p, int type)
+QDS_API bool qdsSpawn(qdsGame *p, int type)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -87,7 +87,7 @@ QDS_API bool qdsSpawn(qdsPlayfield *p, int type)
 	return !overlaps;
 }
 
-QDS_API bool qdsTeleport(qdsPlayfield *p, int x, int y)
+QDS_API bool qdsTeleport(qdsGame *p, int x, int y)
 {
 	assert((p != NULL));
 	if (!qdsCanMove(p, x, y)) return false;
@@ -97,7 +97,7 @@ QDS_API bool qdsTeleport(qdsPlayfield *p, int x, int y)
 	return true;
 }
 
-QDS_API int qdsMove(qdsPlayfield *p, int offset)
+QDS_API int qdsMove(qdsGame *p, int offset)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -118,7 +118,7 @@ QDS_API int qdsMove(qdsPlayfield *p, int offset)
 	return i;
 }
 
-QDS_API int qdsDrop(qdsPlayfield *p, int type, int distance)
+QDS_API int qdsDrop(qdsGame *p, int type, int distance)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -133,7 +133,7 @@ QDS_API int qdsDrop(qdsPlayfield *p, int type, int distance)
 	return i;
 }
 
-QDS_API int qdsRotate(qdsPlayfield *p, int rotation)
+QDS_API int qdsRotate(qdsGame *p, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -150,7 +150,7 @@ QDS_API int qdsRotate(qdsPlayfield *p, int rotation)
 	return result;
 }
 
-QDS_API bool qdsLock(qdsPlayfield *p)
+QDS_API bool qdsLock(qdsGame *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -175,7 +175,7 @@ QDS_API bool qdsLock(qdsPlayfield *p)
 	return true;
 }
 
-QDS_API int qdsHold(qdsPlayfield *p)
+QDS_API int qdsHold(qdsGame *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -191,7 +191,7 @@ QDS_API int qdsHold(qdsPlayfield *p)
 	return QDS_HOLD_SUCCESS;
 }
 
-QDS_API bool qdsClearLine(qdsPlayfield *p, int y)
+QDS_API bool qdsClearLine(qdsGame *p, int y)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -204,7 +204,7 @@ QDS_API bool qdsClearLine(qdsPlayfield *p, int y)
 	return true;
 }
 
-QDS_API bool qdsCanRotate(qdsPlayfield *p, int x, int y, int rotation)
+QDS_API bool qdsCanRotate(qdsGame *p, int x, int y, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
@@ -225,7 +225,7 @@ QDS_API bool qdsCanRotate(qdsPlayfield *p, int x, int y, int rotation)
 	return true;
 }
 
-QDS_API int qdsPlayfieldGetGhostY(qdsPlayfield *p)
+QDS_API int qdsPlayfieldGetGhostY(qdsGame *p)
 {
 	assert((p != NULL));
 	int i = 0;
