@@ -75,6 +75,7 @@ START_TEST(autorepeat)
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
 
+	/* autorepeat resets when another direction is pressed... */
 	input = QDS_INPUT_RIGHT;
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
@@ -82,6 +83,7 @@ START_TEST(autorepeat)
 		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
 
+	/* ...or when all directions are released */
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, 0), 0);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
 }
@@ -119,10 +121,15 @@ START_TEST(oppositeDirections)
 	/* when both left and right are active, latest press takes priority */
 	unsigned input = QDS_INPUT_LEFT;
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
 	input |= QDS_INPUT_RIGHT;
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
 	input &= ~(QDS_INPUT_RIGHT);
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, 0), 0);
 
 	/* left takes priority in simultaneous press */
