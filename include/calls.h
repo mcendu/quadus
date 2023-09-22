@@ -37,7 +37,7 @@
 /* handling */
 #define QDS_GETDAS 7  /* get autorepeat startup */
 #define QDS_GETARR 8  /* get autorepeat interval */
-#define QDS_GETDCD 9  /* get autorepeat cooldown right after lock */
+#define QDS_GETDCD 9  /* get autorepeat startup after interruption */
 #define QDS_GETSDG 10 /* get soft drop gravity */
 #define QDS_GETSDF 11 /* get soft drop gravity multiplier */
 #define QDS_GETARE 12 /* get delay between lock and piece spawn */

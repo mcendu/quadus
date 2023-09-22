@@ -1,4 +1,5 @@
 quaduscore_src_rulesets_common = [
+    'input.c',
     'piece.c',
     'twist.c',
 ]

@@ -26,10 +26,6 @@
 #ifndef QDS__PLAYFIELD_H
 #define QDS__PLAYFIELD_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdalign.h>
 
 #include <mode.h>
@@ -53,9 +49,5 @@ struct qdsGame
 	const qdsGamemode *mode;
 	void *modeData;
 };
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* !QDS__PLAYFIELD_H */

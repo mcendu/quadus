@@ -20,29 +20,48 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/*
- * Utilities for checking for twists.
- */
-#ifndef QDS__RULESET_TWIST_H
-#define QDS__RULESET_TWIST_H
+#ifndef QDS__RULESET_INPUT_H
+#define QDS__RULESET_INPUT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "../calls.h"
 #include "../quadus.h"
 
+#define QDS_DEFAULT_DAS 12
+#define QDS_DEFAULT_ARR 2
+#define QDS_DEFAULT_DCD 9
+
+typedef struct qdsInputState qdsInputState;
+
+struct qdsInputState
+{
+	unsigned int lastInput;
+	short repeatTimer;
+	short direction;
+};
+
 /**
- * Check for a twist via the immobile method.
+ * Convert raw input to effective input.
  */
-QDS_API bool qdsCheckTwistImmobile(qdsGame *game);
+QDS_API unsigned int qdsFilterInput(qdsGame *game,
+									qdsInputState *istate,
+									unsigned int input);
+
 /**
- * Check for a twist via the three-corner method.
+ * Interrupt autorepeat and reset the repeat timer.
  */
-QDS_API bool qdsCheckTwistThreeCorner(qdsGame *game);
+inline static void qdsInterruptRepeat(qdsGame *game, qdsInputState *istate)
+{
+	int dcd;
+	if (!game || qdsCall(game, QDS_GETDCD, &dcd) < 0) dcd = QDS_DEFAULT_DCD;
+	istate->repeatTimer = dcd;
+}
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__RULESET_TWIST_H */
+#endif /* !QDS__RULESET_INPUT_H */
