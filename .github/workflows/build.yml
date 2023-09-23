@@ -22,10 +22,6 @@ jobs:
       - name: Install Meson and dependencies
         run: |
           sudo apt-get install meson ninja-build check
-      - name: Install clang
-        if: matrix.cc == 'clang'
-        run: |
-          sudo apt-get install clang
       - name: Configure project
         run: |
           mkdir builddir
@@ -46,5 +42,4 @@ jobs:
         run: ninja -C builddir test
       - name: Install
         run: |
-          mkdir install_tree
           meson install -C builddir --destdir=install_tree

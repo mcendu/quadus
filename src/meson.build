@@ -25,6 +25,7 @@ subdir('rulesets')
 
 quaduscore_internal_include = include_directories('include')
 
-quaduscore_lib = shared_library('quaduscore', quaduscore_src,
+quaduscore_lib = shared_library('quadus', quaduscore_src,
     include_directories: [quaduscore_include, quaduscore_internal_include],
-    gnu_symbol_visibility: 'hidden')
+    gnu_symbol_visibility: 'hidden',
+    install: true)
