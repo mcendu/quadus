@@ -66,12 +66,17 @@ START_TEST(autorepeat)
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
 
-	for (int i = 0; i < QDS_DEFAULT_DAS - 1; ++i)
+	for (int i = QDS_DEFAULT_DAS - 1; i > 0; --i) {
 		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
+		ck_assert_int_eq(istate->repeatTimer, i);
+	}
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
-	for (int i = 0; i < QDS_DEFAULT_ARR - 1; ++i)
+
+	for (int i = QDS_DEFAULT_ARR - 1; i > 0; --i) {
 		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
+		ck_assert_int_eq(istate->repeatTimer, i);
+	}
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
 
@@ -79,8 +84,10 @@ START_TEST(autorepeat)
 	input = QDS_INPUT_RIGHT;
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
 	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
-	for (int i = 0; i < QDS_DEFAULT_DAS - 1; ++i)
+	for (int i = QDS_DEFAULT_DAS - 1; i > 0; --i) {
 		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
+		ck_assert_int_eq(istate->repeatTimer, i);
+	}
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
 
 	/* ...or when all directions are released */
@@ -139,6 +146,30 @@ START_TEST(oppositeDirections)
 }
 END_TEST
 
+START_TEST(softdrop)
+{
+	unsigned input = QDS_INPUT_SOFT_DROP;
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+
+	input |= QDS_INPUT_LEFT;
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input),
+					 QDS_INPUT_LEFT | QDS_INPUT_SOFT_DROP);
+	for (int i = QDS_DEFAULT_DAS - 1; i > 0; --i)
+		ck_assert_int_eq(qdsFilterInput(NULL, istate, input),
+						 QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input),
+					 QDS_INPUT_LEFT | QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
+
+	input &= ~(QDS_INPUT_LEFT);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsFilterInput");
@@ -149,6 +180,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, autorepeat);
 	tcase_add_test(c, autorepeatWithNonDirection);
 	tcase_add_test(c, oppositeDirections);
+	tcase_add_test(c, softdrop);
 	suite_add_tcase(s, c);
 
 	return s;

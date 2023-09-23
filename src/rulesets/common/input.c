@@ -28,26 +28,30 @@ QDS_API unsigned int qdsFilterInput(qdsGame *game,
 									qdsInputState *istate,
 									unsigned int input)
 {
-	unsigned newbtn = input & (~istate->lastInput);
+	/* normal inputs */
+	unsigned effective = input & (~istate->lastInput);
 	istate->lastInput = input;
 
-	if (newbtn & (QDS_INPUT_LEFT | QDS_INPUT_RIGHT)) {
+	/* normally held inputs */
+	effective |= input & QDS_INPUT_SOFT_DROP;
+
+	/* newly pressed directions */
+	if (effective & (QDS_INPUT_LEFT | QDS_INPUT_RIGHT)) {
 		int das;
 		if (!game || qdsCall(game, QDS_GETDAS, &das) < 0) das = QDS_DEFAULT_DAS;
 		istate->repeatTimer = das;
 
-		if (newbtn & (QDS_INPUT_LEFT)) {
+		if (effective & (QDS_INPUT_LEFT)) {
 			istate->direction = QDS_INPUT_LEFT;
-			newbtn &= ~(QDS_INPUT_RIGHT);
+			effective &= ~(QDS_INPUT_RIGHT);
 		} else {
 			istate->direction = QDS_INPUT_RIGHT;
 		}
 
-		return newbtn;
+		return effective;
 	}
 
-	unsigned effective = newbtn;
-
+	/* autorepeat */
 	if (input & istate->direction) {
 		istate->repeatTimer -= 1;
 		if (istate->repeatTimer <= 0) {
