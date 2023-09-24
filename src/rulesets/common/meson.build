@@ -1,6 +1,7 @@
 quaduscore_src_rulesets_common = [
     'input.c',
     'piece.c',
+    'rand.c',
     'twist.c',
 ]
 
