@@ -45,5 +45,6 @@
 
 /* other stats */
 #define QDS_GETLEVELTARGET 14 /* get level target */
+#define QDS_GETNEXTCOUNT 15	  /* get max piececount in queue visible */
 
 #endif /* !QDS__CALLS_H */

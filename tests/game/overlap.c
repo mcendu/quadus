@@ -52,7 +52,7 @@ START_TEST(inbounds)
 	 *  	(const coords[]){ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, END },
 	 *  };
 	 */
-	qdsLine *playfield = qdsGetPlayfield(game);
+	qdsLine *playfield = game->playfield;
 
 	qdsSpawn(game, QDS_PIECE_O);
 	ck_assert(!qdsOverlaps(game));

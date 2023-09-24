@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-#include <quadus.h>
+#include "../quadus.h"
 
 #include <stdint.h>
 

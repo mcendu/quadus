@@ -20,20 +20,48 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <quadus.h>
+#include <ruleset/piecegen.h>
+
+#include <string.h>
+
+#include <piece.h>
 #include <ruleset/rand.h>
 
-/* https://doi.org/10.1002/spe.3030 */
-#define A 0xd1342543de82ef95ul;
-
-QDS_API int qdsRand(qdsRandState *state)
+static void genBag(qdsTile *q, qdsRandState *rng)
 {
-	*state *= A;
-	*state += 1;
-	return (*state >> 32) & 0x7fffffff;
+	const qdsTile pieces[] = {
+		QDS_PIECE_I, QDS_PIECE_J, QDS_PIECE_L, QDS_PIECE_O,
+		QDS_PIECE_S, QDS_PIECE_T, QDS_PIECE_Z,
+	};
+
+	memcpy(q, pieces, sizeof(pieces));
+	for (int i = 6; i > 0; --i) {
+		int n = qdsRand(rng) % (i + 1);
+		qdsTile tmp = q[i];
+		q[i] = q[n];
+		q[n] = tmp;
+	}
 }
 
-QDS_API void qdsSrand(unsigned int seed, qdsRandState *state)
+QDS_API void qdsBagInit(struct qdsBag *q, unsigned seed)
 {
-	*state = (qdsRandState)seed;
+	qdsSrand(seed, &q->rng);
+	genBag(q->pieces, &q->rng);
+	genBag(q->pieces + 7, &q->rng);
+	q->head = 0;
+}
+
+QDS_API int qdsBagPeek(const struct qdsBag *q, int pos)
+{
+	return q->pieces[(q->head + pos) % 14];
+}
+
+QDS_API int qdsBagDraw(struct qdsBag *q)
+{
+	int p = q->pieces[q->head];
+	q->head = (q->head + 1) % 14;
+	if (q->head % 7 == 0) {
+		genBag(&q->pieces[(q->head + 7) % 14], &q->rng);
+	}
+	return p;
 }

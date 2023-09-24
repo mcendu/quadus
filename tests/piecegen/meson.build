@@ -18,12 +18,21 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-quaduscore_src_game = [
-    'actions.c',
-    'init.c',
-    'properties.c',
+tests_piecegen = [
+    ['qdsBag', 'bag.c'],
 ]
 
-foreach src : quaduscore_src_game
-    quaduscore_src += 'game' / src
+foreach t : tests_piecegen
+    bin = executable(t[0], t[1],
+        build_by_default: false,
+        install: false,
+        include_directories: [
+            quaduscore_include,
+            quaduscore_internal_include,
+            testutils_include
+        ],
+        dependencies: check_dep,
+        link_with: [quaduscore_lib, testutils_lib]
+    )
+    test(t[0], bin, protocol: 'tap')
 endforeach

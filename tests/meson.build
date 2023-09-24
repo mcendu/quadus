@@ -29,3 +29,4 @@ endif
 subdir('utils')
 subdir('game')
 subdir('ruleset')
+subdir('piecegen')

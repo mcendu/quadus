@@ -47,7 +47,7 @@ static void teardown(void)
 
 START_TEST(getPlayfield)
 {
-	void *p = qdsGetPlayfield(game);
+	const void *p = qdsGetPlayfield(game);
 	ck_assert_ptr_eq(p, &game->playfield);
 }
 END_TEST
