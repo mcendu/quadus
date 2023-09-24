@@ -31,62 +31,62 @@
 #include <mode.h>
 #include <ruleset.h>
 
-QDS_API qdsLine *qdsGetPlayfield(qdsGame *p)
+QDS_API const qdsLine *qdsGetPlayfield(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->playfield;
 }
 
-QDS_API qdsTile qdsGetTile(qdsGame *p, int x, int y)
+QDS_API qdsTile qdsGetTile(const qdsGame *p, int x, int y)
 {
 	if (x < 0 || x >= 10 || y < 0 || y >= 48) return QDS_PIECE_WALL;
 	return p->playfield[y][x];
 }
 
-QDS_API void qdsGetActivePosition(qdsGame *p, int *x, int *y)
+QDS_API void qdsGetActivePosition(const qdsGame *p, int *x, int *y)
 {
 	assert((p != NULL));
 	if (x) *x = p->x;
 	if (y) *y = p->y;
 }
 
-QDS_API int qdsGetActiveX(qdsGame *p)
+QDS_API int qdsGetActiveX(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->x;
 }
 
-QDS_API int qdsGetActiveY(qdsGame *p)
+QDS_API int qdsGetActiveY(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->y;
 }
 
-QDS_API int qdsGetActivePieceType(qdsGame *p)
+QDS_API int qdsGetActivePieceType(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->piece;
 }
 
-QDS_API int qdsGetActiveOrientation(qdsGame *p)
+QDS_API int qdsGetActiveOrientation(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->orientation % 4;
 }
 
-QDS_API int qdsGetNextPiece(qdsGame *p, int pos)
+QDS_API int qdsGetNextPiece(const qdsGame *p, int pos)
 {
 	assert((p != NULL));
 	return p->rs->getPiece(p->rsData, pos);
 }
 
-QDS_API int qdsGetHeldPiece(qdsGame *p)
+QDS_API int qdsGetHeldPiece(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->hold;
 }
 
-QDS_API const qdsRuleset *qdsGetRuleset(qdsGame *p)
+QDS_API const qdsRuleset *qdsGetRuleset(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->rs;
@@ -101,13 +101,13 @@ QDS_API void qdsSetRuleset(qdsGame *p, const qdsRuleset *rs)
 	p->rs = rs;
 }
 
-QDS_API void *qdsGetRulesetData(qdsGame *p)
+QDS_API void *qdsGetRulesetData(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->rsData;
 }
 
-QDS_API const qdsGamemode *qdsGetMode(qdsGame *p)
+QDS_API const qdsGamemode *qdsGetMode(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->mode;
@@ -122,7 +122,7 @@ QDS_API void qdsSetMode(qdsGame *p, const qdsGamemode *mode)
 	p->mode = mode;
 }
 
-QDS_API void *qdsGetModeData(qdsGame *p)
+QDS_API void *qdsGetModeData(const qdsGame *p)
 {
 	assert((p != NULL));
 	return p->modeData;

@@ -67,7 +67,7 @@ START_TEST(lock)
 	ck_assert_int_ne(rsData->lockCount, 0);
 	ck_assert_int_ne(modeData->lockCount, 0);
 
-	qdsLine *playfield = qdsGetPlayfield(game);
+	const qdsLine *playfield = qdsGetPlayfield(game);
 	ck_assert_mem_eq(playfield[0], lockedLine, sizeof(qdsLine));
 	ck_assert_mem_eq(playfield[1], emptyLine, sizeof(qdsLine));
 }
@@ -75,7 +75,7 @@ START_TEST(lock)
 /* locking is not allowed mid-air */
 START_TEST(lockAir)
 {
-	qdsLine *playfield = qdsGetPlayfield(game);
+	const qdsLine *playfield = qdsGetPlayfield(game);
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
@@ -87,7 +87,7 @@ END_TEST
 /* locking is allowed while overlapping terrain */
 START_TEST(lockTerrain)
 {
-	qdsLine *playfield = qdsGetPlayfield(game);
+	qdsLine *playfield = game->playfield;
 	playfield[0][4] = SCHAR_MAX;
 
 	qdsSpawn(game, QDS_PIECE_I);
@@ -104,7 +104,7 @@ START_TEST(lockOutOfBounds)
 {
 	const qdsLine leftCutoff = "\1\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 	const qdsLine rightCutoff = "\0\0\0\0\0\0\0\0\1\1\0\0\0\0\0\0";
-	qdsLine *playfield = qdsGetPlayfield(game);
+	qdsLine *playfield = game->playfield;
 
 	qdsSpawn(game, QDS_PIECE_I);
 	game->y = 10;
@@ -145,7 +145,7 @@ const qdsLine quad[] = {
 
 START_TEST(fill)
 {
-	memcpy(qdsGetPlayfield(game), quad, sizeof(quad));
+	memcpy(game->playfield, quad, sizeof(quad));
 
 	qdsSpawn(game, QDS_PIECE_I);
 	ck_assert(qdsRotate(game, 1));
@@ -163,7 +163,7 @@ END_TEST
 
 START_TEST(fillSplit)
 {
-	qdsLine *playfield = qdsGetPlayfield(game);
+	qdsLine *playfield = game->playfield;
 	memcpy(playfield, quad, sizeof(quad));
 	playfield[1][3] = 0;
 

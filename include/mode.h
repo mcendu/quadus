@@ -61,7 +61,7 @@ typedef struct qdsGamemode
 /**
  * Get a pointer to the gamemode's data.
  */
-QDS_API void *qdsGetModeData(qdsGame *);
+QDS_API void *qdsGetModeData(const qdsGame *);
 
 #ifdef __cplusplus
 }

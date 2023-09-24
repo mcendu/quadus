@@ -75,7 +75,7 @@ typedef struct qdsRuleset
 	/**
 	 * Get a piece in the piece queue.
 	 */
-	int (*getPiece)(void *rsData, int position);
+	int (*getPiece)(const void *rsData, int position);
 	/**
 	 * Remove and return the topmost piece from the piece queue.
 	 */
@@ -177,7 +177,7 @@ QDS_API int qdsGetGhostY(qdsGame *);
 /**
  * Get a pointer to the ruleset's data.
  */
-QDS_API void *qdsGetRulesetData(qdsGame *);
+QDS_API void *qdsGetRulesetData(const qdsGame *);
 
 #ifdef __cplusplus
 }

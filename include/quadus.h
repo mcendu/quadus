@@ -121,7 +121,7 @@ QDS_API void qdsRunCycle(qdsGame *, unsigned int input);
 /**
  * Get the current ruleset.
  */
-QDS_API const qdsRuleset *qdsGetRuleset(qdsGame *);
+QDS_API const qdsRuleset *qdsGetRuleset(const qdsGame *);
 /**
  * Set the game's ruleset.
  */
@@ -130,7 +130,7 @@ QDS_API void qdsSetRuleset(qdsGame *, const qdsRuleset *ruleset);
 /**
  * Get the current game mode.
  */
-QDS_API const qdsGamemode *qdsGetMode(qdsGame *);
+QDS_API const qdsGamemode *qdsGetMode(const qdsGame *);
 /**
  * Set the game's mode.
  */
@@ -139,40 +139,40 @@ QDS_API void qdsSetMode(qdsGame *, const qdsGamemode *mode);
 /**
  * Get the playfield.
  */
-QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
+QDS_API const qdsLine *qdsGetPlayfield(const qdsGame *);
 /**
  * Get a tile in the playfield. Effectively `qdsGetPlayfield(game)[y][x]`
  * with bounds checking.
  */
-QDS_API qdsTile qdsGetTile(qdsGame *, int x, int y);
+QDS_API qdsTile qdsGetTile(const qdsGame *, int x, int y);
 /**
  * Get the active piece's type.
  */
-QDS_API int qdsGetActivePieceType(qdsGame *);
+QDS_API int qdsGetActivePieceType(const qdsGame *);
 /**
  * Get the position of the active piece.
  */
-QDS_API void qdsGetActivePosition(qdsGame *, int *x, int *y);
+QDS_API void qdsGetActivePosition(const qdsGame *, int *x, int *y);
 /**
  * Get the horizontal position of the active piece.
  */
-QDS_API int qdsGetActiveX(qdsGame *);
+QDS_API int qdsGetActiveX(const qdsGame *);
 /**
  * Get the vertical position of the active piece.
  */
-QDS_API int qdsGetActiveY(qdsGame *);
+QDS_API int qdsGetActiveY(const qdsGame *);
 /**
  * Get the orientation of the active piece.
  */
-QDS_API int qdsGetActiveOrientation(qdsGame *);
+QDS_API int qdsGetActiveOrientation(const qdsGame *);
 /**
  * Get the piece at a specific position in the queue.
  */
-QDS_API int qdsGetNextPiece(qdsGame *, int pos);
+QDS_API int qdsGetNextPiece(const qdsGame *, int pos);
 /**
  * Get the held piece.
  */
-QDS_API int qdsGetHeldPiece(qdsGame *);
+QDS_API int qdsGetHeldPiece(const qdsGame *);
 
 /**
  * Call a ruleset-defined function. Returns 0 on success and non-zero

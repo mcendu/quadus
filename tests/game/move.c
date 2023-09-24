@@ -143,7 +143,7 @@ START_TEST(collision)
 	 * |[][]. . . . []. . . | => |. . . . [][][]. . . |
 	 * |. . . . . . . . . . |    |. . . . . . . . . . |
 	 */
-	qdsGetPlayfield(game)[game->y][6] = QDS_PIECE_I;
+	game->playfield[game->y][6] = QDS_PIECE_I;
 	ck_assert_int_eq(qdsMove(game, 10), 4);
 	ck_assert_int_eq(rsData->moveOffset, 4);
 	ck_assert_int_eq(modeData->moveOffset, 4);

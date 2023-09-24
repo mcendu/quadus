@@ -93,7 +93,7 @@ END_TEST
 START_TEST(tileCollision)
 {
 #define tileY 9
-	qdsGetPlayfield(game)[tileY][4] = QDS_PIECE_I;
+	game->playfield[tileY][4] = QDS_PIECE_I;
 	qdsSpawn(game, QDS_PIECE_O);
 
 	ck_assert_int_ne(qdsDrop(game, QDS_DROP_GRAVITY, 100), 100);
