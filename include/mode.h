@@ -56,6 +56,15 @@ typedef struct qdsGamemode
 	qdsTopOutCallback *onTopOut;
 
 	qdsCustomCall *call;
+
+	/**
+	 * Get a piece in the piece queue.
+	 */
+	int (*getPiece)(const void *rsData, int position);
+	/**
+	 * Remove and return the topmost piece from the piece queue.
+	 */
+	int (*shiftPiece)(void *rsData);
 } qdsGamemode;
 
 /**

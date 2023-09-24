@@ -49,6 +49,22 @@
 		}                                                 \
 	} while (0)
 
+/**
+ * Draw a piece from the piece queue.
+ */
+static int shiftPiece(const qdsGame *p)
+{
+	assert((p != NULL));
+	assert((p->rs != NULL));
+	assert((p->mode != NULL));
+
+	if (p->mode->shiftPiece) return p->mode->shiftPiece(p->modeData);
+	return p->rs->shiftPiece(p->rsData);
+}
+
+/**
+ * Check if a line is filled.
+ */
 static bool lineFilled(qdsGame *p, int y)
 {
 	for (int i = 0; i < 10; ++i) {
@@ -72,7 +88,7 @@ QDS_API bool qdsSpawn(qdsGame *p, int type)
 	assert((p->rs != NULL));
 	assert((p->mode != NULL));
 
-	if (type == 0) type = p->rs->shiftPiece(p->rsData);
+	if (type == 0) type = shiftPiece(p);
 
 	EMIT_CANCELLABLE(p, onSpawn, false, p, type);
 
