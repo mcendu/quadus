@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src_rulesets_common = [
     'input.c',
+    'linequeue.c',
     'piece.c',
     'rand.c',
     'twist.c',
