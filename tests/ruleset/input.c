@@ -34,8 +34,6 @@ static void setup(void)
 	memset(istate, 0, sizeof(qdsInputState));
 }
 
-static void teardown(void) {}
-
 START_TEST(base)
 {
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, QDS_INPUT_LEFT),
@@ -170,17 +168,41 @@ START_TEST(softdrop)
 }
 END_TEST
 
+START_TEST(interrupt)
+{
+	unsigned input = QDS_INPUT_RIGHT;
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+
+	qdsInterruptRepeat(NULL, istate);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DCD);
+	for (int i = 0; i < QDS_DEFAULT_DCD - 1; ++i)
+		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
+
+	input = 0;
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
+	qdsInterruptRepeat(NULL, istate);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DCD);
+	input = QDS_INPUT_RIGHT;
+	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_RIGHT);
+	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsFilterInput");
 
 	TCase *c = tcase_create("base");
-	tcase_add_checked_fixture(c, setup, teardown);
+	tcase_add_checked_fixture(c, setup, NULL);
 	tcase_add_test(c, base);
 	tcase_add_test(c, autorepeat);
 	tcase_add_test(c, autorepeatWithNonDirection);
 	tcase_add_test(c, oppositeDirections);
 	tcase_add_test(c, softdrop);
+	tcase_add_test(c, interrupt);
 	suite_add_tcase(s, c);
 
 	return s;
