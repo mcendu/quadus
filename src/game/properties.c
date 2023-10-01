@@ -131,6 +131,7 @@ QDS_API void *qdsGetModeData(const qdsGame *p)
 QDS_API int qdsCall(qdsGame *p, unsigned long req, void *argp)
 {
 	assert((p != NULL));
+	assert((argp != NULL));
 
 	int result;
 

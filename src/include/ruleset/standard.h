@@ -20,54 +20,58 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <qdsbuild.h>
+#ifndef QDS__RULESET_STANDARD_H
+#define QDS__RULESET_STANDARD_H
 
-#include <game.h>
-#include <quadus.h>
+#include <ruleset/input.h>
+#include <ruleset/linequeue.h>
+#include <ruleset/piecegen.h>
+#include <stdbool.h>
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <mode.h>
-#include <ruleset.h>
-
-QDS_API qdsGame *qdsAlloc(void)
+typedef struct standardData
 {
-	qdsGame *p = malloc(sizeof(qdsGame));
-	if (!p) return p;
-	qdsInit(p);
-	return p;
-}
+	unsigned int time;
+	unsigned int lines;
 
-QDS_API void qdsFree(qdsGame *p)
-{
-	qdsCleanup(p);
-	free(p);
-}
+	/**
+	 * Status of the game.
+	 */
+	unsigned short status;
+	/**
+	 * Time remaining for the current status.
+	 */
+	short statusTime;
 
-QDS_API void qdsInit(qdsGame *p)
+	/**
+	 * Input entered during delay.
+	 */
+	unsigned int delayInput;
+
+	/**
+	 * Number of game ticks left until lock.
+	 */
+	unsigned short lockTimer;
+	/**
+	 * Number of lock delay resets left.
+	 */
+	unsigned short resetsLeft;
+
+	unsigned int subY;
+
+	bool held : 1;
+
+	struct qdsInputState inputState;
+	struct qdsBag gen;
+	struct qdsPendingLines pendingLines;
+} standardData;
+
+enum gameStatus
 {
-	assert((p != NULL));
-	memset(p->playfield, 0, sizeof(p->playfield));
-	p->piece = QDS_PIECE_NONE;
-	p->orientation = QDS_ORIENTATION_BASE;
-	p->height = 0;
-	p->hold = 0;
-	p->rs = NULL;
-	p->rsData = NULL;
-	p->mode = NULL;
-	p->modeData = NULL;
+	STATUS_PREGAME,
+	STATUS_ACTIVE,
+	STATUS_LOCKDELAY,
+	STATUS_LINEDELAY,
+	STATUS_GAMEOVER,
 };
 
-QDS_API void qdsCleanup(qdsGame *p)
-{
-	if (p->rs && p->rsData) {
-		p->rs->destroy(p->rsData);
-		p->rsData = NULL;
-	}
-	if (p->mode && p->modeData) {
-		p->mode->destroy(p->modeData);
-		p->modeData = NULL;
-	}
-}
+#endif /* !QDS__RULESET_STANDARD_H */

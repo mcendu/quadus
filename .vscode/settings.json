@@ -1,13 +1,11 @@
 {
   "editor.formatOnSave": true,
-  "C_Cpp.default.compileCommands": "builddir/compile_commands.json",
-  "cmake.configureOnOpen": false,
+  "C_Cpp.default.compileCommands": "build/compile_commands.json",
+  "mesonbuild.buildFolder": "build",
   "clangd.arguments": [
-    "--compile-commands-dir=builddir",
-    "--header-insertion=iwyu"
+    "--compile-commands-dir=build"
   ],
   "files.associations": {
-    ".clangd": "yaml",
-    "*.h": "c",
+    ".clangd": "yaml"
   }
 }

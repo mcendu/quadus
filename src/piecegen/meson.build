@@ -18,16 +18,10 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-check_dep = dependency('check',
-    version: '>=0.15.2',
-    required: get_option('enable_tests'))
+quaduscore_src_piecegen = [
+    'bag.c',
+]
 
-if not check_dep.found()
-    subdir_done()
-endif
-
-subdir('utils')
-subdir('game')
-subdir('ruleset')
-subdir('rulesets')
-subdir('piecegen')
+foreach src : quaduscore_src_piecegen
+    quaduscore_src += 'piecegen' / src
+endforeach

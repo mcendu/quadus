@@ -20,12 +20,13 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src = []
 
-subdir('game')
-subdir('rulesets')
-
 quaduscore_internal_include = include_directories('include')
 
-quaduscore_lib = shared_library('quadus', quaduscore_src,
+subdir('game')
+subdir('piecegen')
+subdir('rulesets')
+
+quaduscore_lib = library('quadus', quaduscore_src,
     include_directories: [quaduscore_include, quaduscore_internal_include],
     gnu_symbol_visibility: 'hidden',
     install: true)

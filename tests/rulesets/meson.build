@@ -18,16 +18,21 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-check_dep = dependency('check',
-    version: '>=0.15.2',
-    required: get_option('enable_tests'))
+tests_rulesets = [
+    ['qdsRulesetStandard', 'standard.c'],
+]
 
-if not check_dep.found()
-    subdir_done()
-endif
-
-subdir('utils')
-subdir('game')
-subdir('ruleset')
-subdir('rulesets')
-subdir('piecegen')
+foreach t : tests_rulesets
+    bin = executable(t[0], t[1],
+        build_by_default: false,
+        install: false,
+        include_directories: [
+            quaduscore_include,
+            quaduscore_internal_include,
+            testutils_include,
+        ],
+        dependencies: check_dep,
+        link_with: [quaduscore_lib, testutils_lib]
+    )
+    test(t[0], bin, protocol: 'tap')
+endforeach

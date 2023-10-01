@@ -19,7 +19,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src_rulesets_standard = [
-    'bag.c',
+    'standard.c',
 ]
 
 foreach src : quaduscore_src_rulesets_standard

@@ -57,11 +57,6 @@ static void *init(void)
 	return data;
 }
 
-static void destroy(void *data)
-{
-	free(data);
-}
-
 EVENT_HANDLER(
 	onSpawn,
 	bool,
@@ -208,14 +203,14 @@ static int rotationCheck(qdsGame *p, int r, int *x, int *y)
 {
 	if (!qdsCanRotate(p, 0, 0, r)) return QDS_ROTATE_FAILED;
 
-	if (x) *x = 0;
-	if (y) *y = 0;
+	*x = 0;
+	*y = 0;
 	return QDS_ROTATE_NORMAL;
 }
 
 const qdsRuleset *mockRuleset = &(const qdsRuleset){
 	.init = init,
-	.destroy = destroy,
+	.destroy = free,
 	.onSpawn = onSpawnRs,
 	.onMove = onMoveRs,
 	.onRotate = onRotateRs,
@@ -236,7 +231,7 @@ const qdsRuleset *mockRuleset = &(const qdsRuleset){
 
 const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 	.init = init,
-	.destroy = destroy,
+	.destroy = free,
 	.doGameCycle = mockGameCycle,
 	.spawnX = spawnX,
 	.spawnY = spawnY,
@@ -248,7 +243,7 @@ const qdsRuleset *noHandlerRuleset = &(const qdsRuleset){
 
 const qdsGamemode *mockGamemode = &(const qdsGamemode){
 	.init = init,
-	.destroy = destroy,
+	.destroy = free,
 	.onSpawn = onSpawnMode,
 	.onMove = onMoveMode,
 	.onRotate = onRotateMode,
@@ -262,5 +257,5 @@ const qdsGamemode *mockGamemode = &(const qdsGamemode){
 
 const qdsGamemode *noHandlerGamemode = &(const qdsGamemode){
 	.init = init,
-	.destroy = destroy,
+	.destroy = free,
 };

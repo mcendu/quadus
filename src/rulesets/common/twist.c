@@ -26,16 +26,18 @@
 
 #include <stdbool.h>
 
-QDS_API bool qdsCheckTwistImmobile(qdsGame *game)
+QDS_API bool qdsCheckTwistImmobile(qdsGame *game, int x, int y, int r)
 {
-	return !qdsCanMove(game, 0, -1) && !qdsCanMove(game, 0, 1)
-		   && !qdsCanMove(game, -1, 0) && !qdsCanMove(game, 1, 0);
+	return !qdsCanRotate(game, x, y - 1, r) && !qdsCanRotate(game, x, y + 1, r)
+		   && !qdsCanRotate(game, x - 1, y, r)
+		   && !qdsCanRotate(game, x + 1, y, r);
 }
 
-QDS_API bool qdsCheckTwistThreeCorner(qdsGame *game)
+QDS_API bool qdsCheckTwist3Corner(qdsGame *game, int dx, int dy, int r)
 {
 	int x, y, corners = 0;
 	qdsGetActivePosition(game, &x, &y);
+	x += dx, y += dy;
 	switch (qdsGetActivePieceType(game)) {
 		case QDS_PIECE_J:
 		case QDS_PIECE_L:

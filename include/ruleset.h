@@ -179,6 +179,12 @@ QDS_API int qdsGetGhostY(qdsGame *);
  */
 QDS_API void *qdsGetRulesetData(const qdsGame *);
 
+/*
+ * Built-in rulesets.
+ */
+
+QDS_API extern const qdsRuleset qdsRulesetStandard;
+
 #ifdef __cplusplus
 }
 #endif

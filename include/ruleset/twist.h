@@ -35,11 +35,11 @@ extern "C" {
 /**
  * Check for a twist via the immobile method.
  */
-QDS_API bool qdsCheckTwistImmobile(qdsGame *game);
+QDS_API bool qdsCheckTwistImmobile(qdsGame *game, int x, int y, int rotation);
 /**
  * Check for a twist via the three-corner method.
  */
-QDS_API bool qdsCheckTwistThreeCorner(qdsGame *game);
+QDS_API bool qdsCheckTwist3Corner(qdsGame *game, int x, int y, int rotation);
 
 #ifdef __cplusplus
 }

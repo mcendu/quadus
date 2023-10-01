@@ -24,6 +24,8 @@
 #include <check.h>
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "mockruleset.h"
 #include <game.h>
@@ -132,6 +134,45 @@ START_TEST(cancel)
 }
 END_TEST
 
+static int canRotateWithKick(qdsGame *p, int r, int *x, int *y)
+{
+	if (!qdsCanRotate(p, 1, 1, r)) return QDS_ROTATE_FAILED;
+
+	*x = 1;
+	*y = 1;
+	return QDS_ROTATE_NORMAL;
+}
+
+static qdsRuleset kickRuleset;
+
+static void setupKickCaseUnchecked(void)
+{
+	memcpy(&kickRuleset, mockRuleset, sizeof(qdsRuleset));
+	kickRuleset.canRotate = canRotateWithKick;
+}
+
+static void setupKickCase(void)
+{
+	qdsInit(game);
+	qdsSetRuleset(game, &kickRuleset);
+	qdsSetMode(game, mockGamemode);
+
+	rsData = game->rsData;
+	modeData = game->modeData;
+}
+
+START_TEST(kick)
+{
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
+
+	int x = game->x, y = game->y;
+	ck_assert(qdsRotate(game, QDS_ROTATION_CLOCKWISE));
+	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_C);
+	ck_assert_int_eq(game->x, x + 1);
+	ck_assert_int_eq(game->y, y + 1);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRotate");
@@ -143,6 +184,12 @@ Suite *createSuite(void)
 	tcase_add_test(c, collision);
 	tcase_add_test(c, cancel);
 	suite_add_tcase(s, c);
+
+	TCase *cKick = tcase_create("kick");
+	tcase_add_unchecked_fixture(cKick, setupKickCaseUnchecked, NULL);
+	tcase_add_checked_fixture(cKick, setupKickCase, teardown);
+	tcase_add_test(cKick, kick);
+	suite_add_tcase(s, cKick);
 
 	return s;
 }
