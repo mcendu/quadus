@@ -24,7 +24,8 @@ project('quadus', 'c',
     meson_version: '>=0.58.2',
     default_options: [
         'buildtype=debugoptimized',
-        'strip=true',
+        'b_pie=true',
+        'b_staticpic=true',
         'c_std=gnu17',
     ],
 )

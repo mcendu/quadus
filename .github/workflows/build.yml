@@ -12,12 +12,12 @@ jobs:
       fail-fast: false
       matrix:
         cc: [gcc, clang]
-        O: [2, 3]
-        sanitize: [none]
+        options: [--optimization=2, --optimization=3]
         include:
           - cc: gcc
-            O: g
-            sanitize: address
+            options: --optimization=g -Db_sanitize=address
+          - cc: gcc
+            options: --optimization=2 -Db_lto=true
     steps:
       - uses: actions/checkout@v3
       - name: Install Meson and dependencies
@@ -30,12 +30,10 @@ jobs:
             meson setup \
             --backend=ninja \
             --debug \
-            --optimization=${{ matrix.O }} \
             --prefix=/usr \
             --strip \
-            -Db_pie=true \
-            -Db_sanitize=${{ matrix.sanitize }} \
             -Denable_tests=true \
+            ${{ matrix.options }} \
             builddir
       - name: Build
         run: ninja -v -C builddir all
