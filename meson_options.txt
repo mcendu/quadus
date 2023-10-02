@@ -19,6 +19,5 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 option('enable_tests',
-    type: 'boolean',
-    value: false,
-    description: 'build tests by default')
+    type: 'feature',
+    description: 'build tests')
