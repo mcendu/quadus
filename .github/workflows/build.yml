@@ -15,30 +15,32 @@ jobs:
         options: [--optimization=2, --optimization=3]
         include:
           - cc: gcc
-            options: --optimization=g -Db_sanitize=address
+            options: [--optimization=g, -Db_sanitize=address]
           - cc: gcc
-            options: --optimization=2 -Db_lto=true
+            options: [--optimization=2, -Db_lto=true]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Install Meson and dependencies
         run: |
           sudo apt-get install meson ninja-build check
       - name: Configure project
         run: |
-          mkdir builddir
-          CC=${{ matrix.cc }} \
-            meson setup \
+          CC=${{ matrix.cc }} meson setup \
             --backend=ninja \
             --debug \
             --prefix=/usr \
             --strip \
             -Denable_tests=enabled \
-            ${{ matrix.options }} \
-            builddir
+            ${{ join(matrix.options, ' ') }} \
+            build
       - name: Build
-        run: ninja -v -C builddir all
+        run: ninja -v -C build all
       - name: Test
-        run: ninja -C builddir test
-      - name: Install
-        run: |
-          meson install -C builddir --destdir=install_tree
+        run: ninja -C build test
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: |
+            quadus-build-${{ github.sha }}-${{ matrix.cc }}-${{ join(matrix.options, '-') }}
+          path: build
