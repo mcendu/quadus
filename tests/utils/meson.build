@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 testutils_src = [
     'main.c',
+    'mockgen.c',
     'mockruleset.c'
 ]
 
