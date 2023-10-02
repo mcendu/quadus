@@ -30,7 +30,6 @@ int main(void)
 {
 	Suite *suite = createSuite();
 	SRunner *runner = srunner_create(suite);
-	srunner_set_log(runner, "/dev/stderr");
 	srunner_set_tap(runner, "-");
 
 	srunner_run_all(runner, CK_SILENT);

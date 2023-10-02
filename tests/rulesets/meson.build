@@ -19,7 +19,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 tests_rulesets = [
-    ['qdsRulesetStandard', 'standard.c'],
+    ['testRulesetStandard', 'standard.c'],
 ]
 
 foreach t : tests_rulesets

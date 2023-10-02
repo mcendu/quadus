@@ -45,4 +45,4 @@ tests_playfield = executable('testGame', tests_playfield_src,
     link_with: [quaduscore_lib, testutils_lib]
 )
 
-test('qdsGame', tests_playfield, protocol: 'tap')
+test('testGame', tests_playfield, protocol: 'tap')
