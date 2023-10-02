@@ -221,6 +221,35 @@ QDS_API bool qdsClearLine(qdsGame *p, int y)
 	return true;
 }
 
+QDS_API bool qdsAddLines(qdsGame *restrict p,
+						 const qdsLine *restrict src,
+						 size_t count)
+{
+	assert((p != NULL));
+	assert((p->rs != NULL));
+	assert((p->mode != NULL));
+
+	bool topout = false;
+	int playfieldRows = p->height; /* number of rows to copy */
+
+	if (count > 48) {
+		topout = true;
+		count = 48;
+		playfieldRows = 0;
+	} else if (playfieldRows + count > 48) {
+		topout = true;
+		playfieldRows -= (count + playfieldRows) - 48;
+	}
+	p->height = playfieldRows + count;
+
+	memmove(
+		p->playfield[count], p->playfield[0], playfieldRows * sizeof(qdsLine));
+	memcpy(p->playfield, src, count * sizeof(qdsLine));
+
+	if (topout) EMIT(p, onTopOut, p);
+	return !topout;
+}
+
 QDS_API bool qdsCanRotate(qdsGame *p, int x, int y, int rotation)
 {
 	assert((p != NULL));

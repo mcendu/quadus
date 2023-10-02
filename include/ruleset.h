@@ -31,6 +31,7 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "piece.h"
 #include "quadus.h"
@@ -148,6 +149,11 @@ QDS_API int qdsHold(qdsGame *);
  * line first to prevent off-by-one bugs.
  */
 QDS_API bool qdsClearLine(qdsGame *, int y);
+/**
+ * Insert lines into the bottom of the playfield. Returns false if
+ * this results in a top-out, true otherwise.
+ */
+QDS_API bool qdsAddLines(qdsGame *, const qdsLine *lines, size_t height);
 
 /**
  * Check if the active mino does not overlap with the playfield after
@@ -163,10 +169,6 @@ QDS_API bool qdsCanRotate(qdsGame *, int x, int y, int rotation);
  * Check if the active mino overlaps the playfield.
  */
 #define qdsOverlaps(p) (!qdsCanRotate((p), 0, 0, 0))
-/**
- * Get the vertical position of the ghost piece.
- */
-QDS_API int qdsGetGhostY(qdsGame *);
 /**
  * Check if the active mino is grounded. The active mino is grounded
  * if it is unable to drop any further.

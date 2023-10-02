@@ -162,6 +162,10 @@ QDS_API int qdsGetActiveX(const qdsGame *);
  */
 QDS_API int qdsGetActiveY(const qdsGame *);
 /**
+ * Get the vertical position of the ghost piece.
+ */
+QDS_API int qdsGetGhostY(qdsGame *);
+/**
  * Get the orientation of the active piece.
  */
 QDS_API int qdsGetActiveOrientation(const qdsGame *);
