@@ -122,11 +122,9 @@ START_TEST(getData)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseProperties(void)
 {
-	Suite *s = suite_create("qdsGame");
-
-	TCase *c = tcase_create("properties");
+	TCase *c = tcase_create("caseProperties");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, getPlayfield);
 	tcase_add_test(c, getTile);
@@ -136,7 +134,5 @@ Suite *createSuite(void)
 	tcase_add_test(c, getNextPiece);
 	tcase_add_test(c, getHeldPiece);
 	tcase_add_test(c, getData);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

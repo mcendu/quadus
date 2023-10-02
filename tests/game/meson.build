@@ -18,31 +18,31 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-tests_playfield = [
-    ['qdsAddLines', 'addlines.c'],
-    ['qdsClearLine', 'clear.c'],
-    ['qdsDrop', 'drop.c'],
-    ['qdsHold', 'hold.c'],
-    ['qdsInit', 'init.c'],
-    ['qdsLock', 'lock.c'],
-    ['qdsMove', 'move.c'],
-    ['qdsCanRotate', 'overlap.c'],
-    ['qdsGame', 'properties.c'],
-    ['qdsRotate', 'rotate.c'],
-    ['qdsSpawn', 'spawn.c'],
+tests_playfield_src = [
+    'addlines.c',
+    'clear.c',
+    'drop.c',
+    'hold.c',
+    'init.c',
+    'lock.c',
+    'move.c',
+    'overlap.c',
+    'properties.c',
+    'rotate.c',
+    'spawn.c',
+    'suite.c',
 ]
 
-foreach t : tests_playfield
-    bin = executable(t[0], t[1],
-        build_by_default: false,
-        install: false,
-        include_directories: [
-            quaduscore_include,
-            quaduscore_internal_include,
-            testutils_include
-        ],
-        dependencies: check_dep,
-        link_with: [quaduscore_lib, testutils_lib]
-    )
-    test(t[0], bin, protocol: 'tap')
-endforeach
+tests_playfield = executable('testGame', tests_playfield_src,
+    build_by_default: false,
+    install: false,
+    include_directories: [
+        quaduscore_include,
+        quaduscore_internal_include,
+        testutils_include
+    ],
+    dependencies: check_dep,
+    link_with: [quaduscore_lib, testutils_lib]
+)
+
+test('qdsGame', tests_playfield, protocol: 'tap')

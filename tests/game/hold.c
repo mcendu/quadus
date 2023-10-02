@@ -116,16 +116,12 @@ START_TEST(cancel)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseHold(void)
 {
-	Suite *s = suite_create("qdsHold");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseHold");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, base);
 	tcase_add_test(c, topout);
 	tcase_add_test(c, cancel);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

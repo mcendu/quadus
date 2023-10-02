@@ -121,16 +121,12 @@ START_TEST(rotated)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseOverlap(void)
 {
-	Suite *s = suite_create("qdsCanRotate");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseOverlap");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, inbounds);
 	tcase_add_test(c, outofbounds);
 	tcase_add_test(c, rotated);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

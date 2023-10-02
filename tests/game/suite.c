@@ -20,58 +20,37 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "mockruleset.h"
-#include "quadus.h"
 #include <check.h>
-#include <game.h>
 
-static qdsGame gamed;
-static qdsGame *game = &gamed;
+extern TCase *caseAddLines(void);
+extern TCase *caseClear(void);
+extern TCase *caseDrop(void);
+extern TCase *caseHold(void);
+extern TCase *caseInit(void);
+extern TCase *caseLock(void);
+extern TCase *caseMove(void);
+extern TCase *caseOverlap(void);
+extern TCase *caseProperties(void);
+extern TCase *caseRotate(void);
+extern TCase *caseRotateWithKick(void);
+extern TCase *caseSpawn(void);
+extern TCase *caseSpawnNoHandler(void);
 
-void setup(void)
+Suite *createSuite(void)
 {
-	qdsInitGame(game);
-}
-
-void teardown(void)
-{
-	qdsCleanupGame(game);
-}
-
-START_TEST(init)
-{
-	ck_assert_int_eq(game->hold, 0);
-	ck_assert_int_eq(game->piece, QDS_PIECE_NONE);
-	ck_assert_int_eq(game->orientation, QDS_ORIENTATION_BASE);
-	ck_assert_ptr_null(game->rs);
-	ck_assert_ptr_null(game->rsData);
-	ck_assert_ptr_null(game->mode);
-	ck_assert_ptr_null(game->modeData);
-}
-END_TEST
-
-START_TEST(setRuleset)
-{
-	qdsSetRuleset(game, mockRuleset);
-	ck_assert_ptr_eq(game->rs, mockRuleset);
-	ck_assert_ptr_nonnull(game->rsData);
-}
-END_TEST
-
-START_TEST(setGamemode)
-{
-	qdsSetMode(game, mockGamemode);
-	ck_assert_ptr_eq(game->mode, mockGamemode);
-	ck_assert_ptr_nonnull(game->modeData);
-}
-END_TEST
-
-TCase *caseInit(void)
-{
-	TCase *c = tcase_create("caseInit");
-	tcase_add_checked_fixture(c, setup, teardown);
-	tcase_add_test(c, init);
-	tcase_add_test(c, setRuleset);
-	tcase_add_test(c, setGamemode);
-	return c;
+	Suite *s = suite_create("qdsGame");
+	suite_add_tcase(s, caseAddLines());
+	suite_add_tcase(s, caseClear());
+	suite_add_tcase(s, caseDrop());
+	suite_add_tcase(s, caseHold());
+	suite_add_tcase(s, caseInit());
+	suite_add_tcase(s, caseLock());
+	suite_add_tcase(s, caseMove());
+	suite_add_tcase(s, caseOverlap());
+	suite_add_tcase(s, caseProperties());
+	suite_add_tcase(s, caseRotate());
+	suite_add_tcase(s, caseRotateWithKick());
+	suite_add_tcase(s, caseSpawn());
+	suite_add_tcase(s, caseSpawnNoHandler());
+	return s;
 }

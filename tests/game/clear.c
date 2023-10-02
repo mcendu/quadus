@@ -48,7 +48,7 @@ static void teardown(void)
 	qdsCleanupGame(game);
 }
 
-const qdsLine emptyLine = { 0 };
+static const qdsLine emptyLine = { 0 };
 
 START_TEST(clear)
 {
@@ -139,17 +139,13 @@ START_TEST(cancel)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseClear(void)
 {
-	Suite *s = suite_create("qdsClearLine");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseClear");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, clear);
 	tcase_add_test(c, clearCeiling);
 	tcase_add_test(c, event);
 	tcase_add_test(c, cancel);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

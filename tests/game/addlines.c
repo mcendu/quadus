@@ -106,16 +106,12 @@ START_TEST(topoutOneshot)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseAddLines(void)
 {
-	Suite *s = suite_create("qdsAddLines");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseAddLines");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, base);
 	tcase_add_test(c, topout);
 	tcase_add_test(c, topoutOneshot);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

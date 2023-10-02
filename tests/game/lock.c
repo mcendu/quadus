@@ -49,8 +49,8 @@ static void teardown(void)
 	qdsCleanupGame(game);
 }
 
-const alignas(sizeof(qdsLine)) qdsLine emptyLine = {};
-const alignas(sizeof(qdsLine)) qdsLine lockedLine
+static const alignas(sizeof(qdsLine)) qdsLine emptyLine = {};
+static const alignas(sizeof(qdsLine)) qdsLine lockedLine
 	= { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 
 START_TEST(lock)
@@ -136,7 +136,7 @@ START_TEST(lockOutOfBounds)
 	ck_assert_int_eq(game->y, 48);
 }
 
-const qdsLine quad[] = {
+static const qdsLine quad[] = {
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
 	{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
@@ -229,11 +229,9 @@ START_TEST(cancel)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseLock(void)
 {
-	Suite *s = suite_create("qdsLock");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseLock");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, lock);
 	tcase_add_test(c, lockAir);
@@ -243,7 +241,5 @@ Suite *createSuite(void)
 	tcase_add_test(c, fillSplit);
 	tcase_add_test(c, heightTracking);
 	tcase_add_test(c, cancel);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

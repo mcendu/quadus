@@ -149,16 +149,12 @@ START_TEST(collision)
 	ck_assert_int_eq(modeData->moveOffset, 4);
 }
 
-Suite *createSuite(void)
+TCase *caseMove(void)
 {
-	Suite *s = suite_create("qdsMove");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseMove");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, base);
 	tcase_add_test(c, cancel);
 	tcase_add_test(c, collision);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

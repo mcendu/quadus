@@ -134,6 +134,17 @@ START_TEST(cancel)
 }
 END_TEST
 
+TCase *caseRotate(void)
+{
+	TCase *c = tcase_create("base");
+	tcase_add_checked_fixture(c, setup, teardown);
+	tcase_add_test(c, rotate);
+	tcase_add_test(c, event);
+	tcase_add_test(c, collision);
+	tcase_add_test(c, cancel);
+	return c;
+}
+
 static int canRotateWithKick(qdsGame *p, int r, int *x, int *y)
 {
 	if (!qdsCanRotate(p, 1, 1, r)) return QDS_ROTATE_FAILED;
@@ -173,23 +184,11 @@ START_TEST(kick)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseRotateWithKick(void)
 {
-	Suite *s = suite_create("qdsRotate");
-
-	TCase *c = tcase_create("base");
-	tcase_add_checked_fixture(c, setup, teardown);
-	tcase_add_test(c, rotate);
-	tcase_add_test(c, event);
-	tcase_add_test(c, collision);
-	tcase_add_test(c, cancel);
-	suite_add_tcase(s, c);
-
-	TCase *cKick = tcase_create("kick");
-	tcase_add_unchecked_fixture(cKick, setupKickCaseUnchecked, NULL);
-	tcase_add_checked_fixture(cKick, setupKickCase, teardown);
-	tcase_add_test(cKick, kick);
-	suite_add_tcase(s, cKick);
-
-	return s;
+	TCase *c = tcase_create("kick");
+	tcase_add_unchecked_fixture(c, setupKickCaseUnchecked, NULL);
+	tcase_add_checked_fixture(c, setupKickCase, teardown);
+	tcase_add_test(c, kick);
+	return c;
 }

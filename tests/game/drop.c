@@ -140,17 +140,13 @@ START_TEST(cancel)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseDrop(void)
 {
-	Suite *s = suite_create("qdsDrop");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseDrop");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, drop);
 	tcase_add_test(c, edgeCollision);
 	tcase_add_test(c, tileCollision);
 	tcase_add_test(c, cancel);
-	suite_add_tcase(s, c);
-
-	return s;
+	return c;
 }

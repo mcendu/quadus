@@ -48,7 +48,7 @@ static void teardown(void)
 	qdsCleanupGame(game);
 }
 
-START_TEST(test_spawnSet)
+START_TEST(spawnSet)
 {
 	ck_assert_int_eq(rsData->spawnCount, 0);
 	ck_assert_int_eq(modeData->spawnCount, 0);
@@ -69,7 +69,7 @@ START_TEST(test_spawnSet)
 }
 END_TEST
 
-START_TEST(test_spawnNext)
+START_TEST(spawnNext)
 {
 	/* calling spawn with 0 draws from the piece queue */
 	ck_assert_int_eq(rsData->shiftCount, 0);
@@ -86,7 +86,7 @@ START_TEST(test_spawnNext)
 }
 END_TEST
 
-START_TEST(test_blockSpawn)
+START_TEST(cancel)
 {
 	ck_assert(!rsData->blockSpawn);
 	ck_assert(!modeData->blockSpawn);
@@ -109,7 +109,7 @@ START_TEST(test_blockSpawn)
 }
 END_TEST
 
-START_TEST(test_topOut)
+START_TEST(topout)
 {
 	ck_assert_int_eq(rsData->topOutCount, 0);
 	ck_assert_int_eq(modeData->topOutCount, 0);
@@ -132,7 +132,7 @@ void setupWithNoHandler(void)
 	modeData = game->modeData;
 }
 
-START_TEST(test_noSpawnHandler)
+START_TEST(noHandler)
 {
 	ck_assert_ptr_null(game->rs->onSpawn);
 	ck_assert_ptr_null(game->mode->onSpawn);
@@ -148,22 +148,21 @@ START_TEST(test_noSpawnHandler)
 }
 END_TEST
 
-Suite *createSuite(void)
+TCase *caseSpawn(void)
 {
-	Suite *s = suite_create("qdsSpawn");
-
-	TCase *c = tcase_create("base");
+	TCase *c = tcase_create("caseSpawn");
 	tcase_add_checked_fixture(c, setup, teardown);
-	tcase_add_test(c, test_spawnSet);
-	tcase_add_test(c, test_spawnNext);
-	tcase_add_test(c, test_blockSpawn);
-	tcase_add_test(c, test_topOut);
-	suite_add_tcase(s, c);
+	tcase_add_test(c, spawnSet);
+	tcase_add_test(c, spawnNext);
+	tcase_add_test(c, cancel);
+	tcase_add_test(c, topout);
+	return c;
+}
 
-	TCase *cNoHandler = tcase_create("no event handler");
-	tcase_add_checked_fixture(cNoHandler, setupWithNoHandler, teardown);
-	tcase_add_test(cNoHandler, test_noSpawnHandler);
-	suite_add_tcase(s, cNoHandler);
-
-	return s;
+TCase *caseSpawnNoHandler(void)
+{
+	TCase *c = tcase_create("caseSpawnNoEventHandler");
+	tcase_add_checked_fixture(c, setupWithNoHandler, teardown);
+	tcase_add_test(c, noHandler);
+	return c;
 }
