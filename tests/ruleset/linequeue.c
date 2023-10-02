@@ -37,7 +37,7 @@ static struct qdsPendingLines *q;
 
 static void setupCase(void)
 {
-	game = qdsAlloc();
+	game = qdsNewGame();
 	q = malloc(64);
 	if (!game || !q) {
 		fputs("Out of memory\n", stderr);
@@ -47,7 +47,7 @@ static void setupCase(void)
 
 static void teardownCase(void)
 {
-	qdsFree(game);
+	qdsDestroyGame(game);
 }
 
 static void setup(void)

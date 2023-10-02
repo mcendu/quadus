@@ -107,11 +107,20 @@ typedef int qdsCustomCall(qdsGame *, unsigned long req, void *argp);
 /**
  * Allocate and initialize a game state.
  */
-QDS_API qdsGame *qdsAlloc();
+QDS_API qdsGame *qdsNewGame();
 /**
  * Deallocate a game state.
  */
-QDS_API void qdsFree(qdsGame *);
+QDS_API void qdsDestroyGame(qdsGame *);
+
+/**
+ * Initialize the game state.
+ */
+QDS_API void qdsInitGame(qdsGame *);
+/**
+ * Clean up the game state.
+ */
+QDS_API void qdsCleanupGame(qdsGame *);
 
 /**
  * Advance the game state by one cycle.

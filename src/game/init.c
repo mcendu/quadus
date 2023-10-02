@@ -32,21 +32,21 @@
 #include <mode.h>
 #include <ruleset.h>
 
-QDS_API qdsGame *qdsAlloc(void)
+QDS_API qdsGame *qdsNewGame(void)
 {
 	qdsGame *p = malloc(sizeof(qdsGame));
 	if (!p) return p;
-	qdsInit(p);
+	qdsInitGame(p);
 	return p;
 }
 
-QDS_API void qdsFree(qdsGame *p)
+QDS_API void qdsDestroyGame(qdsGame *p)
 {
-	qdsCleanup(p);
+	qdsCleanupGame(p);
 	free(p);
 }
 
-QDS_API void qdsInit(qdsGame *p)
+QDS_API void qdsInitGame(qdsGame *p)
 {
 	assert((p != NULL));
 	memset(p->playfield, 0, sizeof(p->playfield));
@@ -60,7 +60,7 @@ QDS_API void qdsInit(qdsGame *p)
 	p->modeData = NULL;
 };
 
-QDS_API void qdsCleanup(qdsGame *p)
+QDS_API void qdsCleanupGame(qdsGame *p)
 {
 	if (p->rs && p->rsData) {
 		p->rs->destroy(p->rsData);

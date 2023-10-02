@@ -38,7 +38,7 @@ static mockRulesetData *modeData;
 
 static void setup(void)
 {
-	qdsInit(game);
+	qdsInitGame(game);
 	qdsSetRuleset(game, mockRuleset);
 	qdsSetMode(game, mockGamemode);
 
@@ -48,7 +48,7 @@ static void setup(void)
 
 static void teardown(void)
 {
-	qdsCleanup(game);
+	qdsCleanupGame(game);
 }
 
 START_TEST(rotate)
@@ -153,7 +153,7 @@ static void setupKickCaseUnchecked(void)
 
 static void setupKickCase(void)
 {
-	qdsInit(game);
+	qdsInitGame(game);
 	qdsSetRuleset(game, &kickRuleset);
 	qdsSetMode(game, mockGamemode);
 

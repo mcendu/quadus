@@ -35,20 +35,20 @@ static standardData *data;
 
 static void setupCase(void)
 {
-	game = qdsAlloc();
+	game = qdsNewGame();
 	if (!game) abort();
 }
 
 static void teardownCase(void)
 {
-	qdsFree(game);
+	qdsDestroyGame(game);
 }
 
 static void setup(void)
 {
 	memcpy(&mode, mockGamemode, sizeof(qdsGamemode));
 
-	qdsInit(game);
+	qdsInitGame(game);
 	qdsSetRuleset(game, &qdsRulesetStandard);
 	qdsSetMode(game, &mode);
 
@@ -58,7 +58,7 @@ static void setup(void)
 
 static void teardown(void)
 {
-	qdsCleanup(game);
+	qdsCleanupGame(game);
 }
 
 START_TEST(base)

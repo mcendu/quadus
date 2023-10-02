@@ -94,15 +94,6 @@ typedef struct qdsRuleset
 } qdsRuleset;
 
 /**
- * Initialize the game state.
- */
-QDS_API void qdsInit(qdsGame *);
-/**
- * Clean up the game state.
- */
-QDS_API void qdsCleanup(qdsGame *);
-
-/**
  * Spawn a specified piece. If the specified piece is 0, draw from
  * the piece queue. Returns whether the newly spawned active piece
  * doesn't overlap the playfield.

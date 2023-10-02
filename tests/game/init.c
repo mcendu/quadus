@@ -30,12 +30,12 @@ static qdsGame *game = &gamed;
 
 void setup(void)
 {
-	qdsInit(game);
+	qdsInitGame(game);
 }
 
 void teardown(void)
 {
-	qdsCleanup(game);
+	qdsCleanupGame(game);
 }
 
 START_TEST(testInit)
