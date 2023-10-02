@@ -288,6 +288,8 @@ static void doMovement(standardData *data, qdsGame *game, unsigned int input)
 	} else if (input & QDS_INPUT_RIGHT) {
 		if (qdsGrounded(game)) resetLock(data, game, false);
 		qdsMove(game, 1);
+	} else {
+		return;
 	}
 
 	data->twistCheckResult = 0;
@@ -401,14 +403,14 @@ static bool onDrop(qdsGame *game, int type, int distance)
 static void doLock(standardData *data, qdsGame *game)
 {
 	if (!qdsLock(game)) return;
-
-	int lines = data->pendingLines.lines > 4 ? 4 : data->pendingLines.lines;
-	int points = dropScore[data->twistCheckResult][lines];
-	data->b2b = lines >= 4 || data->twistCheckResult >= 2;
-	if (data->b2b) points += points / 2;
-	addLevelMultipliedScore(data, game, points);
-
 	qdsInterruptRepeat(game, &data->inputState);
+	int lines = data->pendingLines.lines > 4 ? 4 : data->pendingLines.lines;
+
+	int points = dropScore[data->twistCheckResult][lines];
+	bool b2b = lines >= 4 || data->twistCheckResult >= 2;
+	if (b2b && data->b2b) points += points / 2;
+	data->b2b = b2b;
+	addLevelMultipliedScore(data, game, points);
 
 	unsigned int delay;
 	if (lines > 0) {

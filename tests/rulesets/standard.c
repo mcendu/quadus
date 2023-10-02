@@ -23,6 +23,7 @@
 #include <check.h>
 #include <stdlib.h>
 
+#include "mockgen.h"
 #include "mockruleset.h"
 #include <quadus.h>
 #include <ruleset.h>
@@ -227,6 +228,91 @@ START_TEST(irsihs)
 }
 END_TEST
 
+static unsigned int getLinesCleared(qdsGame *game)
+{
+	unsigned int lines;
+	if (qdsCall(game, QDS_GETLINES, &lines) < 0) lines = 0;
+	return lines;
+}
+
+static unsigned int getScore(qdsGame *game)
+{
+	unsigned int score;
+	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
+	return score;
+}
+
+START_TEST(lineClear)
+{
+	const qdsLine playfield[] = { { 8, 8, 8, 0, 0, 0, 0, 8, 8, 8 } };
+	const int seq[] = { QDS_PIECE_I, QDS_PIECE_J };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+	qdsAddLines(game, playfield, 1);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	ck_assert_int_eq(getLinesCleared(game), 0);
+	ck_assert_int_eq(getScore(game), 0);
+
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(qdsGetActivePieceType(game), 0);
+	ck_assert_int_eq(getLinesCleared(game), 1);
+	ck_assert_int_eq(getScore(game), 100 + 20 * 2);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(data->statusTime, 30);
+
+	for (int i = 0; i < 29; ++i) {
+		qdsRunCycle(game, 0);
+		ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+		ck_assert_int_eq(qdsGetActivePieceType(game), 0);
+	}
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->status, STATUS_ACTIVE);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_J);
+}
+END_TEST
+
+START_TEST(lineClearTwist)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 },
+		{ 8, 8, 8, 0, 0, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 },
+	};
+	const int seq[] = { QDS_PIECE_T, QDS_PIECE_J };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+	qdsAddLines(game, playfield, 3);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_T);
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_C);
+	ck_assert_int_eq(data->twistCheckResult, QDS_ROTATE_NORMAL);
+
+	qdsRunCycle(game, QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(data->twistCheckResult, 1);
+	for (int i = 0; i < 38; ++i) {
+		qdsRunCycle(game, QDS_INPUT_SOFT_DROP);
+		ck_assert_int_eq(data->twistCheckResult, 0);
+	}
+	ck_assert_int_eq(qdsGetActiveY(game), 1);
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_FLIP);
+	ck_assert_int_eq(data->twistCheckResult, QDS_ROTATE_TWIST);
+
+	int score = getScore(game);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(getLinesCleared(game), 2);
+	ck_assert_int_eq(getScore(game), score + 1200);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(data->statusTime, 30);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRulesetStandard");
@@ -242,6 +328,8 @@ Suite *createSuite(void)
 	tcase_add_test(c, ihs);
 	tcase_add_test(c, ihsCancel);
 	tcase_add_test(c, irsihs);
+	tcase_add_test(c, lineClear);
+	tcase_add_test(c, lineClearTwist);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 

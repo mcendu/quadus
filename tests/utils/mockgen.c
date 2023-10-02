@@ -44,7 +44,7 @@ void setMockSequence(qdsGame *restrict game, const int *restrict seq, int count)
 	data->next = 0;
 }
 
-static void *init()
+static void *init(void)
 {
 	mockGenData *data = malloc(sizeof(mockGenData));
 	if (!data) return NULL;
