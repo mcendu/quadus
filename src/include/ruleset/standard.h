@@ -32,7 +32,13 @@ typedef struct standardData
 {
 	unsigned int time;
 	unsigned int lines;
+	unsigned int score;
+	unsigned int combo;
 
+	/**
+	 * Subtile vertical position of the active mino.
+	 */
+	unsigned int subY;
 	/**
 	 * Status of the game.
 	 */
@@ -55,10 +61,13 @@ typedef struct standardData
 	 * Number of lock delay resets left.
 	 */
 	unsigned short resetsLeft;
-
-	unsigned int subY;
+	/**
+	 * The result of the last twist check or 0.
+	 */
+	unsigned int twistCheckResult;
 
 	bool held : 1;
+	bool b2b : 1;
 
 	struct qdsInputState inputState;
 	struct qdsBag gen;

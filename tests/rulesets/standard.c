@@ -99,6 +99,7 @@ START_TEST(gravity)
 
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->status, STATUS_ACTIVE);
+	ck_assert_int_eq(qdsGetActivePieceType(game), 4);
 	ck_assert_int_eq(qdsGetActiveY(game), 20);
 	ck_assert_int_gt(data->subY, 0);
 
@@ -113,6 +114,18 @@ START_TEST(gravity)
 	qdsRunCycle(game, QDS_INPUT_SOFT_DROP);
 	qdsRunCycle(game, QDS_INPUT_SOFT_DROP);
 	ck_assert_int_eq(qdsGetActiveY(game), 18);
+
+	while (qdsGetActiveY(game) > 0) qdsRunCycle(game, QDS_INPUT_SOFT_DROP);
+	ck_assert_int_eq(data->subY, 0);
+
+	/* automatic locking */
+	for (int i = 0; i < 29; ++i) {
+		qdsRunCycle(game, 0);
+		ck_assert_int_eq(qdsGetActiveY(game), 0);
+	}
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), 3);
+	ck_assert_int_eq(qdsGetActiveY(game), 20);
 }
 END_TEST
 

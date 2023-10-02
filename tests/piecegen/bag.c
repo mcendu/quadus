@@ -20,11 +20,18 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "quadus.h"
 #include <check.h>
+#include <piece.h>
+#include <quadus.h>
 #include <ruleset/piecegen.h>
 
-#include <quadus.h>
+#define I QDS_PIECE_I
+#define J QDS_PIECE_J
+#define L QDS_PIECE_L
+#define O QDS_PIECE_O
+#define S QDS_PIECE_S
+#define T QDS_PIECE_T
+#define Z QDS_PIECE_Z
 
 struct qdsBag bag;
 
@@ -34,10 +41,10 @@ static void setup(void)
 }
 
 const qdsTile seq[][7] = {
-	{ 4, 3, 6, 7, 1, 2, 5 },
-	{ 1, 2, 7, 6, 3, 4, 5 },
-	{ 2, 6, 3, 4, 5, 7, 1 },
-	{ 7, 5, 2, 4, 1, 3, 6 },
+	{ O, L, T, Z, I, J, S },
+	{ I, J, Z, T, L, O, S },
+	{ J, T, L, O, S, Z, I },
+	{ Z, S, J, O, I, L, T },
 };
 
 START_TEST(peek)

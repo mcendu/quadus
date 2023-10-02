@@ -90,6 +90,13 @@ static const struct
 	[QDS_PIECE_Z] = { &qdsPieceZ, kicksNormal },
 };
 
+static const int dropScore[4][5] = {
+	[0] = { 0, 100, 300, 500, 800 },
+	[QDS_ROTATE_NORMAL] = { 0, 100, 300, 500, 800 },
+	[QDS_ROTATE_TWIST] = { 400, 800, 1200, 1600, 2000 },
+	[QDS_ROTATE_TWIST_MINI] = { 100, 200, 400, 600, 800 },
+};
+
 #define DEFAULT_LOCKTIME 30
 #define DEFAULT_GRAVITY (65536 / 60)
 
@@ -134,6 +141,12 @@ static void doLock(standardData *data, qdsGame *game);
  * Reset lock timer.
  */
 static void resetLock(standardData *data, qdsGame *game, bool refresh);
+/**
+ * Add to score a number of points multiplied by level.
+ */
+static int addLevelMultipliedScore(standardData *data,
+								   qdsGame *game,
+								   int points);
 
 static void *init(void)
 {
@@ -142,13 +155,17 @@ static void *init(void)
 
 	data->time = 0;
 	data->lines = 0;
+	data->score = 0;
+	data->combo = 0;
+	data->subY = 0;
 	data->status = STATUS_PREGAME;
 	data->statusTime = 1;
 	data->delayInput = 0;
 	data->lockTimer = 30;
 	data->resetsLeft = 15;
-	data->subY = 0;
+	data->twistCheckResult = 0;
 	data->held = false;
+	data->b2b = false;
 
 	data->inputState.lastInput = 0;
 	data->inputState.direction = 0;
@@ -164,6 +181,14 @@ static const qdsCoords *getShape(int type, int orientation)
 {
 	type %= 8;
 	return ((const qdsCoords **)(pieces[type].shape))[orientation];
+}
+
+static int addLevelMultipliedScore(standardData *data, qdsGame *game, int pts)
+{
+	int level;
+	if (qdsCall(game, QDS_GETLEVEL, &level) < 0) level = 1;
+	data->score += pts * level;
+	return data->score;
 }
 
 static void gameCycle(qdsGame *game, unsigned int input)
@@ -237,6 +262,7 @@ static bool onSpawn(qdsGame *game, int _)
 {
 	standardData *data = qdsGetRulesetData(game);
 	data->subY = 0;
+	data->twistCheckResult = 0;
 	resetLock(data, game, true);
 	return true;
 }
@@ -263,17 +289,27 @@ static void doMovement(standardData *data, qdsGame *game, unsigned int input)
 		if (qdsGrounded(game)) resetLock(data, game, false);
 		qdsMove(game, 1);
 	}
+
+	data->twistCheckResult = 0;
 }
 
 static void doRotate(standardData *data, qdsGame *game, unsigned int input)
 {
+	int rotation;
 	if (input & QDS_INPUT_ROTATE_C) {
 		if (qdsGrounded(game)) resetLock(data, game, false);
-		qdsRotate(game, QDS_ROTATION_CLOCKWISE);
+		rotation = QDS_ROTATION_CLOCKWISE;
 	} else if (input & QDS_INPUT_ROTATE_CC) {
 		if (qdsGrounded(game)) resetLock(data, game, false);
-		qdsRotate(game, QDS_ROTATION_COUNTERCLOCKWISE);
+		rotation = QDS_ROTATION_COUNTERCLOCKWISE;
+	} else {
+		return;
 	}
+
+	int twistCheckResult;
+	if ((twistCheckResult = qdsRotate(game, rotation)) == QDS_ROTATE_FAILED)
+		return;
+	data->twistCheckResult = twistCheckResult;
 }
 
 static int canRotate(qdsGame *game, int rotation, int *x, int *y)
@@ -346,22 +382,47 @@ static void doGravity(standardData *data, qdsGame *game, unsigned int input)
 
 		data->subY += gravity;
 		qdsDrop(game, dropType, data->subY / 65536);
-		data->subY %= 65536;
+		if (qdsGrounded(game))
+			data->subY = 0;
+		else
+			data->subY %= 65536;
 	}
+}
+
+static bool onDrop(qdsGame *game, int type, int distance)
+{
+	standardData *data = qdsGetRulesetData(game);
+	if (type == QDS_DROP_HARD) data->score += distance * 2;
+	if (type == QDS_DROP_SOFT) data->score += distance;
+	if (distance > 0) data->twistCheckResult = 0;
+	return true;
 }
 
 static void doLock(standardData *data, qdsGame *game)
 {
 	if (!qdsLock(game)) return;
 
+	int lines = data->pendingLines.lines > 4 ? 4 : data->pendingLines.lines;
+	int points = dropScore[data->twistCheckResult][lines];
+	data->b2b = lines >= 4 || data->twistCheckResult >= 2;
+	if (data->b2b) points += points / 2;
+	addLevelMultipliedScore(data, game, points);
+
+	qdsInterruptRepeat(game, &data->inputState);
+
 	unsigned int delay;
-	if (data->pendingLines.lines > 0) {
-		/* default to 0.5s line delay */
+	if (lines > 0) {
+		/* add combo bonus */
+		addLevelMultipliedScore(data, game, 50 * data->combo++);
+		/* enter line delay */
 		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0) delay = 30;
 		if (delay == 0) return clearLines(data, game, 0);
 		data->status = STATUS_LINEDELAY;
 		data->statusTime = delay;
 	} else {
+		/* break combo */
+		data->combo = 0;
+		/* go to lock delay */
 		if (qdsCall(game, QDS_GETARE, &delay) < 0 || delay == 0) {
 			return spawnPiece(data, game, data->delayInput);
 		} else {
@@ -434,6 +495,9 @@ static int rulesetCall(qdsGame *game, unsigned long call, void *argp)
 		case QDS_GETLINES:
 			*(unsigned int *)argp = data->lines;
 			return 0;
+		case QDS_GETSCORE:
+			*(unsigned int *)argp = data->score;
+			return 0;
 		case QDS_GETGRAVITY:
 			*(int *)argp = DEFAULT_GRAVITY;
 			return 0;
@@ -483,6 +547,7 @@ QDS_API const qdsRuleset qdsRulesetStandard = {
 	.canRotate = canRotate,
 	.doGameCycle = gameCycle,
 	.onSpawn = onSpawn,
+	.onDrop = onDrop,
 	.onLineFilled = onLineFilled,
 	.onTopOut = onTopOut,
 	.call = rulesetCall,
