@@ -313,6 +313,150 @@ START_TEST(lineClearTwist)
 }
 END_TEST
 
+START_TEST(lineClearCombo)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 0, 0, 8, 8, 8, 8, 8 }, { 8, 8, 8, 0, 0, 8, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 },
+	};
+	const int seq[] = { QDS_PIECE_O };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 1);
+	qdsAddLines(game, playfield, 6);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 300 + 16 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_LEFT | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 332 + 300 + 50 + 18 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 718 + 300 + 100 + 20 * 2);
+}
+END_TEST
+
+START_TEST(lineClearComboBreak)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 0, 0, 0, 0, 8, 8, 8 }, { 8, 8, 8, 0, 0, 0, 0, 8, 8, 8 },
+		{ 8, 8, 0, 0, 8, 8, 8, 8, 8, 8 }, { 8, 8, 0, 0, 8, 8, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 0, 0, 8, 8, 8, 8 },
+	};
+	const int seq[] = { QDS_PIECE_O };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 1);
+	qdsAddLines(game, playfield, 6);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 300 + 16 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_LEFT);
+	qdsRunCycle(game, 0);
+	qdsRunCycle(game, QDS_INPUT_LEFT | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 332 + 300 + 50 + 18 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	qdsRunCycle(game, QDS_INPUT_LEFT | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(getScore(game), 718 + 20 * 2);
+	qdsRunCycle(game, QDS_INPUT_RIGHT);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 758 + 300 + 0 + 20 * 2);
+}
+END_TEST
+
+START_TEST(lineClearB2b)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 8, 0, 0, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 0, 0, 0, 8 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 },
+	};
+	const int seq[] = { QDS_PIECE_I, QDS_PIECE_L, QDS_PIECE_I };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 3);
+	qdsAddLines(game, playfield, 8);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_CC);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 800 + 14 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_L);
+	qdsRunCycle(game, QDS_INPUT_RIGHT | QDS_INPUT_ROTATE_C);
+	qdsRunCycle(game, 0);
+	qdsRunCycle(game, QDS_INPUT_RIGHT | QDS_INPUT_ROTATE_C);
+	qdsRunCycle(game, 0);
+	qdsRunCycle(game, QDS_INPUT_RIGHT | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(getScore(game), 828 + 17 * 2);
+
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_C);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 862 + 1200 + 18 * 2);
+}
+END_TEST
+
+START_TEST(lineClearB2bBreak)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 8 }, { 8, 8, 0, 0, 0, 8, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 },
+		{ 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 8 },
+	};
+	const int seq[] = { QDS_PIECE_I, QDS_PIECE_J, QDS_PIECE_I };
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 3);
+	qdsAddLines(game, playfield, 10);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 800 + 12 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_J);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_CC);
+	qdsRunCycle(game, QDS_INPUT_LEFT);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_CC | QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 824 + 300 + 50 + 15 * 2);
+
+	for (int i = 0; i < 30; ++i) qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
+	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
+	ck_assert_int_eq(getScore(game), 1204 + 800 + 100 + 18 * 2);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRulesetStandard");
@@ -322,14 +466,18 @@ Suite *createSuite(void)
 	tcase_add_test(c, base);
 	tcase_add_test(c, gravity);
 	tcase_add_test(c, doubleRotation);
+	tcase_add_test(c, lineClear);
+	tcase_add_test(c, lineClearTwist);
+	tcase_add_test(c, lineClearCombo);
+	tcase_add_test(c, lineClearComboBreak);
+	tcase_add_test(c, lineClearB2b);
+	tcase_add_test(c, lineClearB2bBreak);
 	tcase_add_test(c, irs);
 	tcase_add_test(c, irsChangeDirection);
 	tcase_add_test(c, irsDoubleDirection);
 	tcase_add_test(c, ihs);
 	tcase_add_test(c, ihsCancel);
 	tcase_add_test(c, irsihs);
-	tcase_add_test(c, lineClear);
-	tcase_add_test(c, lineClearTwist);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 

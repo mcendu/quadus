@@ -407,21 +407,24 @@ static void doLock(standardData *data, qdsGame *game)
 	int lines = data->pendingLines.lines > 4 ? 4 : data->pendingLines.lines;
 
 	int points = dropScore[data->twistCheckResult][lines];
-	bool b2b = lines >= 4 || data->twistCheckResult >= 2;
-	if (b2b && data->b2b) points += points / 2;
-	data->b2b = b2b;
-	addLevelMultipliedScore(data, game, points);
 
 	unsigned int delay;
 	if (lines > 0) {
+		/* check for back-to-back */
+		bool b2b = lines >= 4 || data->twistCheckResult >= QDS_ROTATE_TWIST;
+		if (b2b && data->b2b) points += points / 2;
+		data->b2b = b2b;
+		addLevelMultipliedScore(data, game, points);
 		/* add combo bonus */
 		addLevelMultipliedScore(data, game, 50 * data->combo++);
-		/* enter line delay */
+		/* go to line delay */
 		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0) delay = 30;
 		if (delay == 0) return clearLines(data, game, 0);
 		data->status = STATUS_LINEDELAY;
 		data->statusTime = delay;
 	} else {
+		/* add spin score */
+		addLevelMultipliedScore(data, game, points);
 		/* break combo */
 		data->combo = 0;
 		/* go to lock delay */
