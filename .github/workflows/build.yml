@@ -37,8 +37,9 @@ jobs:
       - name: Build
         run: ninja -v -C build all
       - name: Test
-        run: meson -C build --verbose --no-rebuild test
+        run: meson test -C build --verbose --no-rebuild
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: |
