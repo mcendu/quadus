@@ -23,6 +23,7 @@ quaduscore_src = []
 quaduscore_internal_include = include_directories('include')
 
 subdir('game')
+subdir('modes')
 subdir('piecegen')
 subdir('rulesets')
 
