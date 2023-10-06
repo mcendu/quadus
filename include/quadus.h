@@ -84,6 +84,21 @@ typedef struct qdsRuleset qdsRuleset;
  * The game mode.
  */
 typedef struct qdsGamemode qdsGamemode;
+/**
+ * Represents coordinates in a piece shape.
+ *
+ * A shape is an array of tiles, represented as coordinates relative to
+ * its rotation center, ending with { 127, 127 }.
+ */
+typedef struct
+#if defined(__GNUC__)
+	__attribute__((aligned(2)))
+#endif
+	qdsCoords
+{
+	signed char x;
+	signed char y;
+} qdsCoords;
 
 typedef bool qdsSpawnCallback(qdsGame *game, int piece);
 typedef bool qdsMoveCallback(qdsGame *game, int offset);
@@ -159,6 +174,20 @@ QDS_API qdsTile qdsGetTile(const qdsGame *, int x, int y);
  */
 QDS_API int qdsGetActivePieceType(const qdsGame *);
 /**
+ * Get the orientation of the active piece.
+ */
+QDS_API int qdsGetActiveOrientation(const qdsGame *);
+/**
+ * Get the shape of a specific piece type.
+ */
+QDS_API const qdsCoords *qdsGetShape(const qdsGame *,
+									 int piece,
+									 int orientation);
+/**
+ * Get the shape of the active piece.
+ */
+#define qdsGetActiveShape(game) (qdsGetShape(game, 0, 0))
+/**
  * Get the position of the active piece.
  */
 QDS_API void qdsGetActivePosition(const qdsGame *, int *x, int *y);
@@ -174,10 +203,6 @@ QDS_API int qdsGetActiveY(const qdsGame *);
  * Get the vertical position of the ghost piece.
  */
 QDS_API int qdsGetGhostY(qdsGame *);
-/**
- * Get the orientation of the active piece.
- */
-QDS_API int qdsGetActiveOrientation(const qdsGame *);
 /**
  * Get the piece at a specific position in the queue.
  */

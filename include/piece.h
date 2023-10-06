@@ -34,19 +34,6 @@ extern "C" {
 #include <limits.h>
 
 /**
- * Coordinates inside a piece definition.
- */
-typedef struct
-#if defined(__GNUC__)
-	__attribute__((aligned(2)))
-#endif
-	qdsCoords
-{
-	signed char x;
-	signed char y;
-} qdsCoords;
-
-/**
  * Definition for a piece.
  */
 typedef struct qdsPiecedef

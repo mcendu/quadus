@@ -74,6 +74,15 @@ QDS_API int qdsGetActiveOrientation(const qdsGame *p)
 	return p->orientation % 4;
 }
 
+QDS_API const qdsCoords *qdsGetShape(const qdsGame *p, int type, int o)
+{
+	assert((p != NULL));
+	assert((p->rs != NULL));
+	if (type == 0) type = p->piece;
+	if (o == 0) o = p->orientation;
+	return p->rs->getShape(type, o);
+}
+
 QDS_API int qdsGetNextPiece(const qdsGame *p, int pos)
 {
 	assert((p != NULL));

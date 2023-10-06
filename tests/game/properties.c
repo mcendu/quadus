@@ -25,6 +25,7 @@
 #include <limits.h>
 
 #include "mockruleset.h"
+#include "piece.h"
 #include <game.h>
 #include <quadus.h>
 
@@ -82,6 +83,22 @@ START_TEST(getActivePosition)
 }
 END_TEST
 
+START_TEST(getShape)
+{
+	ck_assert_ptr_eq(qdsGetShape(game, QDS_PIECE_I, QDS_ORIENTATION_BASE),
+					 qdsPieceI.base);
+	ck_assert_ptr_eq(qdsGetShape(game, QDS_PIECE_J, QDS_ORIENTATION_FLIP),
+					 qdsPieceJ.flip);
+	ck_assert_ptr_eq(qdsGetShape(game, QDS_PIECE_L, QDS_ORIENTATION_C),
+					 qdsPieceL.cw);
+	ck_assert_ptr_eq(qdsGetShape(game, QDS_PIECE_O, QDS_ORIENTATION_CC),
+					 qdsPieceO.ccw);
+
+	game->piece = QDS_PIECE_J;
+	game->orientation = QDS_ORIENTATION_CC;
+	ck_assert_ptr_eq(qdsGetActiveShape(game), qdsPieceJ.ccw);
+}
+
 START_TEST(getActivePieceType)
 {
 	game->piece = QDS_PIECE_I;
@@ -129,6 +146,7 @@ TCase *caseProperties(void)
 	tcase_add_test(c, getPlayfield);
 	tcase_add_test(c, getTile);
 	tcase_add_test(c, getActivePosition);
+	tcase_add_test(c, getShape);
 	tcase_add_test(c, getActivePieceType);
 	tcase_add_test(c, getActiveOrientation);
 	tcase_add_test(c, getNextPiece);
