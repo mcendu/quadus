@@ -31,22 +31,25 @@
 
 #include <mode.h>
 #include <ruleset.h>
-#include <threads.h>
+#include <ui.h>
 
-#define EMIT(p, e, ...)                                          \
-	do {                                                         \
-		if (p->rs->events.e) (p->rs->events.e)(__VA_ARGS__);     \
-		if (p->mode->events.e) (p->mode->events.e)(__VA_ARGS__); \
+#define EMIT(p, e, ...)                                                       \
+	do {                                                                      \
+		if (p->rs->events.e) (p->rs->events.e)(__VA_ARGS__);                  \
+		if (p->mode && (p->mode->events.e)) (p->mode->events.e)(__VA_ARGS__); \
+		if (p->ui && (p->ui->events.e)) (p->ui->events.e)(__VA_ARGS__);       \
 	} while (0)
 
-#define EMIT_CANCELLABLE(p, e, cancel_retval, ...)                      \
-	do {                                                                \
-		if ((p->rs->events.e) && !(p->rs->events.e)(__VA_ARGS__)) {     \
-			return (cancel_retval);                                     \
-		}                                                               \
-		if ((p->mode->events.e) && !(p->mode->events.e)(__VA_ARGS__)) { \
-			return (cancel_retval);                                     \
-		}                                                               \
+#define EMIT_CANCELLABLE(p, e, cancel_retval, ...)                    \
+	do {                                                              \
+		if ((p->rs->events.e) && !(p->rs->events.e)(__VA_ARGS__)) {   \
+			return (cancel_retval);                                   \
+		}                                                             \
+		if (p->mode && (p->mode->events.e)                            \
+			&& !(p->mode->events.e)(__VA_ARGS__)) {                   \
+			return (cancel_retval);                                   \
+		}                                                             \
+		if (p->ui && p->ui->events.e) (p->ui->events.e)(__VA_ARGS__); \
 	} while (0)
 
 /**
@@ -86,7 +89,6 @@ QDS_API bool qdsSpawn(qdsGame *p, int type)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 
 	if (type == 0) type = shiftPiece(p);
 
@@ -117,7 +119,6 @@ QDS_API int qdsMove(qdsGame *p, int offset)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 	int i;
 	if (offset < 0) {
 		for (i = 0; i > offset; --i) {
@@ -138,7 +139,6 @@ QDS_API int qdsDrop(qdsGame *p, int type, int distance)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 	int i;
 	for (i = 0; i < distance; ++i) {
 		if (!qdsCanMove(p, 0, -(i + 1))) break;
@@ -153,7 +153,6 @@ QDS_API int qdsRotate(qdsGame *p, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 	int x, y;
 	int result = p->rs->canRotate(p, rotation, &x, &y);
 	if (result == QDS_ROTATE_FAILED) return QDS_ROTATE_FAILED;
@@ -170,7 +169,6 @@ QDS_API bool qdsLock(qdsGame *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 
 	if (!qdsGrounded(p)) return false;
 	EMIT_CANCELLABLE(p, onLock, false, p);
@@ -195,7 +193,6 @@ QDS_API int qdsHold(qdsGame *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 	EMIT_CANCELLABLE(p, onHold, QDS_HOLD_BLOCKED, p, p->piece);
 
 	int active = p->piece;
@@ -211,7 +208,6 @@ QDS_API bool qdsClearLine(qdsGame *p, int y)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 	EMIT_CANCELLABLE(p, onLineClear, false, p, y);
 
 	if (y >= p->height) return true;
@@ -227,7 +223,6 @@ QDS_API bool qdsAddLines(qdsGame *restrict p,
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 
 	bool topout = false;
 	int playfieldRows = p->height; /* number of rows to copy */
@@ -269,12 +264,4 @@ QDS_API bool qdsCanRotate(qdsGame *p, int x, int y, int rotation)
 	}
 
 	return true;
-}
-
-QDS_API int qdsPlayfieldGetGhostY(qdsGame *p)
-{
-	assert((p != NULL));
-	int i = 0;
-	while (qdsCanMove(p, 0, i - 1)) i -= 1;
-	return p->y + i;
 }

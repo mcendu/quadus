@@ -84,6 +84,8 @@ typedef struct qdsRuleset qdsRuleset;
  * The game mode.
  */
 typedef struct qdsGamemode qdsGamemode;
+typedef struct qdsUserInterface qdsUserInterface;
+
 /**
  * Represents coordinates in a piece shape.
  *
@@ -204,6 +206,15 @@ QDS_API const qdsGamemode *qdsGetMode(const qdsGame *);
  * Set the game's mode.
  */
 QDS_API void qdsSetMode(qdsGame *, const qdsGamemode *mode);
+
+/**
+ * Get the currently bound application interface.
+ */
+QDS_API const qdsUserInterface *qdsGetUi(const qdsGame *);
+/**
+ * Bind an application interface.
+ */
+QDS_API void qdsSetUi(qdsGame *, const qdsUserInterface *ui, void *data);
 
 /**
  * Get the playfield.

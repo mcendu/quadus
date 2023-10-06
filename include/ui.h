@@ -21,36 +21,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * Low level playfield actions for consumption by rulesets.
+ * Interface for the controlling application.
  */
-#ifndef QDS__PLAYFIELD_H
-#define QDS__PLAYFIELD_H
+#ifndef QDS__UI_H
+#define QDS__UI_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "quadus.h"
-#include <stdalign.h>
 
-#include <mode.h>
-#include <ruleset.h>
-
-/**
- * Definition of qdsPlayfield.
- */
-struct qdsGame
+struct qdsUserInterface
 {
-	alignas(sizeof(qdsLine)) qdsLine playfield[48];
-	int x;
-	int y;
-	int piece;
-	unsigned orientation;
-	int height;
-	int hold;
-
-	const qdsRuleset *rs;
-	void *rsData;
-	const qdsGamemode *mode;
-	void *modeData;
-	const qdsUserInterface *ui;
-	void *uiData;
+	qdsEventTable events;
+	qdsCustomCall *call;
 };
 
-#endif /* !QDS__PLAYFIELD_H */
+QDS_API void *qdsGetUiData(const qdsGame *);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* QDS__UI_H */

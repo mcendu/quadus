@@ -30,6 +30,7 @@
 
 #include <mode.h>
 #include <ruleset.h>
+#include <ui.h>
 
 QDS_API const qdsLine *qdsGetPlayfield(const qdsGame *p)
 {
@@ -95,6 +96,14 @@ QDS_API int qdsGetHeldPiece(const qdsGame *p)
 	return p->hold;
 }
 
+QDS_API int qdsPlayfieldGetGhostY(qdsGame *p)
+{
+	assert((p != NULL));
+	int i = 0;
+	while (qdsCanMove(p, 0, i - 1)) i -= 1;
+	return p->y + i;
+}
+
 QDS_API const qdsRuleset *qdsGetRuleset(const qdsGame *p)
 {
 	assert((p != NULL));
@@ -137,6 +146,25 @@ QDS_API void *qdsGetModeData(const qdsGame *p)
 	return p->modeData;
 }
 
+QDS_API const qdsUserInterface *qdsGetUi(const qdsGame *p)
+{
+	assert((p));
+	return p->ui;
+}
+
+QDS_API void qdsSetUi(qdsGame *p, const qdsUserInterface *ui, void *data)
+{
+	assert((p));
+	p->ui = ui;
+	p->uiData = data;
+}
+
+QDS_API void *qdsGetUiData(const qdsGame *p)
+{
+	assert((p));
+	return p->uiData;
+}
+
 QDS_API int qdsCall(qdsGame *p, unsigned long req, void *argp)
 {
 	assert((p != NULL));
@@ -151,6 +179,11 @@ QDS_API int qdsCall(qdsGame *p, unsigned long req, void *argp)
 
 	if (p->rs && p->rs->call
 		&& (result = p->rs->call(p, req, argp)) != -ENOTTY) {
+		return result;
+	}
+
+	if (p->ui && p->ui->call
+		&& (result = p->ui->call(p, req, argp)) != -ENOTTY) {
 		return result;
 	}
 
