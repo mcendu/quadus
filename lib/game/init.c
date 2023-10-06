@@ -58,6 +58,8 @@ QDS_API void qdsInitGame(qdsGame *p)
 	p->rsData = NULL;
 	p->mode = NULL;
 	p->modeData = NULL;
+	p->ui = NULL;
+	p->uiData = NULL;
 };
 
 QDS_API void qdsCleanupGame(qdsGame *p)
