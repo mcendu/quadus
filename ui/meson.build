@@ -18,47 +18,15 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-project('quadus', 'c',
-    version: '1.0.0',
-    license: 'MIT',
-    meson_version: '>=0.58.2',
-    default_options: [
-        'buildtype=debugoptimized',
-        'b_pie=true',
-        'b_staticpic=true',
-        'c_std=gnu17',
-    ],
-)
+curses_dep = dependency('curses')
 
-cc = meson.get_compiler('c')
+quadusui_src = [
+    'game.c',
+    'main.c',
+]
 
-if cc.get_define('__GNUC__') != ''
-    # fine tune warnings
-    add_project_arguments([
-        '-Werror=implicit-int',
-        '-Werror=implicit-function-declaration',
-        '-Wformat-security',
-        '-Wold-style-definition',
-    ], language: ['c'])
-
-    # GCC-only warnings
-    if cc.get_define('__clang__') == ''
-        add_project_arguments([
-            '-Wimplicit-fallthrough=2',
-            '-Werror=old-style-declaration',
-        ], language: ['c'])
-    endif
-endif
-
-# disable asserts if not in a debug optimization preset
-if get_option('optimization') not in ['plain', '0', 'g']
-    add_project_arguments([
-        '-DNDEBUG'
-    ], language: ['c'])
-endif
-
-quaduscore_include = include_directories('include')
-
-subdir('lib')
-subdir('ui')
-subdir('tests')
+quadusui_bin = executable('quadus', quadusui_src,
+    include_directories: [quaduscore_include],
+    link_with: [quaduscore_lib],
+    dependencies: [curses_dep],
+    install: true)

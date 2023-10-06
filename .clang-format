@@ -97,6 +97,7 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+  - QDS_SHAPE_FOREACH
 IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Preserve

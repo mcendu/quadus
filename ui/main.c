@@ -1,0 +1,105 @@
+/*
+ * Copyright (c) 2023 McEndu
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+#include <bits/types/sigset_t.h>
+#include <bits/types/struct_itimerspec.h>
+#include <curses.h>
+#include <quadus.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include "ruleset.h"
+#include "ui.h"
+
+#define SIGVBLANK SIGRTMIN
+
+static jmp_buf cleanupJump;
+
+static void cleanup(int signo)
+{
+	longjmp(cleanupJump, signo);
+}
+
+int main(int argc, char **argv)
+{
+	sigaction(
+		SIGVBLANK, &(const struct sigaction){ .sa_handler = SIG_IGN }, NULL);
+	timer_t frameTimer;
+	struct sigevent frameTimerSigev = {
+		.sigev_notify = SIGEV_SIGNAL,
+		.sigev_signo = SIGVBLANK,
+		.sigev_value = { 0 },
+	};
+	if (timer_create(CLOCK_MONOTONIC, &frameTimerSigev, &frameTimer) < 0) {
+		fprintf(
+			stderr, "%s:%d: Failed to create game timer\n", __FILE__, __LINE__);
+		exit(1);
+	}
+
+	sigset_t vblankWaitSet;
+	sigemptyset(&vblankWaitSet);
+	sigaddset(&vblankWaitSet, SIGVBLANK);
+
+	qdsGame *game = qdsNewGame();
+	if (!game) abort();
+	qdsSetRuleset(game, &qdsRulesetStandard);
+
+	initscr();
+	cbreak();
+	noecho();
+	refresh();
+
+	timer_settime(frameTimer, 0, &(const struct itimerspec){
+        .it_value = {
+            .tv_sec = 0,
+            .tv_nsec = 16666667,
+        },
+        .it_interval = {
+            .tv_sec = 0,
+            .tv_nsec = 16666667,
+        }
+    }, NULL);
+
+	int jmpval;
+	if ((jmpval = setjmp(cleanupJump))) {
+		move(24, 0);
+		endwin();
+		qdsDestroyGame(game);
+		timer_delete(frameTimer);
+		exit(jmpval == SIGINT ? 0 : -jmpval);
+	}
+
+	static const struct sigaction cleanupAction = { .sa_handler = cleanup };
+	sigaction(SIGINT, &cleanupAction, NULL);
+
+	while (1) {
+		int sig;
+		sigwait(&vblankWaitSet, &sig);
+		qdsRunCycle(game, 0);
+		wnoutrefresh(stdscr);
+		gameView(stdscr, 0, 0, game);
+		doupdate();
+	}
+}

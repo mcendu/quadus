@@ -59,9 +59,8 @@ static int shiftPiece(const qdsGame *p)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	assert((p->mode != NULL));
 
-	if (p->mode->shiftPiece) return p->mode->shiftPiece(p->modeData);
+	if (p->mode && p->mode->shiftPiece) return p->mode->shiftPiece(p->modeData);
 	return p->rs->shiftPiece(p->rsData);
 }
 

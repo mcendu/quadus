@@ -79,8 +79,8 @@ QDS_API const qdsCoords *qdsGetShape(const qdsGame *p, int type, int o)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));
-	if (type == 0) type = p->piece;
-	if (o == 0) o = p->orientation;
+	if (type == -1) type = p->piece;
+	if (o == -1) o = p->orientation;
 	return p->rs->getShape(type, o);
 }
 

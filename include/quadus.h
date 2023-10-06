@@ -242,7 +242,7 @@ QDS_API const qdsCoords *qdsGetShape(const qdsGame *,
 /**
  * Get the shape of the active piece.
  */
-#define qdsGetActiveShape(game) (qdsGetShape(game, 0, 0))
+#define qdsGetActiveShape(game) (qdsGetShape(game, -1, -1))
 /**
  * Get the position of the active piece.
  */
