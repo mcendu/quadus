@@ -100,14 +100,46 @@ typedef struct
 	signed char y;
 } qdsCoords;
 
+/**
+ * Called on attempt to spawn a piece. Return false to cancel the
+ * piece spawn.
+ */
 typedef bool qdsSpawnCallback(qdsGame *game, int piece);
+/**
+ * Called on attempt to move the piece. Return false to cancel the move.
+ */
 typedef bool qdsMoveCallback(qdsGame *game, int offset);
+/**
+ * Called on attempt to rotate the piece. Return false to cancel the
+ * rotation.
+ */
 typedef bool qdsRotateCallback(qdsGame *game, int rotation);
+/**
+ * Called on attempt to make the piece fall down. Return false to
+ * prevent this.
+ */
 typedef bool qdsDropCallback(qdsGame *game, int type, int distance);
+/**
+ * Called on attempt to lock the piece. Return false to cancel the
+ * lock.
+ */
 typedef bool qdsLockCallback(qdsGame *game);
+/**
+ * Called on attempt to hold the piece. Return false to cancel the hold.
+ */
 typedef bool qdsHoldCallback(qdsGame *game, int piece);
+/**
+ * Called when a line is filled.
+ */
 typedef void qdsLineFilledCallback(qdsGame *game, int y);
+/**
+ * Called on attempt to delete a line. Return false to cancel the line
+ * deletion.
+ */
 typedef bool qdsLineClearCallback(qdsGame *game, int y);
+/**
+ * Called on game over.
+ */
 typedef void qdsTopOutCallback(qdsGame *game);
 
 /**
@@ -118,6 +150,19 @@ typedef void qdsTopOutCallback(qdsGame *game);
  * undefined. In both cases, the caller should free ap using va_end().
  */
 typedef int qdsCustomCall(qdsGame *, unsigned long req, void *argp);
+
+typedef struct qdsEventTable
+{
+	qdsSpawnCallback *onSpawn;
+	qdsMoveCallback *onMove;
+	qdsRotateCallback *onRotate;
+	qdsDropCallback *onDrop;
+	qdsLockCallback *onLock;
+	qdsHoldCallback *onHold;
+	qdsLineFilledCallback *onLineFilled;
+	qdsLineClearCallback *onLineClear;
+	qdsTopOutCallback *onTopOut;
+} qdsEventTable;
 
 /**
  * Allocate and initialize a game state.

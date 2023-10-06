@@ -47,16 +47,7 @@ typedef struct qdsRuleset
 	 */
 	void (*destroy)(void *rsData);
 
-	qdsSpawnCallback *onSpawn;
-	qdsMoveCallback *onMove;
-	qdsRotateCallback *onRotate;
-	qdsDropCallback *onDrop;
-	qdsLockCallback *onLock;
-	qdsHoldCallback *onHold;
-	qdsLineFilledCallback *onLineFilled;
-	qdsLineClearCallback *onLineClear;
-	qdsTopOutCallback *onTopOut;
-
+	qdsEventTable events;
 	qdsCustomCall *call;
 
 	/**

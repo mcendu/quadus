@@ -551,9 +551,11 @@ QDS_API const qdsRuleset qdsRulesetStandard = {
 	.getShape = getShape,
 	.canRotate = canRotate,
 	.doGameCycle = gameCycle,
-	.onSpawn = onSpawn,
-	.onDrop = onDrop,
-	.onLineFilled = onLineFilled,
-	.onTopOut = onTopOut,
+	.events = {
+		.onSpawn = onSpawn,
+		.onDrop = onDrop,
+		.onLineFilled = onLineFilled,
+		.onTopOut = onTopOut,
+	},
 	.call = rulesetCall,
 };

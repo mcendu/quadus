@@ -45,16 +45,7 @@ typedef struct qdsGamemode
 	 */
 	void (*destroy)(void *modeData);
 
-	qdsSpawnCallback *onSpawn;
-	qdsMoveCallback *onMove;
-	qdsRotateCallback *onRotate;
-	qdsDropCallback *onDrop;
-	qdsLockCallback *onLock;
-	qdsHoldCallback *onHold;
-	qdsLineFilledCallback *onLineFilled;
-	qdsLineClearCallback *onLineClear;
-	qdsTopOutCallback *onTopOut;
-
+	qdsEventTable events;
 	qdsCustomCall *call;
 
 	/**

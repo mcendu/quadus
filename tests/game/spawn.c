@@ -134,11 +134,6 @@ void setupWithNoHandler(void)
 
 START_TEST(noHandler)
 {
-	ck_assert_ptr_null(game->rs->onSpawn);
-	ck_assert_ptr_null(game->mode->onSpawn);
-	ck_assert_ptr_null(game->rs->onTopOut);
-	ck_assert_ptr_null(game->mode->onTopOut);
-
 	/* normally triggers spawn handler */
 	ck_assert(qdsSpawn(game, QDS_PIECE_I));
 

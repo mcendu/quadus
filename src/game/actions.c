@@ -33,20 +33,20 @@
 #include <ruleset.h>
 #include <threads.h>
 
-#define EMIT(p, e, ...)                            \
-	do {                                           \
-		if (p->rs->e) (p->rs->e)(__VA_ARGS__);     \
-		if (p->mode->e) (p->mode->e)(__VA_ARGS__); \
+#define EMIT(p, e, ...)                                          \
+	do {                                                         \
+		if (p->rs->events.e) (p->rs->events.e)(__VA_ARGS__);     \
+		if (p->mode->events.e) (p->mode->events.e)(__VA_ARGS__); \
 	} while (0)
 
-#define EMIT_CANCELLABLE(p, e, cancel_retval, ...)        \
-	do {                                                  \
-		if ((p->rs->e) && !(p->rs->e)(__VA_ARGS__)) {     \
-			return (cancel_retval);                       \
-		}                                                 \
-		if ((p->mode->e) && !(p->mode->e)(__VA_ARGS__)) { \
-			return (cancel_retval);                       \
-		}                                                 \
+#define EMIT_CANCELLABLE(p, e, cancel_retval, ...)                      \
+	do {                                                                \
+		if ((p->rs->events.e) && !(p->rs->events.e)(__VA_ARGS__)) {     \
+			return (cancel_retval);                                     \
+		}                                                               \
+		if ((p->mode->events.e) && !(p->mode->events.e)(__VA_ARGS__)) { \
+			return (cancel_retval);                                     \
+		}                                                               \
 	} while (0)
 
 /**
