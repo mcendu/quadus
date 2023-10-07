@@ -22,6 +22,7 @@
  */
 #include "input.h"
 #include "quadustui.h"
+
 #include <fcntl.h>
 #include <linux/input-event-codes.h>
 #include <linux/kd.h>

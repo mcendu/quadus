@@ -28,7 +28,6 @@
 
 #include "quadustui.h"
 #include "ui.h"
-#include "widget.h"
 
 static const char tileFilled[] = "[]";
 static const char tileEmpty[] = ". ";
@@ -44,11 +43,14 @@ static void playfieldLine(WINDOW *w,
 						  const char *tileEmpty)
 {
 	wmove(w, row, left);
+	wattr_set(w, 0, 0, NULL);
 	waddch(w, boundary);
 	for (int x = 0; x < 10; ++x) {
 		const char *tile = line[x] ? tileFilled : tileEmpty;
+		wattr_set(w, 0, line[x] % 8, NULL);
 		waddstr(w, tile);
 	}
+	wattr_set(w, 0, 0, NULL);
 	waddch(w, boundary);
 }
 
@@ -60,13 +62,16 @@ static void piece(WINDOW *w,
 				  int orientation,
 				  const char *tile)
 {
+	if (type < 0) type = qdsGetActivePieceType(game);
 	const qdsCoords *shape = qdsGetShape(game, type, orientation);
 
+	wattr_set(w, A_BOLD, type % 8, NULL);
 	QDS_SHAPE_FOREACH (i, shape) {
 		int x = cx + 2 * i->x;
 		int y = cy - i->y;
 		mvwaddstr(w, y, x, tile);
 	}
+	wattr_set(w, 0, 0, NULL);
 }
 
 static void playfield(WINDOW *w, int top, int left, const qdsGame *game)

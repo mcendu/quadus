@@ -25,7 +25,7 @@ quadusui_src = [
     'input/curses.c',
     'input/linux.c',
     'main.c',
-    'ui.c',
+    'uidata.c',
 ]
 
 quadusui_bin = executable('quadus', quadusui_src,
