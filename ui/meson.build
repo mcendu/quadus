@@ -22,7 +22,7 @@ curses_dep = dependency('curses')
 
 quadusui_src = [
     'game.c',
-    'input.c',
+    'input/curses.c',
     'main.c',
 ]
 

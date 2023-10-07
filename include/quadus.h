@@ -274,6 +274,12 @@ QDS_API int qdsGetHeldPiece(const qdsGame *);
  */
 QDS_API int qdsCall(qdsGame *, unsigned long req, void *argp);
 
+/*
+ * Built-in rulesets.
+ */
+
+QDS_API extern const qdsRuleset qdsRulesetStandard;
+
 #ifdef __cplusplus
 }
 #endif

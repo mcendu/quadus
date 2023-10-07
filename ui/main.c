@@ -20,6 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "input/input.h"
+#include "ui.h"
 #include <curses.h>
 #include <quadus.h>
 #include <setjmp.h>
@@ -29,9 +31,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "ruleset.h"
-#include "ui.h"
 
 #define SIGVBLANK SIGRTMIN
 
@@ -43,6 +42,7 @@ static void cleanup(int signo);
 struct gameState
 {
 	qdsGame *game;
+	const struct inputHandler *inputHandler;
 	unsigned int input;
 };
 
@@ -59,6 +59,9 @@ int main(int argc, char **argv)
 	state.game = qdsNewGame();
 	if (!state.game) abort();
 	qdsSetRuleset(state.game, &qdsRulesetStandard);
+
+	state.input = 0;
+	state.inputHandler = &cursesInput;
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {
@@ -119,7 +122,7 @@ static void loop(int signo, siginfo_t *siginfo, void *p)
 	struct gameState *state = siginfo->si_value.sival_ptr;
 	qdsGame *game = state->game;
 
-	processInput(&state->input);
+	state->inputHandler->read(&state->input, NULL);
 	qdsRunCycle(game, state->input);
 	wnoutrefresh(stdscr);
 	gameView(stdscr, 0, 0, game);

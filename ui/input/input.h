@@ -20,12 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef UI_H
-#define UI_H
+#ifndef INPUT_H
+#define INPUT_H
 
-#include <curses.h>
-#include <quadus.h>
+struct inputHandler
+{
+	unsigned int (*read)(unsigned int *prev, void *inputState);
+	void *(*init)(int fd);
+	void (*cleanup)(void *inputState);
+};
 
-extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
+extern const struct inputHandler cursesInput;
 
-#endif /* UI_H */
+#endif /* !INPUT_H */

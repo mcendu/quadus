@@ -20,10 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "input.h"
 #include <curses.h>
 #include <quadus.h>
 
-unsigned int processInput(unsigned int *last)
+static unsigned int readCursesInput(unsigned int *last, void *_)
 {
 	unsigned int input = 0;
 	unsigned int ch;
@@ -56,3 +57,7 @@ unsigned int processInput(unsigned int *last)
 	*last = input;
 	return input;
 }
+
+const struct inputHandler cursesInput = {
+	.read = readCursesInput,
+};
