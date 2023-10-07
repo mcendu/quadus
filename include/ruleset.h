@@ -141,7 +141,7 @@ QDS_API bool qdsAddLines(qdsGame *, const qdsLine *lines, size_t height);
  * Check if the active mino does not overlap with the playfield after
  * moving and rotating.
  */
-QDS_API bool qdsCanRotate(qdsGame *, int x, int y, int rotation);
+QDS_API bool qdsCanRotate(const qdsGame *, int x, int y, int rotation);
 /**
  * Check if the active mino does not overlap with the playfield after
  * moving.

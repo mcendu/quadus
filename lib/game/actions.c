@@ -244,7 +244,7 @@ QDS_API bool qdsAddLines(qdsGame *restrict p,
 	return !topout;
 }
 
-QDS_API bool qdsCanRotate(qdsGame *p, int x, int y, int rotation)
+QDS_API bool qdsCanRotate(const qdsGame *p, int x, int y, int rotation)
 {
 	assert((p != NULL));
 	assert((p->rs != NULL));

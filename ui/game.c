@@ -30,6 +30,7 @@
 
 static const char tileFilled[] = "[]";
 static const char tileEmpty[] = ". ";
+static const char tileGhost[] = "::";
 static const char tileEmptyOverflow[] = "  ";
 
 static void playfieldLine(WINDOW *w,
@@ -47,6 +48,23 @@ static void playfieldLine(WINDOW *w,
 		waddstr(w, tile);
 	}
 	waddch(w, boundary);
+}
+
+static void piece(WINDOW *w,
+				  int cy,
+				  int cx,
+				  const qdsGame *game,
+				  int type,
+				  int orientation,
+				  const char *tile)
+{
+	const qdsCoords *shape = qdsGetShape(game, type, orientation);
+
+	QDS_SHAPE_FOREACH (i, shape) {
+		int x = cx + 2 * i->x;
+		int y = cy - i->y;
+		mvwaddstr(w, y, x, tile);
+	}
 }
 
 static void playfield(WINDOW *w, int top, int left, const qdsGame *game)
@@ -84,34 +102,25 @@ static void playfield(WINDOW *w, int top, int left, const qdsGame *game)
 					  tileEmptyOverflow);
 	}
 
-	/* active piece */
-	const qdsCoords *shape = qdsGetActiveShape(game);
 	int x, y;
-	qdsGetActivePosition(game, &x, &y);
-	QDS_SHAPE_FOREACH (i, shape) {
-		int tx = x + i->x;
-		int ty = y + i->y;
-		if (tx < 0 || tx >= 10) return;
-		if (ty < 0 || ty >= 22) return;
-		mvwaddstr(w, top + playfieldBaseY - ty, left + 1 + 2 * tx, tileFilled);
-	}
-	wmove(w, top + playfieldBaseY - y, left + 1 + 2 * x);
+	x = left + 1 + 2 * qdsGetActiveX(game);
+	/* ghost piece */
+	y = top + playfieldBaseY - qdsGetGhostY(game);
+	piece(w, y, x, game, -1, -1, tileGhost);
+	/* active piece */
+	y = top + playfieldBaseY - qdsGetActiveY(game);
+	piece(w, y, x, game, -1, -1, tileFilled);
+	wmove(w, y, x);
 }
 
-static void queuedPiece(WINDOW *w, int top, int left, qdsGame *game, int piece)
+static void queuedPiece(WINDOW *w, int top, int left, qdsGame *game, int type)
 {
 	/* clear corresponding screen area */
 	for (int y = 0; y < 3; ++y) mvwaddstr(w, top + y, left, "        ");
 
 	int cx = left + 2;
 	int cy = top + 1;
-	const qdsCoords *shape = qdsGetShape(game, piece, 0);
-
-	QDS_SHAPE_FOREACH (i, shape) {
-		int x = cx + 2 * i->x;
-		int y = cy - i->y;
-		mvwaddstr(w, y, x, tileFilled);
-	}
+	piece(w, cy, cx, game, type, 0, tileFilled);
 }
 
 static void hold(WINDOW *w, int top, int left, qdsGame *game)

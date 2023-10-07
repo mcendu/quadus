@@ -258,7 +258,7 @@ QDS_API int qdsGetActiveY(const qdsGame *);
 /**
  * Get the vertical position of the ghost piece.
  */
-QDS_API int qdsGetGhostY(qdsGame *);
+QDS_API int qdsGetGhostY(const qdsGame *);
 /**
  * Get the piece at a specific position in the queue.
  */

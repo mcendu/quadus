@@ -96,9 +96,10 @@ QDS_API int qdsGetHeldPiece(const qdsGame *p)
 	return p->hold;
 }
 
-QDS_API int qdsPlayfieldGetGhostY(qdsGame *p)
+QDS_API int qdsGetGhostY(const qdsGame *p)
 {
 	assert((p != NULL));
+	if (!p->piece) return 0;
 	int i = 0;
 	while (qdsCanMove(p, 0, i - 1)) i -= 1;
 	return p->y + i;
