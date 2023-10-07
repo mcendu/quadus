@@ -29,11 +29,9 @@ QDS_API unsigned int qdsFilterInput(qdsGame *game,
 									unsigned int input)
 {
 	/* normal inputs */
-	unsigned effective = input & (~istate->lastInput);
+	unsigned effective = input & ~(QDS_INPUT_LEFT | QDS_INPUT_RIGHT);
+	effective |= input & ~istate->lastInput;
 	istate->lastInput = input;
-
-	/* normally held inputs */
-	effective |= input & QDS_INPUT_SOFT_DROP;
 
 	/* newly pressed directions */
 	if (effective & (QDS_INPUT_LEFT | QDS_INPUT_RIGHT)) {

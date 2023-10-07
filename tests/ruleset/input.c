@@ -94,33 +94,6 @@ START_TEST(autorepeat)
 }
 END_TEST
 
-START_TEST(autorepeatWithNonDirection)
-{
-	/* nothing else autorepeats */
-	unsigned input = QDS_INPUT_HARD_DROP;
-	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_HARD_DROP);
-	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
-	for (int i = 0; i < QDS_DEFAULT_DAS - 1; ++i)
-		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
-	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
-	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
-
-	/* not even when directions are thrown in the mix */
-	input |= QDS_INPUT_LEFT;
-	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
-	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_DAS);
-
-	for (int i = 0; i < QDS_DEFAULT_DAS - 1; ++i)
-		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
-	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
-	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
-	for (int i = 0; i < QDS_DEFAULT_ARR - 1; ++i)
-		ck_assert_int_eq(qdsFilterInput(NULL, istate, input), 0);
-	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_LEFT);
-	ck_assert_int_eq(istate->repeatTimer, QDS_DEFAULT_ARR);
-}
-END_TEST
-
 START_TEST(oppositeDirections)
 {
 	/* when both left and right are active, latest press takes priority */
@@ -144,7 +117,7 @@ START_TEST(oppositeDirections)
 }
 END_TEST
 
-START_TEST(softdrop)
+START_TEST(withOtherInputs)
 {
 	unsigned input = QDS_INPUT_SOFT_DROP;
 	ck_assert_int_eq(qdsFilterInput(NULL, istate, input), QDS_INPUT_SOFT_DROP);
@@ -199,9 +172,8 @@ Suite *createSuite(void)
 	tcase_add_checked_fixture(c, setup, NULL);
 	tcase_add_test(c, base);
 	tcase_add_test(c, autorepeat);
-	tcase_add_test(c, autorepeatWithNonDirection);
 	tcase_add_test(c, oppositeDirections);
-	tcase_add_test(c, softdrop);
+	tcase_add_test(c, withOtherInputs);
 	tcase_add_test(c, interrupt);
 	suite_add_tcase(s, c);
 

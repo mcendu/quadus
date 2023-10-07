@@ -132,19 +132,11 @@ END_TEST
 
 START_TEST(doubleRotation)
 {
-	unsigned input = QDS_INPUT_ROTATE_C;
-
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_BASE);
-	qdsRunCycle(game, input);
-	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_C);
-	input |= QDS_INPUT_ROTATE_CC;
-	qdsRunCycle(game, input);
-	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_BASE);
-	qdsRunCycle(game, 0);
 
 	/* clockwise prevails if two rotations are simultaneously pressed */
-	qdsRunCycle(game, input);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C | QDS_INPUT_ROTATE_CC);
 	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_C);
 }
 END_TEST
