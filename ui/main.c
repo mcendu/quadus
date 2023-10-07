@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "input/input.h"
-#include "ui.h"
+#include "quadustui.h"
 #include <curses.h>
 #include <quadus.h>
 #include <setjmp.h>
@@ -57,9 +57,12 @@ int main(int argc, char **argv)
 	sigaddset(&vblankWaitSet, SIGVBLANK);
 
 	struct gameState state;
+	uiData uiData;
+	initUiData(&uiData);
 	state.game = qdsNewGame();
 	if (!state.game) abort();
 	qdsSetRuleset(state.game, &qdsRulesetStandard);
+	qdsSetUi(state.game, &ui, &uiData);
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {

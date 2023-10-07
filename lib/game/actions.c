@@ -185,6 +185,7 @@ QDS_API bool qdsLock(qdsGame *p)
 	}
 	p->piece = 0;
 	p->orientation = 0;
+	EMIT(p, postLock, p);
 	return true;
 }
 

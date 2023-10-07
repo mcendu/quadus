@@ -164,6 +164,7 @@ typedef struct qdsEventTable
 	qdsLineFilledCallback *onLineFilled;
 	qdsLineClearCallback *onLineClear;
 	qdsTopOutCallback *onTopOut;
+	qdsLockCallback *postLock;
 } qdsEventTable;
 
 /**

@@ -20,15 +20,52 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef UI_H
-#define UI_H
-
-#include <curses.h>
+#include "quadustui.h"
 #include <quadus.h>
-#include <setjmp.h>
+#include <ruleset/linequeue.h>
+#include <stdbool.h>
+#include <string.h>
+#include <ui.h>
 
-extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
+void initUiData(uiData *data)
+{
+	data->useDisplayPlayfield = false;
+	data->lines.lines = 0;
+}
 
-extern jmp_buf cleanupJump;
+static void onLineFilled(qdsGame *game, int y)
+{
+	uiData *data = qdsGetUiData(game);
+	qdsQueueLine(&data->lines, y);
+}
 
-#endif /* UI_H */
+static void removeLineFromDisplay(qdsGame *game, int y)
+{
+	if (y >= 22) return;
+	uiData *data = qdsGetUiData(game);
+	memset(data->displayPlayfield[y], 0, sizeof(qdsLine));
+}
+
+static bool postLock(qdsGame *game)
+{
+	uiData *data = qdsGetUiData(game);
+	if (data->lines.lines == 0) return true;
+
+	memcpy(data->displayPlayfield, qdsGetPlayfield(game), sizeof(qdsLine[22]));
+	qdsForeachPendingLine(game, &data->lines, removeLineFromDisplay);
+	data->useDisplayPlayfield = true;
+	return true;
+}
+
+static bool onLineClear(qdsGame *game, int y)
+{
+	uiData *data = qdsGetUiData(game);
+	data->useDisplayPlayfield = false;
+	return true;
+}
+
+qdsUserInterface ui = { .events = {
+							.onLineFilled = onLineFilled,
+							.postLock = postLock,
+							.onLineClear = onLineClear,
+						} };

@@ -20,10 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "../ui.h"
 #include "input.h"
+#include "quadustui.h"
 #include <fcntl.h>
-/* Assume keycode matches equivalent event code */
 #include <linux/input-event-codes.h>
 #include <linux/kd.h>
 #include <quadus.h>

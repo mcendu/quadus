@@ -26,6 +26,8 @@
 #include <piece.h>
 #include <quadus.h>
 
+#include "quadustui.h"
+#include "ui.h"
 #include "widget.h"
 
 static const char tileFilled[] = "[]";
@@ -82,7 +84,13 @@ static void playfield(WINDOW *w, int top, int left, const qdsGame *game)
 							  ACS_HLINE,	ACS_LRCORNER, 0 }));
 
 	/* playfield proper */
-	const qdsLine *playfield = qdsGetPlayfield(game);
+	const qdsLine *playfield;
+	uiData *data = qdsGetUiData(game);
+	if (data->useDisplayPlayfield)
+		playfield = data->displayPlayfield;
+	else
+		playfield = qdsGetPlayfield(game);
+
 	for (int y = 0; y < 20; ++y) {
 		playfieldLine(w,
 					  playfield[y],

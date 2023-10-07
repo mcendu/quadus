@@ -47,8 +47,9 @@ inline static void siftdown(size_t node, unsigned char *heap, size_t size)
 	}
 }
 
-QDS_API int qdsClearQueuedLines(qdsGame *restrict game,
-								struct qdsPendingLines *restrict q)
+QDS_API int qdsForeachPendingLine(qdsGame *restrict game,
+								  struct qdsPendingLines *restrict q,
+								  void (*action)(qdsGame *, int y))
 {
 	/* heap sort variation */
 	int size = q->lines;
@@ -61,7 +62,7 @@ QDS_API int qdsClearQueuedLines(qdsGame *restrict game,
 
 	/* pop lines */
 	while (size > 0) {
-		qdsClearLine(game, heap[1]);
+		action(game, heap[1]);
 		heap[1] = heap[size--];
 		siftdown(1, heap, size);
 	}

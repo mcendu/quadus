@@ -20,47 +20,28 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/**
- * Utilities for buffers holding pending lines to clear.
- */
-#ifndef QDS__RULESET_LINES_H
-#define QDS__RULESET_LINES_H
+#ifndef UI_H
+#define UI_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <curses.h>
 #include <quadus.h>
+#include <ruleset/linequeue.h>
+#include <setjmp.h>
+#include <ui.h>
 
-struct qdsPendingLines
+typedef struct uiData
 {
-	unsigned char lines;
-	unsigned char h[47];
-};
+	qdsLine displayPlayfield[22];
+	bool useDisplayPlayfield;
 
-/**
- * Queue lines for removal.
- *
- * This API does not bounds-check; you should ensure yourself that the
- * input does not cause the queue to overflow.
- */
-QDS_API void qdsQueueLine(struct qdsPendingLines *q, int y);
+	struct qdsPendingLines lines;
+} uiData;
 
-/**
- * Execute an action on all pending lines. This clears the queue.
- */
-QDS_API int qdsForeachPendingLine(qdsGame *game,
-								  struct qdsPendingLines *q,
-								  void (*action)(qdsGame *, int y));
+extern void initUiData(uiData *data);
 
-/**
- * Clear all pending lines.
- */
-#define qdsClearQueuedLines(game, q) \
-	(qdsForeachPendingLine(game, q, (void (*)(qdsGame *, int))qdsClearLine))
+extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
 
-#ifdef __cplusplus
-}
-#endif
+extern qdsUserInterface ui;
+extern jmp_buf cleanupJump;
 
-#endif /* !QDS__RULESET_LINES_H */
+#endif /* UI_H */
