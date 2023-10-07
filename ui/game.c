@@ -25,6 +25,7 @@
 #include <curses.h>
 #include <piece.h>
 #include <quadus.h>
+#include <stdarg.h>
 
 #include "quadustui.h"
 #include "ui.h"
@@ -60,12 +61,13 @@ static void piece(WINDOW *w,
 				  const qdsGame *game,
 				  int type,
 				  int orientation,
+				  attr_t attr,
 				  const char *tile)
 {
 	if (type < 0) type = qdsGetActivePieceType(game);
 	const qdsCoords *shape = qdsGetShape(game, type, orientation);
 
-	wattr_set(w, A_BOLD, type % 8, NULL);
+	wattr_set(w, attr, type % 8, NULL);
 	QDS_SHAPE_FOREACH (i, shape) {
 		int x = cx + 2 * i->x;
 		int y = cy - i->y;
@@ -119,26 +121,31 @@ static void playfield(WINDOW *w, int top, int left, const qdsGame *game)
 	x = left + 1 + 2 * qdsGetActiveX(game);
 	/* ghost piece */
 	y = top + playfieldBaseY - qdsGetGhostY(game);
-	piece(w, y, x, game, -1, -1, tileGhost);
+	piece(w, y, x, game, -1, -1, 0, tileGhost);
 	/* active piece */
 	y = top + playfieldBaseY - qdsGetActiveY(game);
-	piece(w, y, x, game, -1, -1, tileFilled);
+	piece(w, y, x, game, -1, -1, A_BOLD, tileFilled);
 	wmove(w, y, x);
 }
 
-static void queuedPiece(WINDOW *w, int top, int left, qdsGame *game, int type)
+static void queuedPiece(WINDOW *w,
+						int top,
+						int left,
+						qdsGame *game,
+						int type,
+						int attr)
 {
 	/* clear corresponding screen area */
 	for (int y = 0; y < 3; ++y) mvwaddstr(w, top + y, left, "        ");
 
 	int cx = left + 2;
 	int cy = top + 1;
-	piece(w, cy, cx, game, type, 0, tileFilled);
+	piece(w, cy, cx, game, type, 0, attr, tileFilled);
 }
 
 static void hold(WINDOW *w, int top, int left, qdsGame *game)
 {
-	queuedPiece(w, top, left, game, qdsGetHeldPiece(game));
+	queuedPiece(w, top, left, game, qdsGetHeldPiece(game), A_BOLD);
 }
 
 static void next(WINDOW *w, int top, int left, qdsGame *game)
@@ -147,13 +154,44 @@ static void next(WINDOW *w, int top, int left, qdsGame *game)
 	if (qdsCall(game, QDS_GETNEXTCOUNT, &nextCount) < 0) nextCount = 1;
 	if (nextCount > 6) nextCount = 6;
 	for (int i = 0; i < nextCount; ++i) {
-		queuedPiece(w, top + 3 * i, left, game, qdsGetNextPiece(game, i));
+		attr_t attr = i == 0 ? A_BOLD : 0;
+		queuedPiece(w, top + 3 * i, left, game, qdsGetNextPiece(game, i), attr);
 	}
+}
+
+static void stat(WINDOW *w,
+				 int top,
+				 int left,
+				 const char *name,
+				 const char *format,
+				 ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	mvwaddstr(w, top, left, name);
+	wmove(w, top + 1, left);
+	vw_printw(w, format, ap);
+	va_end(ap);
+}
+
+static void statTime(WINDOW *w, int top, int left, const char *name, int time)
+{
+	int times = (time / 60) % 60;
+	int timem = time / (60 * 60);
+	stat(w, top, left, name, "   %.2d:%.2d", timem, times);
 }
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
-	hold(w, top + 2, left + 2, game);
+	int score, time, lines;
+	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
+	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
+	if (qdsCall(game, QDS_GETLINES, &lines) < 0) lines = 0;
+	stat(w, top + 12, left + 2, "LINES", "%8d", lines);
+	stat(w, top + 15, left + 2, "SCORE", "%8d", score);
+	statTime(w, top + 18, left + 2, "TIME", time);
+
 	next(w, top + 2, left + 34, game);
+	hold(w, top + 2, left + 2, game);
 	playfield(w, top, left + 11, game);
 }
