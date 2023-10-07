@@ -20,14 +20,39 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef UI_H
-#define UI_H
-
 #include <curses.h>
 #include <quadus.h>
 
-extern unsigned int processInput(unsigned int *last);
-
-extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
-
-#endif /* UI_H */
+unsigned int processInput(unsigned int *last)
+{
+	unsigned int input = 0;
+	unsigned int ch;
+	while ((ch = getch()) != ERR) {
+		switch (ch) {
+			case KEY_LEFT:
+				input |= QDS_INPUT_LEFT;
+				break;
+			case KEY_RIGHT:
+				input |= QDS_INPUT_RIGHT;
+				break;
+			case KEY_DOWN:
+				input |= QDS_INPUT_SOFT_DROP;
+				break;
+			case ' ':
+				input |= QDS_INPUT_HARD_DROP;
+				break;
+			case 'z':
+			case 'c':
+				input |= QDS_INPUT_ROTATE_CC;
+				break;
+			case 'x':
+				input |= QDS_INPUT_ROTATE_C;
+				break;
+			case 'a':
+				input |= QDS_INPUT_HOLD;
+				break;
+		}
+	}
+	*last = input;
+	return input;
+}

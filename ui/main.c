@@ -20,12 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <bits/types/sigset_t.h>
-#include <bits/types/struct_itimerspec.h>
 #include <curses.h>
 #include <quadus.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -41,6 +40,12 @@ static jmp_buf cleanupJump;
 static void loop(int signo, siginfo_t *siginfo, void *p);
 static void cleanup(int signo);
 
+struct gameState
+{
+	qdsGame *game;
+	unsigned int input;
+};
+
 int main(int argc, char **argv)
 {
 	sigaction(
@@ -50,15 +55,16 @@ int main(int argc, char **argv)
 	sigemptyset(&vblankWaitSet);
 	sigaddset(&vblankWaitSet, SIGVBLANK);
 
-	qdsGame *game = qdsNewGame();
-	if (!game) abort();
-	qdsSetRuleset(game, &qdsRulesetStandard);
+	struct gameState state;
+	state.game = qdsNewGame();
+	if (!state.game) abort();
+	qdsSetRuleset(state.game, &qdsRulesetStandard);
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {
 		.sigev_notify = SIGEV_SIGNAL,
 		.sigev_signo = SIGVBLANK,
-		.sigev_value = { .sival_ptr = game },
+		.sigev_value = { .sival_ptr = &state },
 	};
 	if (timer_create(CLOCK_MONOTONIC, &frameTimerSigev, &frameTimer) < 0) {
 		fprintf(
@@ -69,6 +75,8 @@ int main(int argc, char **argv)
 	initscr();
 	cbreak();
 	noecho();
+	keypad(stdscr, true);
+	nodelay(stdscr, true);
 	refresh();
 
 	timer_settime(frameTimer, 0, &(const struct itimerspec){
@@ -86,7 +94,7 @@ int main(int argc, char **argv)
 	if ((jmpval = setjmp(cleanupJump))) {
 		move(24, 0);
 		endwin();
-		qdsDestroyGame(game);
+		qdsDestroyGame(state.game);
 		timer_delete(frameTimer);
 		exit(jmpval == SIGINT ? 0 : -jmpval);
 	}
@@ -108,8 +116,11 @@ int main(int argc, char **argv)
 
 static void loop(int signo, siginfo_t *siginfo, void *p)
 {
-	qdsGame *game = siginfo->_sifields._timer.si_sigval.sival_ptr;
-	qdsRunCycle(game, 0);
+	struct gameState *state = siginfo->si_value.sival_ptr;
+	qdsGame *game = state->game;
+
+	processInput(&state->input);
+	qdsRunCycle(game, state->input);
 	wnoutrefresh(stdscr);
 	gameView(stdscr, 0, 0, game);
 	doupdate();
