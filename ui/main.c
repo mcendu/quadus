@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "ruleset.h"
 #include "ui.h"
@@ -37,26 +38,13 @@
 
 static jmp_buf cleanupJump;
 
-static void cleanup(int signo)
-{
-	longjmp(cleanupJump, signo);
-}
+static void loop(int signo, siginfo_t *siginfo, void *p);
+static void cleanup(int signo);
 
 int main(int argc, char **argv)
 {
 	sigaction(
 		SIGVBLANK, &(const struct sigaction){ .sa_handler = SIG_IGN }, NULL);
-	timer_t frameTimer;
-	struct sigevent frameTimerSigev = {
-		.sigev_notify = SIGEV_SIGNAL,
-		.sigev_signo = SIGVBLANK,
-		.sigev_value = { 0 },
-	};
-	if (timer_create(CLOCK_MONOTONIC, &frameTimerSigev, &frameTimer) < 0) {
-		fprintf(
-			stderr, "%s:%d: Failed to create game timer\n", __FILE__, __LINE__);
-		exit(1);
-	}
 
 	sigset_t vblankWaitSet;
 	sigemptyset(&vblankWaitSet);
@@ -65,6 +53,18 @@ int main(int argc, char **argv)
 	qdsGame *game = qdsNewGame();
 	if (!game) abort();
 	qdsSetRuleset(game, &qdsRulesetStandard);
+
+	timer_t frameTimer;
+	struct sigevent frameTimerSigev = {
+		.sigev_notify = SIGEV_SIGNAL,
+		.sigev_signo = SIGVBLANK,
+		.sigev_value = { .sival_ptr = game },
+	};
+	if (timer_create(CLOCK_MONOTONIC, &frameTimerSigev, &frameTimer) < 0) {
+		fprintf(
+			stderr, "%s:%d: Failed to create game timer\n", __FILE__, __LINE__);
+		exit(1);
+	}
 
 	initscr();
 	cbreak();
@@ -93,13 +93,29 @@ int main(int argc, char **argv)
 
 	static const struct sigaction cleanupAction = { .sa_handler = cleanup };
 	sigaction(SIGINT, &cleanupAction, NULL);
+	sigaction(SIGVBLANK,
+			  &(const struct sigaction){
+				  .sa_flags = SA_SIGINFO,
+				  .sa_sigaction = loop,
+				  .sa_mask = vblankWaitSet,
+			  },
+			  NULL);
 
 	while (1) {
-		int sig;
-		sigwait(&vblankWaitSet, &sig);
-		qdsRunCycle(game, 0);
-		wnoutrefresh(stdscr);
-		gameView(stdscr, 0, 0, game);
-		doupdate();
+		pause();
 	}
+}
+
+static void loop(int signo, siginfo_t *siginfo, void *p)
+{
+	qdsGame *game = siginfo->_sifields._timer.si_sigval.sival_ptr;
+	qdsRunCycle(game, 0);
+	wnoutrefresh(stdscr);
+	gameView(stdscr, 0, 0, game);
+	doupdate();
+}
+
+static void cleanup(int signo)
+{
+	longjmp(cleanupJump, signo);
 }

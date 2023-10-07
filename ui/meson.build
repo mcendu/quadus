@@ -28,5 +28,6 @@ quadusui_src = [
 quadusui_bin = executable('quadus', quadusui_src,
     include_directories: [quaduscore_include],
     link_with: [quaduscore_lib],
+    link_args: ['-lrt'],
     dependencies: [curses_dep],
     install: true)
