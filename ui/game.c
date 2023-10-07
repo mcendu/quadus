@@ -179,7 +179,7 @@ static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 	int timef = time % 60;
 	int times = (time / 60) % 60;
 	int timem = time / (60 * 60);
-	stat(w, top, left, name, "%.2d:%.2d.%.2d", timem, times, timef);
+	stat(w, top, left, name, "%.2d:%.2d:%.2d", timem, times, timef);
 }
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
