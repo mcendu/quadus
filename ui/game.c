@@ -176,9 +176,10 @@ static void stat(WINDOW *w,
 
 static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 {
+	int timef = time % 60;
 	int times = (time / 60) % 60;
 	int timem = time / (60 * 60);
-	stat(w, top, left, name, "   %.2d:%.2d", timem, times);
+	stat(w, top, left, name, "%.2d:%.2d.%.2d", timem, times, timef);
 }
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
@@ -187,11 +188,11 @@ void gameView(WINDOW *w, int top, int left, qdsGame *game)
 	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
 	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
 	if (qdsCall(game, QDS_GETLINES, &lines) < 0) lines = 0;
-	stat(w, top + 12, left + 2, "LINES", "%8d", lines);
-	stat(w, top + 15, left + 2, "SCORE", "%8d", score);
-	statTime(w, top + 18, left + 2, "TIME", time);
+	stat(w, top + 13, left + 2, "LINES", "%8d", lines);
+	stat(w, top + 16, left + 2, "SCORE", "%8d", score);
+	statTime(w, top + 19, left + 2, "TIME", time);
 
-	next(w, top + 2, left + 34, game);
-	hold(w, top + 2, left + 2, game);
+	next(w, top + 3, left + 34, game);
+	hold(w, top + 3, left + 2, game);
 	playfield(w, top, left + 11, game);
 }
