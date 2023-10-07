@@ -324,10 +324,10 @@ static int canRotate(qdsGame *game, int rotation, int *x, int *y)
 
 	if (rotation > 0) {
 		rotation = 1;
-		kicks = pieces[piece].kicks[1][orientation];
+		kicks = pieces[piece].kicks[0][orientation];
 	} else {
 		rotation = -1;
-		kicks = pieces[piece].kicks[0][orientation];
+		kicks = pieces[piece].kicks[1][orientation];
 	}
 
 	for (const qdsCoords *k = kicks; !(k->x == 127 && k->y == 127); ++k) {
