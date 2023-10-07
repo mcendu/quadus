@@ -38,13 +38,13 @@ if cc.get_define('__GNUC__') != ''
         '-Werror=implicit-int',
         '-Werror=implicit-function-declaration',
         '-Wformat-security',
+        '-Wimplicit-fallthrough',
         '-Wold-style-definition',
     ], language: ['c'])
 
     # GCC-only warnings
     if cc.get_define('__clang__') == ''
         add_project_arguments([
-            '-Wimplicit-fallthrough=2',
             '-Werror=old-style-declaration',
         ], language: ['c'])
     endif

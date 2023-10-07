@@ -34,7 +34,7 @@
 
 #define SIGVBLANK SIGRTMIN
 
-static jmp_buf cleanupJump;
+jmp_buf cleanupJump;
 
 static void loop(int signo, siginfo_t *siginfo, void *p);
 static void cleanup(int signo);
@@ -43,6 +43,7 @@ struct gameState
 {
 	qdsGame *game;
 	const struct inputHandler *inputHandler;
+	void *inputData;
 	unsigned int input;
 };
 
@@ -59,9 +60,6 @@ int main(int argc, char **argv)
 	state.game = qdsNewGame();
 	if (!state.game) abort();
 	qdsSetRuleset(state.game, &qdsRulesetStandard);
-
-	state.input = 0;
-	state.inputHandler = &cursesInput;
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {
@@ -82,6 +80,12 @@ int main(int argc, char **argv)
 	nodelay(stdscr, true);
 	refresh();
 
+	/* use console input; fallback to curses if not possible */
+	state.inputHandler = &linuxConsoleInput;
+	if (!(state.inputData = linuxConsoleInput.init(0)))
+		state.inputHandler = &cursesInput;
+	state.input = 0;
+
 	timer_settime(frameTimer, 0, &(const struct itimerspec){
         .it_value = {
             .tv_sec = 0,
@@ -95,8 +99,9 @@ int main(int argc, char **argv)
 
 	int jmpval;
 	if ((jmpval = setjmp(cleanupJump))) {
-		move(24, 0);
 		endwin();
+		if (state.inputHandler->cleanup)
+			state.inputHandler->cleanup(state.inputData);
 		qdsDestroyGame(state.game);
 		timer_delete(frameTimer);
 		exit(jmpval == SIGINT ? 0 : -jmpval);
@@ -122,7 +127,7 @@ static void loop(int signo, siginfo_t *siginfo, void *p)
 	struct gameState *state = siginfo->si_value.sival_ptr;
 	qdsGame *game = state->game;
 
-	state->inputHandler->read(&state->input, NULL);
+	state->inputHandler->read(&state->input, state->inputData);
 	qdsRunCycle(game, state->input);
 	wnoutrefresh(stdscr);
 	gameView(stdscr, 0, 0, game);

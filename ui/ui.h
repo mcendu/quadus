@@ -25,7 +25,10 @@
 
 #include <curses.h>
 #include <quadus.h>
+#include <setjmp.h>
 
 extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
+
+extern jmp_buf cleanupJump;
 
 #endif /* UI_H */
