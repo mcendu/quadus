@@ -283,11 +283,10 @@ static void clearLines(standardData *data, qdsGame *game, unsigned int input)
 static void doMovement(standardData *data, qdsGame *game, unsigned int input)
 {
 	if (input & QDS_INPUT_LEFT) {
-		if (qdsGrounded(game)) resetLock(data, game, false);
-		qdsMove(game, -1);
+		if (qdsMove(game, -1) && qdsGrounded(game))
+			resetLock(data, game, false);
 	} else if (input & QDS_INPUT_RIGHT) {
-		if (qdsGrounded(game)) resetLock(data, game, false);
-		qdsMove(game, 1);
+		if (qdsMove(game, 1) && qdsGrounded(game)) resetLock(data, game, false);
 	} else {
 		return;
 	}
@@ -299,19 +298,18 @@ static void doRotate(standardData *data, qdsGame *game, unsigned int input)
 {
 	int rotation;
 	if (input & QDS_INPUT_ROTATE_C) {
-		if (qdsGrounded(game)) resetLock(data, game, false);
 		rotation = QDS_ROTATION_CLOCKWISE;
 	} else if (input & QDS_INPUT_ROTATE_CC) {
-		if (qdsGrounded(game)) resetLock(data, game, false);
 		rotation = QDS_ROTATION_COUNTERCLOCKWISE;
 	} else {
 		return;
 	}
 
-	int twistCheckResult;
-	if ((twistCheckResult = qdsRotate(game, rotation)) == QDS_ROTATE_FAILED)
-		return;
-	data->twistCheckResult = twistCheckResult;
+	int rotateResult = qdsRotate(game, rotation);
+	if (rotateResult == QDS_ROTATE_FAILED) return;
+
+	if (qdsGrounded(game)) resetLock(data, game, false);
+	data->twistCheckResult = rotateResult;
 }
 
 static int canRotate(qdsGame *game, int rotation, int *x, int *y)
