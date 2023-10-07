@@ -24,6 +24,7 @@
 #include "quadustui.h"
 
 #include <fcntl.h>
+#include <limits.h>
 #include <linux/input-event-codes.h>
 #include <linux/kd.h>
 #include <quadus.h>
@@ -31,6 +32,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -39,6 +41,7 @@ struct linuxInputData
 {
 	int fd;
 	long oldkbmode;
+	unsigned char inputState[KEY_MAX / CHAR_BIT];
 };
 
 /**
@@ -74,12 +77,25 @@ static unsigned int readInput(unsigned int *old, void *d)
 	unsigned char rawinput[24];
 	int count;
 
+	input &= QDS_INPUT_LEFT | QDS_INPUT_RIGHT | QDS_INPUT_SOFT_DROP;
+
+	/* read */
 	while ((count = read(data->fd, rawinput, 24)) > 0) {
 		unsigned char *i = rawinput;
 		while (i < rawinput + count) {
 			bool release = *i & 0x80;
 			int key = parseKeycode(&i);
 			int flag = 0;
+
+			/* filter out autorepeated keys */
+			if (!release
+				&& data->inputState[key / CHAR_BIT] & (1 << key % CHAR_BIT))
+				continue;
+
+			if (release)
+				data->inputState[key / CHAR_BIT] &= ~(1 << key % CHAR_BIT);
+			else
+				data->inputState[key / CHAR_BIT] |= 1 << key % CHAR_BIT;
 
 			switch (key) {
 				case KEY_LEFT:
@@ -129,6 +145,7 @@ static void *initConsole(int fd)
 	struct linuxInputData *data = malloc(sizeof(struct linuxInputData));
 	if (!data) return NULL;
 	data->fd = fd;
+	memset(data->inputState, 0, sizeof(data->inputState));
 
 	/* set keyboard mode */
 	if (ioctl(fd, KDGKBMODE, &data->oldkbmode)) {
