@@ -131,8 +131,27 @@ int main(int argc, char **argv)
 		exit(jmpval == SIGINT ? 0 : -jmpval);
 	}
 
-	static const struct sigaction cleanupAction = { .sa_handler = cleanup };
-	sigaction(SIGINT, &cleanupAction, NULL);
+	signal(SIGABRT, cleanup);
+	signal(SIGALRM, cleanup);
+	signal(SIGBUS, cleanup);
+	signal(SIGFPE, cleanup);
+	signal(SIGHUP, cleanup);
+	signal(SIGILL, cleanup);
+	signal(SIGINT, cleanup);
+	signal(SIGPIPE, cleanup);
+	signal(SIGPOLL, cleanup);
+	signal(SIGPROF, cleanup);
+	signal(SIGQUIT, cleanup);
+	signal(SIGSEGV, cleanup);
+	signal(SIGSYS, cleanup);
+	signal(SIGTERM, cleanup);
+	signal(SIGTRAP, cleanup);
+	signal(SIGTTIN, cleanup);
+	signal(SIGTTOU, cleanup);
+	signal(SIGVTALRM, cleanup);
+	signal(SIGXCPU, cleanup);
+	signal(SIGXFSZ, cleanup);
+
 	sigaction(SIGVBLANK,
 			  &(const struct sigaction){
 				  .sa_flags = SA_SIGINFO,
