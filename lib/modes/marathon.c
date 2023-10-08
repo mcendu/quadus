@@ -105,6 +105,12 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 		case QDS_GETGRAVITY:
 			*(int *)argp = lvl->gravity;
 			return 0;
+		case QDS_GETSDG:
+			*(int *)argp = lvl->gravity * 20;
+			return 0;
+		case QDS_GETSDF:
+			*(int *)argp = 20;
+			return 0;
 		case QDS_GETLINEDELAY:
 			*(int *)argp = lvl->lineDelay;
 			return 0;
@@ -112,6 +118,7 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 			*(int *)argp = lvl->lockTime;
 			return 0;
 		case QDS_GETDAS:
+		case QDS_GETDCD:
 			*(int *)argp = lvl->das;
 			return 0;
 	}

@@ -154,7 +154,7 @@ static void next(WINDOW *w, int top, int left, qdsGame *game)
 {
 	int nextCount;
 	if (qdsCall(game, QDS_GETNEXTCOUNT, &nextCount) < 0) nextCount = 1;
-	if (nextCount > 6) nextCount = 6;
+	if (nextCount > 5) nextCount = 5;
 	for (int i = 0; i < nextCount; ++i) {
 		attr_t attr = i == 0 ? A_BOLD : 0;
 		queuedPiece(w, top + 3 * i, left, game, qdsGetNextPiece(game, i), attr);
@@ -186,13 +186,15 @@ static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
-	int score, time, lines;
+	int score, time, lines, level;
 	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
 	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
 	if (qdsCall(game, QDS_GETLINES, &lines) < 0) lines = 0;
+	if (qdsCall(game, QDS_GETLEVEL, &level) < 0) level = 1;
 	stat(w, top + 13, left + 2, "LINES", "%8d", lines);
 	stat(w, top + 16, left + 2, "SCORE", "%8d", score);
 	statTime(w, top + 19, left + 2, "TIME", time);
+	stat(w, top + 19, left + 34, "LEVEL", "%8d", level);
 
 	next(w, top + 3, left + 34, game);
 	hold(w, top + 3, left + 2, game);
