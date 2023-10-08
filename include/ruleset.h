@@ -172,12 +172,6 @@ QDS_API bool qdsCanRotate(qdsGame *, int x, int y, int rotation);
  */
 QDS_API void *qdsGetRulesetData(const qdsGame *);
 
-/*
- * Built-in rulesets.
- */
-
-QDS_API extern const qdsRuleset qdsRulesetStandard;
-
 #ifdef __cplusplus
 }
 #endif

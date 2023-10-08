@@ -118,7 +118,7 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 	return -ENOTTY;
 }
 
-QDS_API const qdsGamemode qdsGamemodeEndless = {
+QDS_API const qdsGamemode qdsModeMarathon = {
 	.init = init,
 	.destroy = free,
 	.onLineFilled = onLineFilled,
