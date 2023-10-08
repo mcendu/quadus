@@ -18,16 +18,10 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-quaduscore_src = []
+quaduscore_src_modes = [
+    'marathon.c',
+]
 
-quaduscore_internal_include = include_directories('include')
-
-subdir('game')
-subdir('modes')
-subdir('piecegen')
-subdir('rulesets')
-
-quaduscore_lib = library('quadus', quaduscore_src,
-    include_directories: [quaduscore_include, quaduscore_internal_include],
-    gnu_symbol_visibility: 'hidden',
-    install: true)
+foreach src : quaduscore_src_modes
+    quaduscore_src += 'modes' / src
+endforeach

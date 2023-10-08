@@ -20,4 +20,4 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 option('enable_tests',
     type: 'feature',
-    description: 'build tests')
+    description: 'Whether to build unit tests')

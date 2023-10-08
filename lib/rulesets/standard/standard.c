@@ -183,7 +183,9 @@ static const qdsCoords *getShape(int type, int orientation)
 	return ((const qdsCoords **)(pieces[type].shape))[orientation];
 }
 
-static int addLevelMultipliedScore(standardData *data, qdsGame *game, int pts)
+static int addLevelMultipliedScore(standardData *restrict data,
+								   qdsGame *restrict game,
+								   int pts)
 {
 	int level;
 	if (qdsCall(game, QDS_GETLEVEL, &level) < 0) level = 1;
@@ -191,7 +193,7 @@ static int addLevelMultipliedScore(standardData *data, qdsGame *game, int pts)
 	return data->score;
 }
 
-static void gameCycle(qdsGame *game, unsigned int input)
+static void gameCycle(qdsGame *restrict game, unsigned int input)
 {
 	standardData *data = qdsGetRulesetData(game);
 	input = qdsFilterInput(game, &data->inputState, input);
@@ -220,7 +222,9 @@ static void gameCycle(qdsGame *game, unsigned int input)
 	data->time += 1;
 }
 
-static void doActiveCycle(standardData *data, qdsGame *game, unsigned int input)
+static void doActiveCycle(standardData *restrict data,
+						  qdsGame *restrict game,
+						  unsigned int input)
 {
 	doHold(data, game, input);
 	doMovement(data, game, input);
@@ -228,7 +232,9 @@ static void doActiveCycle(standardData *data, qdsGame *game, unsigned int input)
 	doGravity(data, game, input);
 }
 
-static void doDelayCycle(standardData *data, qdsGame *game, unsigned int input)
+static void doDelayCycle(standardData *restrict data,
+						 qdsGame *restrict game,
+						 unsigned int input)
 {
 	/* initial rotation */
 	if (input & (QDS_INPUT_ROTATE_C | QDS_INPUT_ROTATE_CC)) {
@@ -245,7 +251,9 @@ static void doDelayCycle(standardData *data, qdsGame *game, unsigned int input)
 	data->statusTime -= 1;
 }
 
-static void spawnPiece(standardData *data, qdsGame *game, unsigned int input)
+static void spawnPiece(standardData *restrict data,
+					   qdsGame *restrict game,
+					   unsigned int input)
 {
 	data->status = STATUS_ACTIVE;
 	data->delayInput = 0;
@@ -258,7 +266,7 @@ static void spawnPiece(standardData *data, qdsGame *game, unsigned int input)
 	doGravity(data, game, input & QDS_INPUT_SOFT_DROP);
 }
 
-static bool onSpawn(qdsGame *game, int _)
+static bool onSpawn(qdsGame *restrict game, int piece)
 {
 	standardData *data = qdsGetRulesetData(game);
 	data->subY = 0;
@@ -267,7 +275,9 @@ static bool onSpawn(qdsGame *game, int _)
 	return true;
 }
 
-static void clearLines(standardData *data, qdsGame *game, unsigned int input)
+static void clearLines(standardData *restrict data,
+					   qdsGame *restrict game,
+					   unsigned int input)
 {
 	qdsClearQueuedLines(game, &data->pendingLines);
 
@@ -280,7 +290,9 @@ static void clearLines(standardData *data, qdsGame *game, unsigned int input)
 	}
 }
 
-static void doMovement(standardData *data, qdsGame *game, unsigned int input)
+static void doMovement(standardData *restrict data,
+					   qdsGame *restrict game,
+					   unsigned int input)
 {
 	if (input & QDS_INPUT_LEFT) {
 		if (qdsMove(game, -1) && qdsGrounded(game))
@@ -294,7 +306,9 @@ static void doMovement(standardData *data, qdsGame *game, unsigned int input)
 	data->twistCheckResult = 0;
 }
 
-static void doRotate(standardData *data, qdsGame *game, unsigned int input)
+static void doRotate(standardData *restrict data,
+					 qdsGame *restrict game,
+					 unsigned int input)
 {
 	int rotation;
 	if (input & QDS_INPUT_ROTATE_C) {
@@ -312,7 +326,10 @@ static void doRotate(standardData *data, qdsGame *game, unsigned int input)
 	data->twistCheckResult = rotateResult;
 }
 
-static int canRotate(qdsGame *game, int rotation, int *x, int *y)
+static int canRotate(qdsGame *restrict game,
+					 int rotation,
+					 int *restrict x,
+					 int *restrict y)
 {
 	if (rotation == 0) return QDS_ROTATE_FAILED;
 
@@ -348,7 +365,9 @@ static int canRotate(qdsGame *game, int rotation, int *x, int *y)
 	return QDS_ROTATE_FAILED;
 }
 
-static void doHold(standardData *data, qdsGame *game, unsigned int input)
+static void doHold(standardData *restrict data,
+				   qdsGame *restrict game,
+				   unsigned int input)
 {
 	if (!(input & QDS_INPUT_HOLD)) return;
 
@@ -357,7 +376,9 @@ static void doHold(standardData *data, qdsGame *game, unsigned int input)
 	data->held = true;
 }
 
-static void doGravity(standardData *data, qdsGame *game, unsigned int input)
+static void doGravity(standardData *restrict data,
+					  qdsGame *restrict game,
+					  unsigned int input)
 {
 	if (input & QDS_INPUT_HARD_DROP) {
 		qdsDrop(game, QDS_DROP_HARD, 48);
@@ -386,7 +407,7 @@ static void doGravity(standardData *data, qdsGame *game, unsigned int input)
 	}
 }
 
-static bool onDrop(qdsGame *game, int type, int distance)
+static bool onDrop(qdsGame *restrict game, int type, int distance)
 {
 	standardData *data = qdsGetRulesetData(game);
 	if (type == QDS_DROP_HARD) data->score += distance * 2;
@@ -395,7 +416,7 @@ static bool onDrop(qdsGame *game, int type, int distance)
 	return true;
 }
 
-static void doLock(standardData *data, qdsGame *game)
+static void doLock(standardData *restrict data, qdsGame *restrict game)
 {
 	if (!qdsLock(game)) return;
 	qdsInterruptRepeat(game, &data->inputState);
@@ -432,7 +453,9 @@ static void doLock(standardData *data, qdsGame *game)
 	}
 }
 
-static void resetLock(standardData *data, qdsGame *game, bool refresh)
+static void resetLock(standardData *restrict data,
+					  qdsGame *restrict game,
+					  bool refresh)
 {
 	if (refresh) {
 		int resets;
@@ -469,19 +492,19 @@ static int drawNext(void *data)
 	return qdsBagDraw(&((standardData *)data)->gen);
 }
 
-static void onTopOut(qdsGame *game)
+static void onTopOut(qdsGame *restrict game)
 {
 	((standardData *)qdsGetRulesetData(game))->status = STATUS_GAMEOVER;
 }
 
-static void onLineFilled(qdsGame *game, int y)
+static void onLineFilled(qdsGame *restrict game, int y)
 {
 	standardData *data = qdsGetRulesetData(game);
 	qdsQueueLine(&data->pendingLines, y);
 	data->lines += 1;
 }
 
-static int rulesetCall(qdsGame *game, unsigned long call, void *argp)
+static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 {
 	standardData *data = qdsGetRulesetData(game);
 
