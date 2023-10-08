@@ -59,5 +59,5 @@ endif
 
 quaduscore_include = include_directories('include')
 
-subdir('quadus')
+subdir('lib')
 subdir('tests')
