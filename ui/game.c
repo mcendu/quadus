@@ -184,17 +184,38 @@ static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 	stat(w, top, left, name, "%.2d:%.2d:%.2d", timem, times, timef);
 }
 
+static const int speedThresholds[]
+	= { 3649, 13004, 46341, 165140, 588493, 2097152 };
+
+static void speedBar(WINDOW *w, int top, int left, qdsGame *game)
+{
+	int gravity;
+	if (qdsCall(game, QDS_GETGRAVITY, &gravity) < 0) gravity = 0;
+
+	const chtype barBg[] = { ACS_HLINE, ACS_HLINE, ACS_HLINE, ACS_HLINE,
+							 ACS_HLINE, ACS_HLINE, 0 };
+	mvwaddchstr(w, top, left, barBg);
+	wmove(w, top, left);
+	wattr_set(w, A_BOLD, 8, NULL);
+	for (int i = 0; i < 6 && speedThresholds[i] <= gravity; ++i) {
+		waddch(w, ACS_HLINE);
+	}
+	wattr_set(w, 0, 0, NULL);
+}
+
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
-	int score, time, lines, level;
+	int score, time, level, target;
 	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
 	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
-	if (qdsCall(game, QDS_GETLINES, &lines) < 0) lines = 0;
-	if (qdsCall(game, QDS_GETLEVEL, &level) < 0) level = 1;
-	stat(w, top + 13, left + 2, "LINES", "%8d", lines);
 	stat(w, top + 16, left + 2, "SCORE", "%8d", score);
 	statTime(w, top + 19, left + 2, "TIME", time);
-	stat(w, top + 19, left + 34, "LEVEL", "%8d", level);
+
+	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 0;
+	if (qdsCall(game, QDS_GETLEVELTARGET, &target) < 0) target = 0;
+	mvwprintw(w, top + 18, left + 34, "%5d", level);
+	speedBar(w, top + 19, left + 34, game);
+	if (target != 0) mvwprintw(w, top + 20, left + 34, "%5d", target);
 
 	next(w, top + 3, left + 34, game);
 	hold(w, top + 3, left + 2, game);

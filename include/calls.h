@@ -50,5 +50,6 @@
 #define QDS_GETLOCKTIME 17	  /* (int *) max time grounded before locking */
 #define QDS_GETRESETS 18	  /* (int *) max number of lock delay resets */
 #define QDS_CANHOLD 19		  /* (NULL) whether holding is possible */
+#define QDS_GETSUBLEVEL 20	  /* (int *) get current sub-level */
 
 #endif /* !QDS__CALLS_H */

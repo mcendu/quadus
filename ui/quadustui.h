@@ -29,6 +29,8 @@
 #include <setjmp.h>
 #include <ui.h>
 
+#define PAIR_ACCENT 8
+
 typedef struct uiData
 {
 	qdsLine displayPlayfield[22];

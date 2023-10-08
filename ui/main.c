@@ -92,6 +92,7 @@ int main(int argc, char **argv)
 	init_pair(5, COLOR_GREEN, COLOR_BLACK);
 	init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
 	init_pair(7, COLOR_RED, COLOR_BLACK);
+	init_pair(PAIR_ACCENT, COLOR_RED, COLOR_BLACK);
 
 	/* use console input; fallback to curses if not possible */
 	state.inputHandler = &linuxConsoleInput;

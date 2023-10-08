@@ -23,7 +23,8 @@
 #ifndef MODES_MARATHON_H
 #define MODES_MARATHON_H
 
-typedef struct modeData {
+typedef struct modeData
+{
 	int level;
 	int lines;
 } modeData;

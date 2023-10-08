@@ -102,6 +102,12 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 		case QDS_GETLEVEL:
 			*(int *)argp = data->level + 1;
 			return 0;
+		case QDS_GETSUBLEVEL:
+			*(int *)argp = data->lines;
+			return 0;
+		case QDS_GETLEVELTARGET:
+			*(int *)argp = (data->level + 1) * 10;
+			return 0;
 		case QDS_GETGRAVITY:
 			*(int *)argp = lvl->gravity;
 			return 0;
