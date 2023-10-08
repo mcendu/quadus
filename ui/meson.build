@@ -28,15 +28,20 @@ cfg.set('HAVE_RT_SIGNAL',
 cfg.set('HAVE_POSIX_TIMER',
     cc.has_header_symbol('time.h', 'timer_create',
         required: get_option('enable_tui')))
-cfg.set('HAVE_LINUX_CONSOLE', cc.has_header('linux/kd.h'))
+
+HAVE_LINUX_CONSOLE = cc.has_header('linux/kd.h')
+cfg.set('HAVE_LINUX_CONSOLE', HAVE_LINUX_CONSOLE)
 
 quadusui_src = [
     'game.c',
     'input/curses.c',
-    'input/linux.c',
     'main.c',
     'uidata.c',
 ]
+
+if HAVE_LINUX_CONSOLE
+    quadusui_src += 'input/linux.c'
+endif
 
 quadusui_bin = executable('quadus', quadusui_src,
     include_directories: [quaduscore_include, config_include],

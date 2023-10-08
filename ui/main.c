@@ -49,12 +49,12 @@ struct gameState
 	unsigned int input;
 };
 
-static inline void initInput(const struct inputHandler **handler, void **data) {
+static inline void initInput(const struct inputHandler **handler, void **data)
+{
 #ifdef HAVE_LINUX_CONSOLE
 	/* use console input; fallback to curses if not possible */
 	*handler = &linuxConsoleInput;
-	if (!(*data = linuxConsoleInput.init(0)))
-		*handler = &cursesInput;
+	if (!(*data = linuxConsoleInput.init(0))) *handler = &cursesInput;
 #else
 	*handlerVar = &cursesInput;
 #endif
