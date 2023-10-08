@@ -20,6 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <config.h>
+
 #include "input/input.h"
 #include "quadustui.h"
 #include <curses.h>
@@ -46,6 +48,17 @@ struct gameState
 	void *inputData;
 	unsigned int input;
 };
+
+static inline void initInput(const struct inputHandler **handler, void **data) {
+#ifdef HAVE_LINUX_CONSOLE
+	/* use console input; fallback to curses if not possible */
+	*handler = &linuxConsoleInput;
+	if (!(*data = linuxConsoleInput.init(0)))
+		*handler = &cursesInput;
+#else
+	*handlerVar = &cursesInput;
+#endif
+}
 
 int main(int argc, char **argv)
 {
@@ -94,10 +107,7 @@ int main(int argc, char **argv)
 	init_pair(7, COLOR_RED, COLOR_BLACK);
 	init_pair(PAIR_ACCENT, COLOR_RED, COLOR_BLACK);
 
-	/* use console input; fallback to curses if not possible */
-	state.inputHandler = &linuxConsoleInput;
-	if (!(state.inputData = linuxConsoleInput.init(0)))
-		state.inputHandler = &cursesInput;
+	initInput(&state.inputHandler, &state.inputData);
 	state.input = 0;
 
 	timer_settime(frameTimer, 0, &(const struct itimerspec){

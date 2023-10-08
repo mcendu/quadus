@@ -18,7 +18,17 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-curses_dep = dependency('curses')
+curses_dep = dependency('curses', required: get_option('enable_tui'))
+
+cfg.set('HAVE_UNISTD_H',
+    cc.has_header('unistd.h', required: get_option('enable_tui')))
+cfg.set('HAVE_RT_SIGNAL',
+    cc.has_header_symbol('signal.h', 'SIGRTMIN',
+        required: get_option('enable_tui')))
+cfg.set('HAVE_POSIX_TIMER',
+    cc.has_header_symbol('time.h', 'timer_create',
+        required: get_option('enable_tui')))
+cfg.set('HAVE_LINUX_CONSOLE', cc.has_header('linux/kd.h'))
 
 quadusui_src = [
     'game.c',
@@ -29,7 +39,7 @@ quadusui_src = [
 ]
 
 quadusui_bin = executable('quadus', quadusui_src,
-    include_directories: [quaduscore_include],
+    include_directories: [quaduscore_include, config_include],
     link_with: [quaduscore_lib],
     link_args: ['-lrt'],
     dependencies: [curses_dep],

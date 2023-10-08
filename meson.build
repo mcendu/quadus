@@ -30,6 +30,7 @@ project('quadus', 'c',
     ],
 )
 
+cfg = configuration_data()
 cc = meson.get_compiler('c')
 
 if cc.get_define('__GNUC__') != ''
@@ -57,8 +58,11 @@ if get_option('optimization') not in ['plain', '0', 'g']
     ], language: ['c'])
 endif
 
+config_include = include_directories('.')
 quaduscore_include = include_directories('include')
 
 subdir('lib')
 subdir('ui')
 subdir('tests')
+
+configure_file(input: 'config.h.in', output: 'config.h', configuration: cfg)

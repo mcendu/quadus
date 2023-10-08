@@ -21,3 +21,6 @@
 option('enable_tests',
     type: 'feature',
     description: 'Whether to build unit tests')
+option('enable_tui',
+    type: 'feature',
+    description: 'Whether to build text user interface')
