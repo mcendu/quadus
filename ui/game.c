@@ -145,7 +145,9 @@ static void queuedPiece(WINDOW *w,
 
 static void hold(WINDOW *w, int top, int left, qdsGame *game)
 {
-	queuedPiece(w, top, left, game, qdsGetHeldPiece(game), A_BOLD);
+	attr_t attrs = 0;
+	if (qdsCall(game, QDS_CANHOLD, NULL) > 0) attrs |= A_BOLD;
+	queuedPiece(w, top, left, game, qdsGetHeldPiece(game), attrs);
 }
 
 static void next(WINDOW *w, int top, int left, qdsGame *game)

@@ -166,10 +166,9 @@ QDS_API void *qdsGetUiData(const qdsGame *p)
 	return p->uiData;
 }
 
-QDS_API int qdsCall(qdsGame *p, unsigned long req, void *argp)
+QDS_API int qdsCall(qdsGame *restrict p, unsigned long req, void *restrict argp)
 {
 	assert((p != NULL));
-	assert((argp != NULL));
 
 	int result;
 

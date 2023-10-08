@@ -352,10 +352,7 @@ static void doHold(standardData *data, qdsGame *game, unsigned int input)
 {
 	if (!(input & QDS_INPUT_HOLD)) return;
 
-	bool infinihold;
-	if (data->held
-		&& (qdsCall(game, QDS_GETINFINIHOLD, &infinihold) < 0 || !infinihold))
-		return;
+	if (data->held && (qdsCall(game, QDS_GETINFINIHOLD, NULL) <= 0)) return;
 	qdsHold(game);
 	data->held = true;
 }
@@ -526,14 +523,15 @@ static int rulesetCall(qdsGame *game, unsigned long call, void *argp)
 			*(int *)argp = 7;
 			return 0;
 		case QDS_GETINFINIHOLD:
-			*(bool *)argp = false;
-			return 0;
+			return false;
 		case QDS_GETLOCKTIME:
 			*(int *)argp = 30;
 			return 0;
 		case QDS_GETRESETS:
 			*(int *)argp = 15;
 			return 0;
+		case QDS_CANHOLD:
+			return !data->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
 		default:
 			return -ENOTTY;
 	}
