@@ -32,7 +32,7 @@
 #include <ruleset.h>
 #include <ui.h>
 
-QDS_API const qdsLine *qdsGetPlayfield(const qdsGame *p)
+QDS_API qdsLine *qdsGetPlayfield(qdsGame *p)
 {
 	assert((p != NULL));
 	return p->playfield;

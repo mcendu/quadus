@@ -220,7 +220,7 @@ QDS_API void qdsSetUi(qdsGame *, const qdsUserInterface *ui, void *data);
 /**
  * Get the playfield.
  */
-QDS_API const qdsLine *qdsGetPlayfield(const qdsGame *);
+QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
 /**
  * Get a tile in the playfield. Effectively `qdsGetPlayfield(game)[y][x]`
  * with bounds checking.

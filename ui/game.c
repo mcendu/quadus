@@ -76,7 +76,7 @@ static void piece(WINDOW *w,
 	wattr_set(w, 0, 0, NULL);
 }
 
-static void playfield(WINDOW *w, int top, int left, const qdsGame *game)
+static void playfield(WINDOW *w, int top, int left, qdsGame *game)
 {
 	const int playfieldBaseY = 21;
 
