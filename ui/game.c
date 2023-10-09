@@ -195,7 +195,7 @@ static void speedBar(WINDOW *w, int top, int left, qdsGame *game)
 
 	int i;
 	wmove(w, top, left);
-	wattr_set(w, A_BOLD, 8, NULL);
+	wattr_set(w, 0, 8, NULL);
 	for (i = 0; i < 8 && speedThresholds[i] <= gravity; ++i)
 		waddch(w, ACS_HLINE);
 	wattr_set(w, 0, 0, NULL);
