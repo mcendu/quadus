@@ -42,14 +42,6 @@ jmp_buf cleanupJump;
 static void loop(int signo, siginfo_t *siginfo, void *p);
 static void cleanup(int signo);
 
-struct gameState
-{
-	qdsGame *game;
-	const struct inputHandler *inputHandler;
-	void *inputData;
-	unsigned int input;
-};
-
 static inline void initInput(const struct inputHandler **handler, void **data)
 {
 #ifdef HAVE_LINUX_CONSOLE
@@ -70,14 +62,15 @@ int main(int argc, char **argv)
 	sigemptyset(&vblankWaitSet);
 	sigaddset(&vblankWaitSet, SIGVBLANK);
 
-	struct gameState state;
-	uiData uiData;
-	initUiData(&uiData);
+	struct uiState state;
+	state.useDisplayPlayfield = false;
+	state.lines.lines = 0;
+
 	state.game = qdsNewGame();
 	if (!state.game) abort();
 	qdsSetRuleset(state.game, &qdsRulesetStandard);
 	qdsSetMode(state.game, &qdsModeMarathon);
-	qdsSetUi(state.game, &ui, &uiData);
+	qdsSetUi(state.game, &ui, &state);
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {
@@ -172,7 +165,7 @@ int main(int argc, char **argv)
 static void loop(int signo, siginfo_t *siginfo, void *p)
 {
 	alarm(5);
-	struct gameState *state = siginfo->si_value.sival_ptr;
+	struct uiState *state = siginfo->si_value.sival_ptr;
 	qdsGame *game = state->game;
 
 	state->inputHandler->read(&state->input, state->inputData);

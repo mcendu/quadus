@@ -92,7 +92,7 @@ static void playfield(WINDOW *w, int top, int left, qdsGame *game)
 
 	/* playfield proper */
 	const qdsLine *playfield;
-	uiData *data = qdsGetUiData(game);
+	uiState *data = qdsGetUiData(game);
 	if (data->useDisplayPlayfield)
 		playfield = data->displayPlayfield;
 	else

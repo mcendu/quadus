@@ -31,15 +31,19 @@
 
 #define PAIR_ACCENT 8
 
-typedef struct uiData
+typedef struct uiState
 {
+	qdsGame *game;
+	const struct inputHandler *inputHandler;
+	void *inputData;
+	unsigned int input;
+
 	qdsLine displayPlayfield[22];
 	bool useDisplayPlayfield;
-
 	struct qdsPendingLines lines;
-} uiData;
+} uiState;
 
-extern void initUiData(uiData *data);
+extern void initUiData(uiState *data);
 
 extern void gameView(WINDOW *w, int top, int left, qdsGame *game);
 

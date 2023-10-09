@@ -35,8 +35,8 @@ cfg.set('HAVE_LINUX_CONSOLE', HAVE_LINUX_CONSOLE)
 quadusui_src = [
     'game.c',
     'input/curses.c',
+    'interface.c',
     'main.c',
-    'uidata.c',
 ]
 
 if HAVE_LINUX_CONSOLE

@@ -27,7 +27,7 @@
 #include <string.h>
 #include <ui.h>
 
-void initUiData(uiData *data)
+void initUiData(uiState *data)
 {
 	data->useDisplayPlayfield = false;
 	data->lines.lines = 0;
@@ -35,20 +35,20 @@ void initUiData(uiData *data)
 
 static void onLineFilled(qdsGame *game, int y)
 {
-	uiData *data = qdsGetUiData(game);
+	uiState *data = qdsGetUiData(game);
 	qdsQueueLine(&data->lines, y);
 }
 
 static void removeLineFromDisplay(qdsGame *game, int y)
 {
 	if (y >= 22) return;
-	uiData *data = qdsGetUiData(game);
+	uiState *data = qdsGetUiData(game);
 	memset(data->displayPlayfield[y], 0, sizeof(qdsLine));
 }
 
 static bool postLock(qdsGame *game)
 {
-	uiData *data = qdsGetUiData(game);
+	uiState *data = qdsGetUiData(game);
 	if (data->lines.lines == 0) return true;
 
 	memcpy(data->displayPlayfield, qdsGetPlayfield(game), sizeof(qdsLine[22]));
@@ -59,7 +59,7 @@ static bool postLock(qdsGame *game)
 
 static bool onLineClear(qdsGame *game, int y)
 {
-	uiData *data = qdsGetUiData(game);
+	uiState *data = qdsGetUiData(game);
 	data->useDisplayPlayfield = false;
 	return true;
 }
