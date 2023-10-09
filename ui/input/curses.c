@@ -23,6 +23,7 @@
 #include "input.h"
 #include <curses.h>
 #include <quadus.h>
+#include <signal.h>
 
 static unsigned int readCursesInput(unsigned int *last, void *_)
 {
@@ -43,14 +44,23 @@ static unsigned int readCursesInput(unsigned int *last, void *_)
 				input |= QDS_INPUT_HARD_DROP;
 				break;
 			case 'z':
+			case 'Z':
 			case 'c':
+			case 'C':
 				input |= QDS_INPUT_ROTATE_CC;
 				break;
 			case 'x':
+			case 'X':
+			case KEY_UP:
 				input |= QDS_INPUT_ROTATE_C;
 				break;
 			case 'a':
+			case 'A':
 				input |= QDS_INPUT_HOLD;
+				break;
+			case 'q':
+			case 'Q':
+				raise(SIGINT);
 				break;
 		}
 	}

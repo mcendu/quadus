@@ -123,7 +123,7 @@ static unsigned int readInput(unsigned int *old, void *d)
 					break;
 				case KEY_ESC:
 				case KEY_Q:
-					kill(getpid(), SIGINT);
+					raise(SIGINT);
 					break;
 			}
 
