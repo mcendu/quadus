@@ -184,23 +184,22 @@ static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 	stat(w, top, left, name, "%.2d:%.2d:%.2d", timem, times, timef);
 }
 
+/* exponential curve from 1092 (~1/60G) to 1310720 (20G) */
 static const int speedThresholds[]
-	= { 3649, 13004, 46341, 165140, 588493, 2097152 };
+	= { 2649, 6428, 15594, 37833, 91786, 222684, 540255, 1310720 };
 
 static void speedBar(WINDOW *w, int top, int left, qdsGame *game)
 {
 	int gravity;
 	if (qdsCall(game, QDS_GETGRAVITY, &gravity) < 0) gravity = 0;
 
-	const chtype barBg[] = { ACS_HLINE, ACS_HLINE, ACS_HLINE, ACS_HLINE,
-							 ACS_HLINE, ACS_HLINE, 0 };
-	mvwaddchstr(w, top, left, barBg);
+	int i;
 	wmove(w, top, left);
 	wattr_set(w, A_BOLD, 8, NULL);
-	for (int i = 0; i < 6 && speedThresholds[i] <= gravity; ++i) {
+	for (i = 0; i < 8 && speedThresholds[i] <= gravity; ++i)
 		waddch(w, ACS_HLINE);
-	}
 	wattr_set(w, 0, 0, NULL);
+	for (; i < 8; ++i) waddch(w, ACS_HLINE);
 }
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
@@ -213,9 +212,9 @@ void gameView(WINDOW *w, int top, int left, qdsGame *game)
 
 	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 0;
 	if (qdsCall(game, QDS_GETLEVELTARGET, &target) < 0) target = 0;
-	mvwprintw(w, top + 18, left + 34, "%5d", level);
+	mvwprintw(w, top + 18, left + 34, "%6d", level);
 	speedBar(w, top + 19, left + 34, game);
-	if (target != 0) mvwprintw(w, top + 20, left + 34, "%5d", target);
+	if (target != 0) mvwprintw(w, top + 20, left + 34, "%6d", target);
 
 	next(w, top + 3, left + 34, game);
 	hold(w, top + 3, left + 2, game);
