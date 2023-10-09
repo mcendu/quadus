@@ -31,6 +31,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -128,6 +129,9 @@ int main(int argc, char **argv)
 			state.inputHandler->cleanup(state.inputData);
 		qdsDestroyGame(state.game);
 		timer_delete(frameTimer);
+
+		if (jmpval != SIGINT) fprintf(stderr, "%s\n", strsignal(jmpval));
+
 		exit(jmpval == SIGINT ? 0 : -jmpval);
 	}
 
@@ -167,6 +171,7 @@ int main(int argc, char **argv)
 
 static void loop(int signo, siginfo_t *siginfo, void *p)
 {
+	alarm(5);
 	struct gameState *state = siginfo->si_value.sival_ptr;
 	qdsGame *game = state->game;
 
