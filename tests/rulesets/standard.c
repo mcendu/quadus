@@ -462,6 +462,9 @@ static int modeParams20G(qdsGame *game, unsigned long req, void *argp)
 		case QDS_GETLOCKTIME:
 			*(int *)argp = 30;
 			return 0;
+		case QDS_GETRESETS:
+			*(int *)argp = 15;
+			return 0;
 	}
 	return -ENOTTY;
 }
@@ -469,7 +472,6 @@ static int modeParams20G(qdsGame *game, unsigned long req, void *argp)
 START_TEST(lockTimeReset)
 {
 	mode.call = modeParams20G;
-	qdsSetMode(game, &mode);
 
 	qdsRunCycle(game, 0);
 	ck_assert(qdsGrounded(game));
@@ -493,8 +495,44 @@ START_TEST(lockTimeReset)
 	ck_assert_int_eq(data->lockTimer, 29);
 	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
 	ck_assert_int_eq(data->lockTimer, 30);
+
+	int x = qdsGetActiveX(game);
+	for (int i = 29; i >= 1; --i) {
+		qdsRunCycle(game, 0);
+		ck_assert_int_eq(data->lockTimer, i);
+	}
+	qdsRunCycle(game, QDS_INPUT_LEFT);
+	ck_assert_int_eq(qdsGetActiveX(game), x - 1);
+	ck_assert_int_eq(data->lockTimer, 30);
+}
+END_TEST
+
+START_TEST(lockTimeResetLimit)
+{
+	mode.call = modeParams20G;
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), 4);
+	ck_assert(qdsGrounded(game));
+	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 15);
+
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->lockTimer, 29);
+
+	for (int i = 14; i >= 0; --i) {
+		qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+		ck_assert_int_eq(data->lockTimer, 30);
+		ck_assert_int_eq(data->resetsLeft, i);
+
+		qdsRunCycle(game, 0);
+		ck_assert_int_eq(data->lockTimer, 29);
+	}
+
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(data->lockTimer, 28);
+	ck_assert_int_eq(data->resetsLeft, 0);
 }
 END_TEST
 
@@ -520,6 +558,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lineClearB2b);
 	tcase_add_test(c, lineClearB2bBreak);
 	tcase_add_test(c, lockTimeReset);
+	tcase_add_test(c, lockTimeResetLimit);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 

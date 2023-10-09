@@ -140,7 +140,7 @@ static void doLock(standardData *data, qdsGame *game);
 /**
  * Reset lock timer.
  */
-static void resetLock(standardData *data, qdsGame *game, bool refresh);
+static bool resetLock(standardData *data, qdsGame *game, bool refresh);
 /**
  * Add to score a number of points multiplied by level.
  */
@@ -386,9 +386,9 @@ static void doGravity(standardData *restrict data,
 	}
 
 	if (qdsGrounded(game)) {
-		if (data->reset) {
+		if (data->reset && resetLock(data, game, false)) {
 			data->reset = false;
-			return resetLock(data, game, false);
+			return;
 		} else if (--data->lockTimer == 0)
 			return doLock(data, game);
 	} else {
@@ -457,7 +457,7 @@ static void doLock(standardData *restrict data, qdsGame *restrict game)
 	}
 }
 
-static void resetLock(standardData *restrict data,
+static bool resetLock(standardData *restrict data,
 					  qdsGame *restrict game,
 					  bool refresh)
 {
@@ -466,7 +466,7 @@ static void resetLock(standardData *restrict data,
 		if (qdsCall(game, QDS_GETRESETS, &resets) < 0) resets = 15;
 		data->resetsLeft = resets;
 	} else {
-		if (data->resetsLeft == 0) return;
+		if (data->resetsLeft == 0) return false;
 		data->resetsLeft -= 1;
 	}
 
@@ -474,6 +474,7 @@ static void resetLock(standardData *restrict data,
 	if (qdsCall(game, QDS_GETLOCKTIME, &lockTime) < 0)
 		lockTime = DEFAULT_LOCKTIME;
 	data->lockTimer = lockTime;
+	return true;
 }
 
 static int spawnX(qdsGame *game)
