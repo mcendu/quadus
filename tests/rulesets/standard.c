@@ -529,7 +529,6 @@ START_TEST(lockTimeResetLimit)
 		ck_assert_int_eq(data->lockTimer, 29);
 	}
 
-
 	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
 	ck_assert_int_eq(data->lockTimer, 28);
 	ck_assert_int_eq(data->resetsLeft, 0);

@@ -63,7 +63,9 @@ int main(int argc, char **argv)
 	sigaddset(&vblankWaitSet, SIGVBLANK);
 
 	struct uiState state;
+	state.time = 0;
 	state.useDisplayPlayfield = false;
+	state.topOut = false;
 	state.lines.lines = 0;
 
 	state.game = qdsNewGame();
@@ -173,6 +175,8 @@ static void loop(int signo, siginfo_t *siginfo, void *p)
 	wnoutrefresh(stdscr);
 	gameView(stdscr, 0, 0, game);
 	doupdate();
+
+	state->time++;
 }
 
 static void cleanup(int signo)

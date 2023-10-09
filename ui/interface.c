@@ -64,8 +64,16 @@ static bool onLineClear(qdsGame *game, int y)
 	return true;
 }
 
+static void onTopOut(qdsGame *game)
+{
+	uiState *data = qdsGetUiData(game);
+	data->topOut = true;
+	data->topOutTime = data->time;
+}
+
 qdsUserInterface ui = { .events = {
 							.onLineFilled = onLineFilled,
 							.postLock = postLock,
 							.onLineClear = onLineClear,
+							.onTopOut = onTopOut,
 						} };

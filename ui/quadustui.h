@@ -27,6 +27,7 @@
 #include <quadus.h>
 #include <ruleset/linequeue.h>
 #include <setjmp.h>
+#include <stdalign.h>
 #include <ui.h>
 
 #define PAIR_ACCENT 8
@@ -34,13 +35,18 @@
 typedef struct uiState
 {
 	qdsGame *game;
+
 	const struct inputHandler *inputHandler;
 	void *inputData;
 	unsigned int input;
+	unsigned int time;
 
 	qdsLine displayPlayfield[22];
-	bool useDisplayPlayfield;
+	bool useDisplayPlayfield : 1;
+	bool topOut : 1;
 	struct qdsPendingLines lines;
+
+	unsigned int topOutTime;
 } uiState;
 
 extern void initUiData(uiState *data);
