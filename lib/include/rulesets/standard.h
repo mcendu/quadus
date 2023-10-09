@@ -68,6 +68,7 @@ typedef struct standardData
 
 	bool held : 1;
 	bool b2b : 1;
+	bool reset : 1;
 
 	struct qdsInputState inputState;
 	struct qdsBag gen;

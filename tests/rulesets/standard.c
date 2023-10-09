@@ -21,13 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <check.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "mockgen.h"
 #include "mockruleset.h"
+#include <calls.h>
+#include <errno.h>
 #include <quadus.h>
 #include <ruleset.h>
-#include <ruleset/standard.h>
+#include <rulesets/standard.h>
 
 static qdsGame *game;
 static qdsGamemode mode;
@@ -449,6 +452,52 @@ START_TEST(lineClearB2bBreak)
 }
 END_TEST
 
+static int modeParams20G(qdsGame *game, unsigned long req, void *argp)
+{
+	switch (req) {
+		case QDS_GETGRAVITY:
+		case QDS_GETSDG:
+			*(int *)argp = 2097152;
+			return 0;
+		case QDS_GETLOCKTIME:
+			*(int *)argp = 30;
+			return 0;
+	}
+	return -ENOTTY;
+}
+
+START_TEST(lockTimeReset)
+{
+	mode.call = modeParams20G;
+	qdsSetMode(game, &mode);
+
+	qdsRunCycle(game, 0);
+	ck_assert(qdsGrounded(game));
+	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(qdsGetActivePieceType(game), 4);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+
+	qdsRunCycle(game, QDS_INPUT_LEFT);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+	qdsRunCycle(game, QDS_INPUT_RIGHT);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRulesetStandard");
@@ -458,18 +507,19 @@ Suite *createSuite(void)
 	tcase_add_test(c, base);
 	tcase_add_test(c, gravity);
 	tcase_add_test(c, doubleRotation);
-	tcase_add_test(c, lineClear);
-	tcase_add_test(c, lineClearTwist);
-	tcase_add_test(c, lineClearCombo);
-	tcase_add_test(c, lineClearComboBreak);
-	tcase_add_test(c, lineClearB2b);
-	tcase_add_test(c, lineClearB2bBreak);
 	tcase_add_test(c, irs);
 	tcase_add_test(c, irsChangeDirection);
 	tcase_add_test(c, irsDoubleDirection);
 	tcase_add_test(c, ihs);
 	tcase_add_test(c, ihsCancel);
 	tcase_add_test(c, irsihs);
+	tcase_add_test(c, lineClear);
+	tcase_add_test(c, lineClearTwist);
+	tcase_add_test(c, lineClearCombo);
+	tcase_add_test(c, lineClearComboBreak);
+	tcase_add_test(c, lineClearB2b);
+	tcase_add_test(c, lineClearB2bBreak);
+	tcase_add_test(c, lockTimeReset);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 

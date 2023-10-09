@@ -20,8 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "rulesets/standard.h"
 #include <quadus.h>
-#include <ruleset/standard.h>
 
 #include <calls.h>
 #include <piece.h>
@@ -166,6 +166,7 @@ static void *init(void)
 	data->twistCheckResult = 0;
 	data->held = false;
 	data->b2b = false;
+	data->reset = false;
 
 	data->inputState.lastInput = 0;
 	data->inputState.direction = 0;
@@ -295,10 +296,9 @@ static void doMovement(standardData *restrict data,
 					   unsigned int input)
 {
 	if (input & QDS_INPUT_LEFT) {
-		if (qdsMove(game, -1) && qdsGrounded(game))
-			resetLock(data, game, false);
+		if (qdsMove(game, -1) && qdsGrounded(game)) data->reset = true;
 	} else if (input & QDS_INPUT_RIGHT) {
-		if (qdsMove(game, 1) && qdsGrounded(game)) resetLock(data, game, false);
+		if (qdsMove(game, 1) && qdsGrounded(game)) data->reset = true;
 	} else {
 		return;
 	}
@@ -322,7 +322,7 @@ static void doRotate(standardData *restrict data,
 	int rotateResult = qdsRotate(game, rotation);
 	if (rotateResult == QDS_ROTATE_FAILED) return;
 
-	if (qdsGrounded(game)) resetLock(data, game, false);
+	if (qdsGrounded(game)) data->reset = true;
 	data->twistCheckResult = rotateResult;
 }
 
@@ -385,8 +385,12 @@ static void doGravity(standardData *restrict data,
 		return doLock(data, game);
 	}
 
-	if (qdsGrounded(game) && --data->lockTimer == 0) {
-		return doLock(data, game);
+	if (qdsGrounded(game)) {
+		if (data->reset) {
+			data->reset = false;
+			return resetLock(data, game, false);
+		} else if (--data->lockTimer == 0)
+			return doLock(data, game);
 	} else {
 		int gravity, dropType;
 		if (input & QDS_INPUT_SOFT_DROP) {
