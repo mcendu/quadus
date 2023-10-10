@@ -476,25 +476,30 @@ START_TEST(lockTimeReset)
 	qdsRunCycle(game, 0);
 	ck_assert(qdsGrounded(game));
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 15);
 	ck_assert_int_eq(qdsGetActivePieceType(game), 4);
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->lockTimer, 29);
 
 	qdsRunCycle(game, QDS_INPUT_LEFT);
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 14);
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->lockTimer, 29);
 	qdsRunCycle(game, QDS_INPUT_RIGHT);
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 13);
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->lockTimer, 29);
 
 	qdsRunCycle(game, QDS_INPUT_ROTATE_C);
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 12);
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(data->lockTimer, 29);
 	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 11);
 
 	int x = qdsGetActiveX(game);
 	for (int i = 29; i >= 1; --i) {
@@ -504,6 +509,7 @@ START_TEST(lockTimeReset)
 	qdsRunCycle(game, QDS_INPUT_LEFT);
 	ck_assert_int_eq(qdsGetActiveX(game), x - 1);
 	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 10);
 }
 END_TEST
 
