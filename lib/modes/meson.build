@@ -22,6 +22,7 @@ quaduscore_src_modes = [
     'invisible.c',
     'marathon.c',
     'sprint.c',
+    'master.c',
 ]
 
 foreach src : quaduscore_src_modes

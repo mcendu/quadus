@@ -310,6 +310,7 @@ QDS_API extern const qdsRuleset qdsRulesetStandard;
 QDS_API extern const qdsGamemode qdsModeInvisible;
 QDS_API extern const qdsGamemode qdsModeMarathon;
 QDS_API extern const qdsGamemode qdsModeSprint;
+QDS_API extern const qdsGamemode qdsModeMaster;
 
 #ifdef __cplusplus
 }
