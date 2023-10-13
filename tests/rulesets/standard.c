@@ -253,7 +253,7 @@ START_TEST(lineClear)
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(qdsGetActivePieceType(game), 0);
 	ck_assert_int_eq(getLinesCleared(game), 1);
-	ck_assert_int_eq(getScore(game), 100 + 20 * 2);
+	ck_assert_int_eq(getScore(game), 100 + 800 + 20 * 2);
 	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
 	ck_assert_int_eq(data->statusTime, 30);
 
@@ -336,7 +336,7 @@ START_TEST(lineClearCombo)
 	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
-	ck_assert_int_eq(getScore(game), 718 + 300 + 100 + 20 * 2);
+	ck_assert_int_eq(getScore(game), 718 + 300 + 100 + 1200 + 20 * 2);
 }
 END_TEST
 
@@ -373,7 +373,7 @@ START_TEST(lineClearComboBreak)
 	qdsRunCycle(game, QDS_INPUT_RIGHT);
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
-	ck_assert_int_eq(getScore(game), 758 + 300 + 0 + 20 * 2);
+	ck_assert_int_eq(getScore(game), 758 + 300 + 1200 + 0 + 20 * 2);
 }
 END_TEST
 
@@ -412,7 +412,7 @@ START_TEST(lineClearB2b)
 	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_C);
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
-	ck_assert_int_eq(getScore(game), 862 + 1200 + 18 * 2);
+	ck_assert_int_eq(getScore(game), 862 + 1200 + 3000 + 18 * 2);
 }
 END_TEST
 
@@ -448,7 +448,7 @@ START_TEST(lineClearB2bBreak)
 	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(data->status, STATUS_LINEDELAY);
-	ck_assert_int_eq(getScore(game), 1204 + 800 + 100 + 18 * 2);
+	ck_assert_int_eq(getScore(game), 1204 + 800 + 2000 + 100 + 18 * 2);
 }
 END_TEST
 

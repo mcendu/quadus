@@ -222,6 +222,10 @@ QDS_API void qdsSetUi(qdsGame *, const qdsUserInterface *ui, void *data);
  */
 QDS_API qdsLine *qdsGetPlayfield(qdsGame *);
 /**
+ * Get the height of the stack.
+ */
+QDS_API int qdsGetFieldHeight(const qdsGame *);
+/**
  * Get a tile in the playfield. Effectively `qdsGetPlayfield(game)[y][x]`
  * with bounds checking.
  */

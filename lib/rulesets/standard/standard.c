@@ -97,6 +97,8 @@ static const int dropScore[4][5] = {
 	[QDS_ROTATE_TWIST_MINI] = { 100, 200, 400, 600, 800 },
 };
 
+static const int perfectClearBonus[] = { 0, 800, 1200, 1800, 2000 };
+
 #define DEFAULT_LOCKTIME 30
 #define DEFAULT_GRAVITY (65536 / 60)
 
@@ -435,6 +437,10 @@ static void doLock(standardData *restrict data, qdsGame *restrict game)
 
 	unsigned int delay;
 	if (lines > 0) {
+		/* check for perfect clear */
+		if (qdsGetFieldHeight(game) == lines) {
+			points += perfectClearBonus[lines];
+		}
 		/* check for back-to-back */
 		bool b2b = lines >= 4 || data->twistCheckResult >= QDS_ROTATE_TWIST;
 		if (b2b && data->b2b) points += points / 2;

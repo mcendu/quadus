@@ -96,6 +96,12 @@ QDS_API int qdsGetHeldPiece(const qdsGame *p)
 	return p->hold;
 }
 
+QDS_API int qdsGetFieldHeight(const qdsGame *p)
+{
+	assert((p));
+	return p->height;
+}
+
 QDS_API int qdsGetGhostY(const qdsGame *p)
 {
 	assert((p != NULL));
