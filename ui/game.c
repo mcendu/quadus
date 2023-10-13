@@ -42,6 +42,7 @@ static void gameOverBanner(WINDOW *w, int top, int left)
 	mvwaddstr(w, top + 2, left + 1, "                    ");
 	mvwaddstr(w, top + 3, left + 1, "  Press Q to quit.  ");
 	mvwaddstr(w, top + 4, left + 1, "                    ");
+	wmove(w, top + 3, left + 19);
 }
 
 #define min(x, y) ((x) < (y) ? (x) : (y))
@@ -54,22 +55,12 @@ static void topOutAnimation(WINDOW *w, int top, int left, qdsGame *game)
 	const int playfieldBaseY = 21;
 	int animationTime = data->time - data->topOutTime;
 
-	for (unsigned y = 0; y < min(20, animationTime); ++y) {
-		wmove(w, top + playfieldBaseY - y, left + 1);
+	for (unsigned y = 0; y < min(22, animationTime); ++y) {
 		for (int x = 0; x < 10; ++x) {
-			const char *tile = playfield[y][x] ? tileFilled : tileEmpty;
-			waddstr(w, tile);
+			wmove(w, top + playfieldBaseY - y, left + 2 * x + 1);
+			if (playfield[y][x]) waddstr(w, tileFilled);
 		}
 	}
-	for (unsigned y = 20; y < min(22, animationTime); ++y) {
-		wmove(w, top + playfieldBaseY - y, left + 1);
-		for (int x = 0; x < 10; ++x) {
-			const char *tile = playfield[y][x] ? tileFilled : tileEmptyOverflow;
-			waddstr(w, tile);
-		}
-	}
-
-	if (animationTime > 22) return gameOverBanner(w, top + 8, left);
 }
 
 static void playfieldLine(WINDOW *w,
@@ -165,6 +156,9 @@ static void playfield(WINDOW *w, int top, int left, qdsGame *game)
 	y = top + playfieldBaseY - qdsGetActiveY(game);
 	piece(w, y, x, game, -1, -1, A_BOLD, tileFilled);
 	wmove(w, y, x);
+
+	if (data->topOut && data->time - data->topOutTime > 22)
+		return gameOverBanner(w, top + 8, left);
 }
 
 static void queuedPiece(WINDOW *w,
@@ -217,7 +211,7 @@ static void stat(WINDOW *w,
 
 static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 {
-	int timef = time % 60;
+	int timef = (time % 60) * 100 / 60;
 	int times = (time / 60) % 60;
 	int timem = time / (60 * 60);
 	stat(w, top, left, name, "%.2d:%.2d:%.2d", timem, times, timef);
