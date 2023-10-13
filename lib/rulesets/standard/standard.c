@@ -295,10 +295,12 @@ static void doMovement(standardData *restrict data,
 					   qdsGame *restrict game,
 					   unsigned int input)
 {
+	bool grounded = qdsGrounded(game);
+
 	if (input & QDS_INPUT_LEFT) {
-		if (qdsMove(game, -1) && qdsGrounded(game)) data->reset = true;
+		if (qdsMove(game, -1) && grounded) data->reset = true;
 	} else if (input & QDS_INPUT_RIGHT) {
-		if (qdsMove(game, 1) && qdsGrounded(game)) data->reset = true;
+		if (qdsMove(game, 1) && grounded) data->reset = true;
 	} else {
 		return;
 	}
@@ -319,10 +321,11 @@ static void doRotate(standardData *restrict data,
 		return;
 	}
 
+	bool grounded = qdsGrounded(game);
 	int rotateResult = qdsRotate(game, rotation);
 	if (rotateResult == QDS_ROTATE_FAILED) return;
 
-	if (qdsGrounded(game)) data->reset = true;
+	if (grounded) data->reset = true;
 	data->twistCheckResult = rotateResult;
 }
 
@@ -385,12 +388,14 @@ static void doGravity(standardData *restrict data,
 		return doLock(data, game);
 	}
 
+	bool reset = false;
+	if (data->reset) {
+		reset = resetLock(data, game, false);
+		data->reset = false;
+	}
+
 	if (qdsGrounded(game)) {
-		if (data->reset && resetLock(data, game, false)) {
-			data->reset = false;
-			return;
-		} else if (--data->lockTimer == 0)
-			return doLock(data, game);
+		if (!reset && --data->lockTimer == 0) return doLock(data, game);
 	} else {
 		int gravity, dropType;
 		if (input & QDS_INPUT_SOFT_DROP) {
@@ -509,6 +514,16 @@ static void onLineFilled(qdsGame *restrict game, int y)
 	data->lines += 1;
 }
 
+static int getSoftDropGravity(qdsGame *game, int *result)
+{
+	int sdf, g;
+	if (qdsCall(game, QDS_GETSDF, &sdf) < 0) return -ENOTTY;
+	if (qdsCall(game, QDS_GETGRAVITY, &g) < 0) g = DEFAULT_GRAVITY;
+
+	*result = g * sdf;
+	return 0;
+}
+
 static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 {
 	standardData *data = qdsGetRulesetData(game);
@@ -529,18 +544,11 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_GETGRAVITY:
 			*(int *)argp = DEFAULT_GRAVITY;
 			return 0;
-		case QDS_GETDAS:
-			*(int *)argp = QDS_DEFAULT_DAS;
-			return 0;
-		case QDS_GETARR:
-			*(int *)argp = QDS_DEFAULT_ARR;
-			return 0;
 		case QDS_GETDCD:
 			*(int *)argp = QDS_DEFAULT_DCD;
 			return 0;
 		case QDS_GETSDG:
-			*(int *)argp = 32768;
-			return 0;
+			return getSoftDropGravity(game, argp);
 		case QDS_GETARE:
 			*(unsigned int *)argp = 0;
 			return 0;

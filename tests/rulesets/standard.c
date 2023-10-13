@@ -513,6 +513,40 @@ START_TEST(lockTimeReset)
 }
 END_TEST
 
+START_TEST(lockTimeResetStep)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 0, 8, 8, 8, 8, 8, 8, 8, 0, 0 }, { 0, 0, 8, 8, 8, 8, 8, 0, 0, 0 },
+		{ 0, 0, 8, 8, 8, 8, 8, 0, 0, 0 }, { 0, 0, 0, 8, 8, 8, 0, 0, 0, 0 },
+		{ 0, 0, 0, 0, 8, 0, 0, 0, 0, 0 },
+	};
+
+	mode.call = modeParams20G;
+	qdsAddLines(game, playfield, 9);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	ck_assert_int_eq(qdsGetActiveX(game), 4);
+	ck_assert_int_eq(qdsGetActiveY(game), 9);
+	ck_assert(qdsGrounded(game));
+	ck_assert_int_eq(data->resetsLeft, 15);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->lockTimer, 29);
+	qdsRunCycle(game, QDS_INPUT_RIGHT);
+	ck_assert_int_eq(qdsGetActiveX(game), 5);
+	ck_assert_int_eq(qdsGetActiveY(game), 8);
+	ck_assert_int_eq(data->resetsLeft, 14);
+	ck_assert_int_eq(data->lockTimer, 30);
+	qdsRunCycle(game, 0);
+	qdsRunCycle(game, QDS_INPUT_RIGHT);
+	ck_assert_int_eq(data->lockTimer, 30);
+	ck_assert_int_eq(data->resetsLeft, 13);
+}
+END_TEST
+
 START_TEST(lockTimeResetLimit)
 {
 	mode.call = modeParams20G;
@@ -563,6 +597,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lineClearB2b);
 	tcase_add_test(c, lineClearB2bBreak);
 	tcase_add_test(c, lockTimeReset);
+	tcase_add_test(c, lockTimeResetStep);
 	tcase_add_test(c, lockTimeResetLimit);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
