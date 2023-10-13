@@ -115,7 +115,7 @@ typedef bool qdsMoveCallback(qdsGame *game, int offset);
  * Called on attempt to rotate the piece. Return false to cancel the
  * rotation.
  */
-typedef bool qdsRotateCallback(qdsGame *game, int rotation);
+typedef bool qdsRotateCallback(qdsGame *game, int rotation, int twist);
 /**
  * Called on attempt to make the piece fall down. Return false to
  * prevent this.

@@ -91,7 +91,8 @@ EVENT_HANDLER(
 	},
 	game,
 	qdsGame *game,
-	int rotation)
+	int rotation,
+	int twist)
 
 EVENT_HANDLER(
 	onDrop,

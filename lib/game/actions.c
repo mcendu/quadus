@@ -156,7 +156,7 @@ QDS_API int qdsRotate(qdsGame *p, int rotation)
 	int result = p->rs->canRotate(p, rotation, &x, &y);
 	if (result == QDS_ROTATE_FAILED) return QDS_ROTATE_FAILED;
 
-	EMIT_CANCELLABLE(p, onRotate, QDS_ROTATE_FAILED, p, rotation);
+	EMIT_CANCELLABLE(p, onRotate, QDS_ROTATE_FAILED, p, rotation, result);
 
 	p->x += x;
 	p->y += y;
