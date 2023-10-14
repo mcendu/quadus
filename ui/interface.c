@@ -47,16 +47,14 @@ static void removeLineFromDisplay(qdsGame *game, int y)
 	memset(data->displayPlayfield[y], 0, sizeof(qdsLine));
 }
 
-static bool postLock(qdsGame *game)
+static void postLock(qdsGame *game)
 {
 	uiState *data = qdsGetUiData(game);
-	if (data->lines.lines == 0) return true;
+	if (data->lines.lines == 0) return;
 
 	memcpy(data->displayPlayfield, qdsGetPlayfield(game), sizeof(qdsLine[22]));
 	qdsForeachPendingLine(game, &data->lines, removeLineFromDisplay);
 	data->useDisplayPlayfield = true;
-
-	return true;
 }
 
 static bool onLineClear(qdsGame *game, int y)

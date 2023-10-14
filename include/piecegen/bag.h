@@ -20,18 +20,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/**
- * Various piece generators.
- */
-#ifndef QDS__RULESET_PIECEGEN_H
-#define QDS__RULESET_PIECEGEN_H
+#ifndef QDS__PIECEGEN_BAG_H
+#define QDS__PIECEGEN_BAG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "../quadus.h"
-#include "rand.h"
+#include "../ruleset/rand.h"
 
 /**
  * State for the standard "7-bag" piece generator.
@@ -45,23 +42,12 @@ struct qdsBag
 
 #define QDS_BAG_DEPTH 7
 
-/**
- * Initialize a standard piece generator.
- */
 QDS_API void qdsBagInit(struct qdsBag *q, unsigned seed);
-
-/**
- * Peek into a standard piece generator.
- */
 QDS_API int qdsBagPeek(const struct qdsBag *q, int pos);
-
-/**
- * Draw a piece from a standard piece generator.
- */
 QDS_API int qdsBagDraw(struct qdsBag *q);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__RULESET_PIECEGEN_H */
+#endif /* !QDS__PIECEGEN_BAG_H */

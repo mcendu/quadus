@@ -23,9 +23,9 @@
 #ifndef QDS__RULESET_STANDARD_H
 #define QDS__RULESET_STANDARD_H
 
+#include <piecegen/bag.h>
 #include <ruleset/input.h>
 #include <ruleset/linequeue.h>
-#include <ruleset/piecegen.h>
 #include <stdbool.h>
 
 typedef struct standardData
@@ -65,7 +65,7 @@ typedef struct standardData
 	 * The result of the last twist check or 0.
 	 */
 	unsigned int twistCheckResult;
-	unsigned int lastLineClear;
+	unsigned int clearType;
 
 	bool held : 1;
 	bool b2b : 1;

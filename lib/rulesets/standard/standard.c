@@ -25,10 +25,10 @@
 
 #include <calls.h>
 #include <piece.h>
+#include <piecegen/bag.h>
 #include <ruleset.h>
 #include <ruleset/input.h>
 #include <ruleset/linequeue.h>
-#include <ruleset/piecegen.h>
 #include <ruleset/rand.h>
 #include <ruleset/twist.h>
 
@@ -166,7 +166,7 @@ static void *init(void)
 	data->lockTimer = 30;
 	data->resetsLeft = 15;
 	data->twistCheckResult = 0;
-	data->lastLineClear = 0;
+	data->clearType = 0;
 	data->held = false;
 	data->b2b = false;
 	data->reset = false;
@@ -443,11 +443,11 @@ static void scoreLineClear(standardData *restrict data,
 	addLevelMultipliedScore(data, game, score);
 }
 
-static bool addLockScore(qdsGame *restrict game)
+static void addLockScore(qdsGame *restrict game)
 {
 	standardData *restrict data = qdsGetRulesetData(game);
 
-	unsigned int clearType = data->lastLineClear;
+	unsigned int clearType = data->clearType;
 
 	int lines = data->pendingLines.lines;
 	clearType |= lines;
@@ -466,7 +466,7 @@ static bool addLockScore(qdsGame *restrict game)
 		data->b2b = b2b;
 
 		/* add line clear score */
-		data->lastLineClear = clearType;
+		data->clearType = clearType;
 		scoreLineClear(data, game, clearType);
 
 		/* add combo bonus */
@@ -479,14 +479,13 @@ static bool addLockScore(qdsGame *restrict game)
 		scoreLineClear(data, game, clearType);
 	}
 
-	data->lastLineClear = clearType;
-	return true;
+	data->clearType = clearType;
 }
 
 static void doLock(standardData *restrict data, qdsGame *restrict game)
 {
 	/* save active piece data for QDS_GETCLEARTYPE use */
-	data->lastLineClear = qdsGetActivePieceType(game) << 16;
+	data->clearType = qdsGetActivePieceType(game) << 16;
 
 	/* the rest is normal lock course */
 	if (!qdsLock(game)) return;
@@ -622,7 +621,7 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_CANHOLD:
 			return !data->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
 		case QDS_GETCLEARTYPE:
-			*(int *)argp = data->lastLineClear;
+			*(int *)argp = data->clearType;
 			return 0;
 		default:
 			return -ENOTTY;

@@ -22,8 +22,8 @@
  */
 #include <check.h>
 #include <piece.h>
+#include <piecegen/bag.h>
 #include <quadus.h>
-#include <ruleset/piecegen.h>
 
 #define I QDS_PIECE_I
 #define J QDS_PIECE_J

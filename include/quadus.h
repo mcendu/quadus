@@ -127,6 +127,10 @@ typedef bool qdsDropCallback(qdsGame *game, int type, int distance);
  */
 typedef bool qdsLockCallback(qdsGame *game);
 /**
+ * Called after piece lockdown.
+ */
+typedef void qdsPostLockCallback(qdsGame *game);
+/**
  * Called on attempt to hold the piece. Return false to cancel the hold.
  */
 typedef bool qdsHoldCallback(qdsGame *game, int piece);
@@ -164,7 +168,7 @@ typedef struct qdsEventTable
 	qdsLineFilledCallback *onLineFilled;
 	qdsLineClearCallback *onLineClear;
 	qdsTopOutCallback *onTopOut;
-	qdsLockCallback *postLock;
+	qdsPostLockCallback *postLock;
 } qdsEventTable;
 
 /**
