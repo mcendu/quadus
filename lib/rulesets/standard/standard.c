@@ -75,7 +75,7 @@ static const qdsCoords (*kicksI[2])[8] = {
 	kicksICounterClockwise,
 };
 
-static const struct
+static const struct pieceData
 {
 	const qdsPiecedef *shape;
 	const qdsCoords (**kicks)[8];
@@ -97,7 +97,7 @@ static const int dropScore[4][5] = {
 	[QDS_ROTATE_TWIST_MINI] = { 100, 200, 400, 600, 800 },
 };
 
-static const int perfectClearBonus[] = { 0, 800, 1200, 1800, 2000 };
+static const int allClearBonus[] = { 0, 800, 1200, 1800, 2000 };
 
 #define DEFAULT_LOCKTIME 30
 #define DEFAULT_GRAVITY (65536 / 60)
@@ -166,6 +166,7 @@ static void *init(void)
 	data->lockTimer = 30;
 	data->resetsLeft = 15;
 	data->twistCheckResult = 0;
+	data->lastLineClear = 0;
 	data->held = false;
 	data->b2b = false;
 	data->reset = false;
@@ -427,37 +428,65 @@ static bool onDrop(qdsGame *restrict game, int type, int distance)
 	return true;
 }
 
+static void scoreLineClear(standardData *restrict data,
+						   qdsGame *restrict game,
+						   unsigned int clearType)
+{
+	int lines = clearType & QDS_LINECLEAR_MAX;
+	int twist = clearType >> 8 & 3;
+
+	if (lines > 4) lines = 4;
+
+	int score = dropScore[twist][lines];
+	if (clearType & QDS_LINECLEAR_ALLCLEAR) score += allClearBonus[lines];
+	if (clearType & QDS_LINECLEAR_B2B) score += score / 2;
+	addLevelMultipliedScore(data, game, score);
+}
+
 static void doLock(standardData *restrict data, qdsGame *restrict game)
 {
+	unsigned int clearType = qdsGetActivePieceType(game) << 16;
+
 	if (!qdsLock(game)) return;
 	qdsInterruptRepeat(game, &data->inputState);
-	int lines = data->pendingLines.lines > 4 ? 4 : data->pendingLines.lines;
 
-	int points = dropScore[data->twistCheckResult][lines];
+	int lines = data->pendingLines.lines;
+	clearType |= lines;
+
+	if (data->twistCheckResult >= QDS_ROTATE_TWIST)
+		clearType |= data->twistCheckResult << 8;
 
 	unsigned int delay;
 	if (lines > 0) {
 		/* check for perfect clear */
-		if (qdsGetFieldHeight(game) == lines) {
-			points += perfectClearBonus[lines];
-		}
+		if (qdsGetFieldHeight(game) == lines)
+			clearType |= QDS_LINECLEAR_ALLCLEAR;
+
 		/* check for back-to-back */
 		bool b2b = lines >= 4 || data->twistCheckResult >= QDS_ROTATE_TWIST;
-		if (b2b && data->b2b) points += points / 2;
+		if (b2b && data->b2b) clearType |= QDS_LINECLEAR_B2B;
 		data->b2b = b2b;
-		addLevelMultipliedScore(data, game, points);
+
+		/* add line clear score */
+		data->lastLineClear = clearType;
+		scoreLineClear(data, game, clearType);
+
 		/* add combo bonus */
 		addLevelMultipliedScore(data, game, 50 * data->combo++);
+
 		/* go to line delay */
-		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0) delay = 30;
-		if (delay == 0) return clearLines(data, game, 0);
+		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0 || delay == 0)
+			return clearLines(data, game, 0);
 		data->status = STATUS_LINEDELAY;
 		data->statusTime = delay;
 	} else {
-		/* add spin score */
-		addLevelMultipliedScore(data, game, points);
 		/* break combo */
 		data->combo = 0;
+
+		/* add twist bonus */
+		data->lastLineClear = clearType;
+		scoreLineClear(data, game, clearType);
+
 		/* go to lock delay */
 		if (qdsCall(game, QDS_GETARE, &delay) < 0 || delay == 0) {
 			return spawnPiece(data, game, data->delayInput);
@@ -547,6 +576,9 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_GETSCORE:
 			*(unsigned int *)argp = data->score;
 			return 0;
+		case QDS_GETCOMBO:
+			*(unsigned int *)argp = data->combo;
+			return 0;
 		case QDS_GETGRAVITY:
 			*(int *)argp = DEFAULT_GRAVITY;
 			return 0;
@@ -574,6 +606,9 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 			return 0;
 		case QDS_CANHOLD:
 			return !data->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
+		case QDS_GETCLEARTYPE:
+			*(int *)argp = data->lastLineClear;
+			return 0;
 		default:
 			return -ENOTTY;
 	}

@@ -36,10 +36,6 @@ typedef struct standardData
 	unsigned int combo;
 
 	/**
-	 * Subtile vertical position of the active mino.
-	 */
-	unsigned int subY;
-	/**
 	 * Status of the game.
 	 */
 	unsigned short status;
@@ -49,10 +45,9 @@ typedef struct standardData
 	short statusTime;
 
 	/**
-	 * Input entered during delay.
+	 * Subtile vertical position of the active mino.
 	 */
-	unsigned int delayInput;
-
+	unsigned int subY;
 	/**
 	 * Number of game ticks left until lock.
 	 */
@@ -62,9 +57,15 @@ typedef struct standardData
 	 */
 	unsigned short resetsLeft;
 	/**
+	 * Input entered during delay.
+	 */
+	unsigned int delayInput;
+
+	/**
 	 * The result of the last twist check or 0.
 	 */
 	unsigned int twistCheckResult;
+	unsigned int lastLineClear;
 
 	bool held : 1;
 	bool b2b : 1;

@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "calls.h"
 #include "quadustui.h"
 #include <quadus.h>
 #include <ruleset/linequeue.h>
@@ -54,6 +55,7 @@ static bool postLock(qdsGame *game)
 	memcpy(data->displayPlayfield, qdsGetPlayfield(game), sizeof(qdsLine[22]));
 	qdsForeachPendingLine(game, &data->lines, removeLineFromDisplay);
 	data->useDisplayPlayfield = true;
+
 	return true;
 }
 

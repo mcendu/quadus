@@ -35,6 +35,45 @@ static const char tileEmpty[] = ". ";
 static const char tileGhost[] = "::";
 static const char tileEmptyOverflow[] = "  ";
 
+static const char *clearTypes[] = {
+	"",			"SINGLE",	"DOUBLE",	"TRIPLE",  "QUADUS",  "QUINTO",
+	"SEXTUS",	"SEPTIMUS", "OCTAVUS",	"NONUS",   "DECIMUS", "UNDECIM",
+	"DUODECIM", "TRODECIM", "QUADECIM", "QUINDES", "SEDECIM", "SEPTADES",
+	"OCTODES",	"NOVDECIM", "ULTIMUS",	"SUPER",   "HYPER",	  "DEITUS",
+};
+
+static const char *pieceNames[] = { "", "I", "J", "L", "O", "S", "T", "Z" };
+
+static void clearTicker(WINDOW *w,
+						int top,
+						int left,
+						unsigned clearType,
+						int combo)
+{
+	int lines = clearType & QDS_LINECLEAR_MAX;
+	if (lines >= 24) lines = 24;
+	const char *clearName = clearTypes[lines];
+
+	for (int i = 0; i < 7; ++i) mvwaddstr(w, top + i, left, "        ");
+
+	if (combo > 1) {
+		mvwprintw(w, top, left, "%8d", combo);
+		mvwaddstr(w, top + 1, left + 3, "COMBO");
+	}
+
+	int row = top + 3;
+
+	if (clearType & QDS_LINECLEAR_B2B) mvwaddstr(w, row++, left, "B2B");
+	if (clearType & QDS_LINECLEAR_MINI) mvwaddstr(w, row++, left, "mini");
+	if (clearType & QDS_LINECLEAR_TWIST) {
+		wmove(w, row++, left);
+		wprintw(w, "%s-SPIN", pieceNames[QDS_LINECLEAR_PIECE(clearType)]);
+	}
+	if (lines >= 4 || clearType & QDS_LINECLEAR_TWIST) {
+		mvwaddstr(w, row++, left, clearName);
+	}
+}
+
 static void gameOverBanner(WINDOW *w, int top, int left)
 {
 	mvwaddstr(w, top + 0, left + 1, "                    ");
@@ -240,19 +279,24 @@ static void speedBar(WINDOW *w, int top, int left, qdsGame *game)
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
-	int score, time, level, target;
+	int score, time, level, target, combo;
+	unsigned int clearType;
 	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
 	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
+	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 0;
+	if (qdsCall(game, QDS_GETLEVELTARGET, &target) < 0) target = 0;
+	if (qdsCall(game, QDS_GETCLEARTYPE, &clearType) < 0) clearType = 0;
+	if (qdsCall(game, QDS_GETCOMBO, &combo) < 0) combo = 0;
+
+	hold(w, top + 3, left + 2, game);
+	clearTicker(w, top + 6, left + 2, clearType, combo);
 	stat(w, top + 16, left + 2, "SCORE", "%8d", score);
 	statTime(w, top + 19, left + 2, "TIME", time);
 
-	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 0;
-	if (qdsCall(game, QDS_GETLEVELTARGET, &target) < 0) target = 0;
+	next(w, top + 3, left + 34, game);
 	mvwprintw(w, top + 18, left + 34, "%6d", level);
 	speedBar(w, top + 19, left + 34, game);
 	if (target != 0) mvwprintw(w, top + 20, left + 34, "%6d", target);
 
-	next(w, top + 3, left + 34, game);
-	hold(w, top + 3, left + 2, game);
 	playfield(w, top, left + 11, game);
 }

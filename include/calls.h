@@ -23,6 +23,8 @@
 #ifndef QDS__CALLS_H
 #define QDS__CALLS_H
 
+#include <stdbool.h>
+
 /* metadata */
 #define QDS_GETRULESETNAME 0 /* (const char **) get name of ruleset */
 #define QDS_GETMODENAME 1	 /* (const char **) get name of gamemode */
@@ -51,5 +53,28 @@
 #define QDS_GETRESETS 18	  /* (int *) max number of lock delay resets */
 #define QDS_CANHOLD 19		  /* (NULL) whether holding is possible */
 #define QDS_GETSUBLEVEL 20	  /* (int *) get current sub-level */
+#define QDS_GETCLEARTYPE 21	  /* (unsigned int *) get type of last line clear */
+#define QDS_GETCOMBO 22		  /* (int *) get combo */
+
+/* line clear type format */
+#define QDS_LINECLEAR_SINGLE 1
+#define QDS_LINECLEAR_DOUBLE 2
+#define QDS_LINECLEAR_TRIPLE 3
+#define QDS_LINECLEAR_QUADUS 4
+#define QDS_LINECLEAR_MAX 0xff
+
+#define QDS_LINECLEAR_MINI 0x100
+#define QDS_LINECLEAR_TWIST 0x200
+#define QDS_LINECLEAR_B2B 0x400
+#define QDS_LINECLEAR_ALLCLEAR 0x800
+
+#define QDS_LINECLEAR_PIECE(x) (((x) >> 16) & 0xff)
+#define QDS_LINECLEAR_I (1 << 16)
+#define QDS_LINECLEAR_J (2 << 16)
+#define QDS_LINECLEAR_L (3 << 16)
+#define QDS_LINECLEAR_O (4 << 16)
+#define QDS_LINECLEAR_S (5 << 16)
+#define QDS_LINECLEAR_T (6 << 16)
+#define QDS_LINECLEAR_Z (7 << 16)
 
 #endif /* !QDS__CALLS_H */

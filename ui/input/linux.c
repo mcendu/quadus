@@ -25,7 +25,6 @@
 
 #include <fcntl.h>
 #include <limits.h>
-#include <linux/input-event-codes.h>
 #include <linux/kd.h>
 #include <quadus.h>
 #include <setjmp.h>
@@ -36,6 +35,8 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
+
+#include <linux/input-event-codes.h>
 
 struct linuxInputData
 {
@@ -124,6 +125,8 @@ static unsigned int readInput(unsigned int *old, void *d)
 				case KEY_ESC:
 				case KEY_Q:
 					raise(SIGINT);
+					break;
+				default:
 					break;
 			}
 
