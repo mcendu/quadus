@@ -443,12 +443,11 @@ static void scoreLineClear(standardData *restrict data,
 	addLevelMultipliedScore(data, game, score);
 }
 
-static void doLock(standardData *restrict data, qdsGame *restrict game)
+static bool addLockScore(qdsGame *restrict game)
 {
-	unsigned int clearType = qdsGetActivePieceType(game) << 16;
+	standardData *restrict data = qdsGetRulesetData(game);
 
-	if (!qdsLock(game)) return;
-	qdsInterruptRepeat(game, &data->inputState);
+	unsigned int clearType = data->lastLineClear;
 
 	int lines = data->pendingLines.lines;
 	clearType |= lines;
@@ -456,7 +455,6 @@ static void doLock(standardData *restrict data, qdsGame *restrict game)
 	if (data->twistCheckResult >= QDS_ROTATE_TWIST)
 		clearType |= data->twistCheckResult << 8;
 
-	unsigned int delay;
 	if (lines > 0) {
 		/* check for perfect clear */
 		if (qdsGetFieldHeight(game) == lines)
@@ -473,20 +471,37 @@ static void doLock(standardData *restrict data, qdsGame *restrict game)
 
 		/* add combo bonus */
 		addLevelMultipliedScore(data, game, 50 * data->combo++);
+	} else {
+		/* break combo */
+		data->combo = 0;
 
+		/* add twist bonus */
+		scoreLineClear(data, game, clearType);
+	}
+
+	data->lastLineClear = clearType;
+	return true;
+}
+
+static void doLock(standardData *restrict data, qdsGame *restrict game)
+{
+	/* save active piece data for QDS_GETCLEARTYPE use */
+	data->lastLineClear = qdsGetActivePieceType(game) << 16;
+
+	/* the rest is normal lock course */
+	if (!qdsLock(game)) return;
+	qdsInterruptRepeat(game, &data->inputState);
+
+	int lines = data->pendingLines.lines;
+	unsigned int delay;
+
+	if (lines > 0) {
 		/* go to line delay */
 		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0 || delay == 0)
 			return clearLines(data, game, 0);
 		data->status = STATUS_LINEDELAY;
 		data->statusTime = delay;
 	} else {
-		/* break combo */
-		data->combo = 0;
-
-		/* add twist bonus */
-		data->lastLineClear = clearType;
-		scoreLineClear(data, game, clearType);
-
 		/* go to lock delay */
 		if (qdsCall(game, QDS_GETARE, &delay) < 0 || delay == 0) {
 			return spawnPiece(data, game, data->delayInput);
@@ -629,6 +644,7 @@ QDS_API const qdsRuleset qdsRulesetStandard = {
 		.onDrop = onDrop,
 		.onLineFilled = onLineFilled,
 		.onTopOut = onTopOut,
+		.postLock = addLockScore,
 	},
 	.call = rulesetCall,
 };
