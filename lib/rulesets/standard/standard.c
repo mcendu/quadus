@@ -299,15 +299,19 @@ static void doMovement(standardData *restrict data,
 					   unsigned int input)
 {
 	bool grounded = qdsGrounded(game);
+	int direction;
 
 	if (input & QDS_INPUT_LEFT) {
-		if (qdsMove(game, -1) && grounded) data->reset = true;
+		direction = -1;
 	} else if (input & QDS_INPUT_RIGHT) {
-		if (qdsMove(game, 1) && grounded) data->reset = true;
+		direction = 1;
 	} else {
 		return;
 	}
 
+	if (!qdsMove(game, direction)) return;
+
+	if (grounded) data->reset = true;
 	data->twistCheckResult = 0;
 }
 

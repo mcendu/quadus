@@ -299,6 +299,9 @@ START_TEST(lineClearTwist)
 	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_FLIP);
 	ck_assert_int_eq(data->twistCheckResult, QDS_ROTATE_TWIST);
 
+	qdsRunCycle(game, QDS_INPUT_RIGHT);
+	ck_assert_int_eq(data->twistCheckResult, QDS_ROTATE_TWIST);
+
 	int score = getScore(game);
 	qdsRunCycle(game, QDS_INPUT_HARD_DROP);
 	ck_assert_int_eq(getLinesCleared(game), 2);
