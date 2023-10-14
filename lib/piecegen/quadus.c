@@ -20,16 +20,48 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef MODES_MARATHON_H
-#define MODES_MARATHON_H
-
 #include <piecegen/quadus.h>
+#include <quadus.h>
+#include <ruleset/rand.h>
 
-typedef struct modeData
+#define INITIAL_WEIGHT 7
+
+static qdsTile draw(struct qdsQuadusGen *q)
 {
-	struct qdsQuadusGen rng;
-	int level;
-	int lines;
-} modeData;
+	int n = qdsRand(&q->rand) % 7 * INITIAL_WEIGHT;
 
-#endif /* !MODES_MARATHON_H */
+	/* find piece to deal */
+	int p;
+	for (p = 0; n >= 0 && p < 7; ++p) n -= q->weights[p];
+	--p; /* fencepost */
+
+	/* reweight */
+	q->weights[p] -= 7;
+	for (int i = 0; i < 7; ++i) {
+		q->weights[i] += 1;
+	}
+
+	return p + 1;
+}
+
+QDS_API void qdsQuadusGenInit(struct qdsQuadusGen *q, unsigned seed)
+{
+	qdsSrand(seed, &q->rand);
+	for (int i = 0; i < 7; ++i) q->weights[i] = INITIAL_WEIGHT;
+	q->head = 0;
+
+	for (int i = 0; i < sizeof(q->queue); ++i) q->queue[i] = draw(q);
+}
+
+QDS_API int qdsQuadusGenPeek(const struct qdsQuadusGen *q, int pos)
+{
+	return q->queue[(q->head + pos) % 8];
+}
+
+QDS_API int qdsQuadusGenDraw(struct qdsQuadusGen *q)
+{
+	int piece = q->queue[q->head];
+	q->queue[q->head] = draw(q);
+	q->head = (q->head + 1) % 8;
+	return piece;
+}

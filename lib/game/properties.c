@@ -87,6 +87,9 @@ QDS_API const qdsCoords *qdsGetShape(const qdsGame *p, int type, int o)
 QDS_API int qdsGetNextPiece(const qdsGame *p, int pos)
 {
 	assert((p != NULL));
+	assert((p->rs));
+	if (p->mode && p->mode->getPiece)
+		return p->mode->getPiece(p->modeData, pos);
 	return p->rs->getPiece(p->rsData, pos);
 }
 

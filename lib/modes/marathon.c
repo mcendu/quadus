@@ -21,12 +21,14 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "modes/marathon.h"
+#include "piecegen/quadus.h"
 #include <calls.h>
 #include <mode.h>
 #include <quadus.h>
 
 #include <errno.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct levelData
 {
@@ -83,7 +85,19 @@ static void *init(void)
 	modeData *data = malloc(sizeof(modeData));
 	if (!data) return NULL;
 	data->level = 0;
+	data->lines = 0;
+	qdsQuadusGenInit(&data->rng, time(NULL));
 	return data;
+}
+
+static int peek(const void *data, int pos)
+{
+	return qdsQuadusGenPeek(&((const modeData *)data)->rng, pos);
+}
+
+static int draw(void *data)
+{
+	return qdsQuadusGenDraw(&((modeData *)data)->rng);
 }
 
 static void onLineFilled(qdsGame *game, int y)
@@ -127,6 +141,9 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 		case QDS_GETDCD:
 			*(int *)argp = lvl->das;
 			return 0;
+		case QDS_GETNEXTCOUNT:
+			*(int *)argp = 8;
+			return 0;
 	}
 	return -ENOTTY;
 }
@@ -134,6 +151,8 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 QDS_API const qdsGamemode qdsModeMarathon = {
 	.init = init,
 	.destroy = free,
+	.getPiece = peek,
+	.shiftPiece = draw,
 	.events = { .onLineFilled = onLineFilled },
 	.call = modeCall,
 };

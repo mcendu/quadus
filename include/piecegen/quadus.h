@@ -20,16 +20,24 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef MODES_MARATHON_H
-#define MODES_MARATHON_H
+#ifndef QDS__PIECEGEN_QUADUS_H
+#define QDS__PIECEGEN_QUADUS_H
 
-#include <piecegen/quadus.h>
+#include "../quadus.h"
+#include "../ruleset/rand.h"
 
-typedef struct modeData
+struct qdsQuadusGen
 {
-	struct qdsQuadusGen rng;
-	int level;
-	int lines;
-} modeData;
+	qdsRandState rand;
+	signed char weights[7];
+	unsigned char head;
+	qdsTile queue[8];
+};
 
-#endif /* !MODES_MARATHON_H */
+#define QDS_QUADUS_GEN_QUEUE_SIZE 8
+
+QDS_API void qdsQuadusGenInit(struct qdsQuadusGen *q, unsigned seed);
+QDS_API int qdsQuadusGenPeek(const struct qdsQuadusGen *q, int pos);
+QDS_API int qdsQuadusGenDraw(struct qdsQuadusGen *q);
+
+#endif /* !QDS__PIECEGEN_QUADUS_H */

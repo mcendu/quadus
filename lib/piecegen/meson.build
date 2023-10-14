@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src_piecegen = [
     'bag.c',
+    'quadus.c',
 ]
 
 foreach src : quaduscore_src_piecegen
