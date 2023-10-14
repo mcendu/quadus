@@ -214,10 +214,13 @@ static void statTime(WINDOW *w, int top, int left, const char *name, int time)
 	int timef = (time % 60) * 100 / 60;
 	int times = (time / 60) % 60;
 	int timem = time / (60 * 60);
-	stat(w, top, left, name, "%.2d:%.2d:%.2d", timem, times, timef);
+	stat(w, top, left, name, "%02d:%02d.%02d", timem, times, timef);
 }
 
-/* exponential curve from 1092 (~1/60G) to 1310720 (20G) */
+/*
+ * Exponential curve from 1092 (~1/60 tiles/cycle) to 1310720 (20 tiles/cycle)
+ * f(x) = 1092e^{x(\ln(1310720) - \ln(1092))}
+ */
 static const int speedThresholds[]
 	= { 2649, 6428, 15594, 37833, 91786, 222684, 540255, 1310720 };
 
