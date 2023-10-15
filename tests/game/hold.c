@@ -85,20 +85,6 @@ START_TEST(base)
 }
 END_TEST
 
-START_TEST(topout)
-{
-	qdsSpawn(game, QDS_PIECE_I);
-	ck_assert_int_eq(rsData->topOutCount, 0);
-	ck_assert_int_eq(modeData->topOutCount, 0);
-
-	game->playfield[20][4] = QDS_PIECE_I;
-	ck_assert_int_eq(qdsHold(game), QDS_HOLD_TOPOUT);
-
-	ck_assert_int_ne(rsData->topOutCount, 0);
-	ck_assert_int_ne(modeData->topOutCount, 0);
-}
-END_TEST
-
 START_TEST(cancel)
 {
 	qdsSpawn(game, QDS_PIECE_I);
@@ -121,7 +107,6 @@ TCase *caseHold(void)
 	TCase *c = tcase_create("caseHold");
 	tcase_add_checked_fixture(c, setup, teardown);
 	tcase_add_test(c, base);
-	tcase_add_test(c, topout);
 	tcase_add_test(c, cancel);
 	return c;
 }

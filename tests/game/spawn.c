@@ -109,19 +109,6 @@ START_TEST(cancel)
 }
 END_TEST
 
-START_TEST(topout)
-{
-	ck_assert_int_eq(rsData->topOutCount, 0);
-	ck_assert_int_eq(modeData->topOutCount, 0);
-
-	game->playfield[20][4] = QDS_PIECE_I;
-	ck_assert(!qdsSpawn(game, QDS_PIECE_O));
-
-	ck_assert_int_ne(rsData->topOutCount, 0);
-	ck_assert_int_ne(modeData->topOutCount, 0);
-}
-END_TEST
-
 void setupWithNoHandler(void)
 {
 	qdsInitGame(game);
@@ -136,10 +123,6 @@ START_TEST(noHandler)
 {
 	/* normally triggers spawn handler */
 	ck_assert(qdsSpawn(game, QDS_PIECE_I));
-
-	/* normally triggers topout handler */
-	game->playfield[20][4] = QDS_PIECE_I;
-	ck_assert(!qdsSpawn(game, QDS_PIECE_O));
 }
 END_TEST
 
@@ -150,7 +133,6 @@ TCase *caseSpawn(void)
 	tcase_add_test(c, spawnSet);
 	tcase_add_test(c, spawnNext);
 	tcase_add_test(c, cancel);
-	tcase_add_test(c, topout);
 	return c;
 }
 

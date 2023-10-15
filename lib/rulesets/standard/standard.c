@@ -267,6 +267,9 @@ static void spawnPiece(standardData *restrict data,
 
 	doHold(data, game, input);
 	doRotate(data, game, input);
+
+	if (qdsOverlaps(game)) qdsEndGame(game);
+
 	doGravity(data, game, input & QDS_INPUT_SOFT_DROP);
 }
 

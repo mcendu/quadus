@@ -222,6 +222,11 @@ QDS_API const qdsUserInterface *qdsGetUi(const qdsGame *);
 QDS_API void qdsSetUi(qdsGame *, const qdsUserInterface *ui, void *data);
 
 /**
+ * End the game.
+ */
+QDS_API void qdsEndGame(qdsGame *);
+
+/**
  * Get the playfield.
  */
 QDS_API qdsLine *qdsGetPlayfield(qdsGame *);

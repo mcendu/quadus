@@ -156,6 +156,60 @@ START_TEST(irs)
 }
 END_TEST
 
+START_TEST(irsTopoutEscape)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 8, 8, 8, 8, 0 }, { 8, 8, 8, 0, 0, 8, 8, 8, 8, 0 },
+	};
+	const int seq[] = { QDS_PIECE_L };
+	qdsAddLines(game, playfield, 22);
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_CC);
+	ck_assert_int_eq(data->status, STATUS_ACTIVE);
+	ck_assert(!qdsOverlaps(game));
+}
+END_TEST
+
+START_TEST(irsTopoutEscapeO)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 0, 0, 0, 0, 0 },
+	};
+	const int seq[] = { QDS_PIECE_O };
+	qdsAddLines(game, playfield, 22);
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+
+	qdsRunCycle(game, QDS_INPUT_ROTATE_CC);
+	ck_assert_int_eq(qdsGetActiveOrientation(game), QDS_ORIENTATION_CC);
+	ck_assert_int_eq(data->status, STATUS_ACTIVE);
+	ck_assert(!qdsOverlaps(game));
+}
+END_TEST
+
 START_TEST(irsChangeDirection)
 {
 	ck_assert_int_eq(data->status, STATUS_PREGAME);
@@ -207,6 +261,32 @@ START_TEST(ihsCancel)
 	qdsRunCycle(game, 0);
 	ck_assert_int_eq(qdsGetActivePieceType(game), 4);
 	ck_assert_int_eq(qdsGetHeldPiece(game), 0);
+}
+END_TEST
+
+START_TEST(ihsTopoutEscape)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 0, 0, 0, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 0 },
+	};
+	const int seq[] = { QDS_PIECE_O, QDS_PIECE_L };
+	qdsAddLines(game, playfield, 22);
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+
+	qdsRunCycle(game, QDS_INPUT_HOLD);
+	ck_assert_int_eq(data->status, STATUS_ACTIVE);
+	ck_assert(!qdsOverlaps(game));
 }
 END_TEST
 
@@ -578,6 +658,31 @@ START_TEST(lockTimeResetLimit)
 }
 END_TEST
 
+START_TEST(topOut)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 0, 0, 0, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 0, 8, 8, 8, 0 },
+	};
+	const int seq[] = { QDS_PIECE_O, QDS_PIECE_L };
+	qdsAddLines(game, playfield, 22);
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(data->status, STATUS_GAMEOVER);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRulesetStandard");
@@ -588,10 +693,13 @@ Suite *createSuite(void)
 	tcase_add_test(c, gravity);
 	tcase_add_test(c, doubleRotation);
 	tcase_add_test(c, irs);
+	tcase_add_test(c, irsTopoutEscape);
+	tcase_add_test(c, irsTopoutEscapeO);
 	tcase_add_test(c, irsChangeDirection);
 	tcase_add_test(c, irsDoubleDirection);
 	tcase_add_test(c, ihs);
 	tcase_add_test(c, ihsCancel);
+	tcase_add_test(c, ihsTopoutEscape);
 	tcase_add_test(c, irsihs);
 	tcase_add_test(c, lineClear);
 	tcase_add_test(c, lineClearTwist);
@@ -602,6 +710,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lockTimeReset);
 	tcase_add_test(c, lockTimeResetStep);
 	tcase_add_test(c, lockTimeResetLimit);
+	tcase_add_test(c, topOut);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 

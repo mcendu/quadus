@@ -98,10 +98,7 @@ QDS_API bool qdsSpawn(qdsGame *p, int type)
 	p->x = p->rs->spawnX(p);
 	p->y = p->rs->spawnY(p);
 
-	bool overlaps = qdsOverlaps(p);
-	if (overlaps) EMIT(p, onTopOut, p);
-
-	return !overlaps;
+	return true;
 }
 
 QDS_API bool qdsTeleport(qdsGame *p, int x, int y)
@@ -264,4 +261,9 @@ QDS_API bool qdsCanRotate(const qdsGame *p, int x, int y, int rotation)
 	}
 
 	return true;
+}
+
+QDS_API void qdsEndGame(qdsGame *p)
+{
+	EMIT(p, onTopOut, p);
 }

@@ -31,6 +31,7 @@
 
 static qdsGame *game = &(qdsGame){};
 static mockRulesetData *rsData;
+static mockRulesetData *modeData;
 
 static void setup(void)
 {
@@ -39,6 +40,7 @@ static void setup(void)
 	qdsSetMode(game, mockGamemode);
 
 	rsData = game->rsData;
+	modeData = game->modeData;
 }
 
 static void teardown(void)
@@ -139,6 +141,16 @@ START_TEST(getData)
 }
 END_TEST
 
+START_TEST(endGame)
+{
+	ck_assert_int_eq(rsData->topOutCount, 0);
+	ck_assert_int_eq(modeData->topOutCount, 0);
+	qdsEndGame(game);
+	ck_assert_int_eq(rsData->topOutCount, 1);
+	ck_assert_int_eq(modeData->topOutCount, 1);
+}
+END_TEST
+
 TCase *caseProperties(void)
 {
 	TCase *c = tcase_create("caseProperties");
@@ -152,5 +164,6 @@ TCase *caseProperties(void)
 	tcase_add_test(c, getNextPiece);
 	tcase_add_test(c, getHeldPiece);
 	tcase_add_test(c, getData);
+	tcase_add_test(c, endGame);
 	return c;
 }
