@@ -30,9 +30,9 @@ extern "C" {
 #include "../calls.h"
 #include "../quadus.h"
 
-#define QDS_DEFAULT_DAS 12
+#define QDS_DEFAULT_DAS 10
 #define QDS_DEFAULT_ARR 2
-#define QDS_DEFAULT_DCD 9
+#define QDS_DEFAULT_DCD 6
 
 typedef struct qdsInputState qdsInputState;
 
