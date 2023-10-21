@@ -81,6 +81,9 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 		case QDS_GETLEVELTARGET:
 			*(int *)argp = 40;
 			return 0;
+		case QDS_GETLINEDELAY:
+			*(int *)argp = 0;
+			return 0;
 	}
 
 	return -ENOTTY;
