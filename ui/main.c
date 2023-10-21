@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	state.game = qdsNewGame();
 	if (!state.game) abort();
 	qdsSetRuleset(state.game, &qdsRulesetStandard);
-	qdsSetMode(state.game, &qdsModeMarathon);
+	qdsSetMode(state.game, &qdsModeSprint);
 	qdsSetUi(state.game, &ui, &state);
 
 	timer_t frameTimer;

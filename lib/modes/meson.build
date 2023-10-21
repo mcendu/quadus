@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src_modes = [
     'marathon.c',
+    'sprint.c',
 ]
 
 foreach src : quaduscore_src_modes
