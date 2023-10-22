@@ -82,6 +82,7 @@ QDS_API void qdsRunCycle(qdsGame *p, unsigned int input)
 	assert((p->rs != NULL));
 	/* the ruleset has full control of how a game cycle should be */
 	p->rs->doGameCycle(p, input);
+	EMIT(p, onCycle, p);
 }
 
 QDS_API bool qdsSpawn(qdsGame *p, int type)

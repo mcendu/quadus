@@ -58,6 +58,15 @@ static void *init(void)
 }
 
 EVENT_HANDLER(
+	onCycle,
+	void,
+	{
+		data->cycleEventCount++;
+	},
+	game,
+	qdsGame *game)
+
+EVENT_HANDLER(
 	onSpawn,
 	bool,
 	{
@@ -213,6 +222,7 @@ const qdsRuleset *mockRuleset = &(const qdsRuleset){
 	.init = init,
 	.destroy = free,
 	.events = {
+		.onCycle = onCycleRs,
 		.onSpawn = onSpawnRs,
 		.onMove = onMoveRs,
 		.onRotate = onRotateRs,
@@ -248,6 +258,7 @@ const qdsGamemode *mockGamemode = &(const qdsGamemode){
 	.init = init,
 	.destroy = free,
 	.events = {
+		.onCycle = onCycleMode,
 		.onSpawn = onSpawnMode,
 		.onMove = onMoveMode,
 		.onRotate = onRotateMode,

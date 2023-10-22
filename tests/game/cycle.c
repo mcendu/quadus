@@ -21,38 +21,50 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <check.h>
+#include <quadus.h>
 
-extern TCase *caseAddLines(void);
-extern TCase *caseClear(void);
-extern TCase *caseCycle(void);
-extern TCase *caseDrop(void);
-extern TCase *caseHold(void);
-extern TCase *caseInit(void);
-extern TCase *caseLock(void);
-extern TCase *caseMove(void);
-extern TCase *caseOverlap(void);
-extern TCase *caseProperties(void);
-extern TCase *caseRotate(void);
-extern TCase *caseRotateWithKick(void);
-extern TCase *caseSpawn(void);
-extern TCase *caseSpawnNoHandler(void);
+#include "game.h"
+#include "mockruleset.h"
 
-Suite *createSuite(void)
+static qdsGame game;
+static mockRulesetData *rsData;
+static mockRulesetData *modeData;
+
+static void setup(void)
 {
-	Suite *s = suite_create("qdsGame");
-	suite_add_tcase(s, caseAddLines());
-	suite_add_tcase(s, caseClear());
-	suite_add_tcase(s, caseCycle());
-	suite_add_tcase(s, caseDrop());
-	suite_add_tcase(s, caseHold());
-	suite_add_tcase(s, caseInit());
-	suite_add_tcase(s, caseLock());
-	suite_add_tcase(s, caseMove());
-	suite_add_tcase(s, caseOverlap());
-	suite_add_tcase(s, caseProperties());
-	suite_add_tcase(s, caseRotate());
-	suite_add_tcase(s, caseRotateWithKick());
-	suite_add_tcase(s, caseSpawn());
-	suite_add_tcase(s, caseSpawnNoHandler());
-	return s;
+	qdsInitGame(&game);
+	qdsSetRuleset(&game, mockRuleset);
+	qdsSetMode(&game, mockGamemode);
+	rsData = game.rsData;
+	modeData = game.modeData;
+}
+
+static void teardown(void)
+{
+	qdsCleanupGame(&game);
+}
+
+START_TEST(cycle)
+{
+	ck_assert_int_eq(rsData->cycleCount, 0);
+	qdsRunCycle(&game, 0);
+	ck_assert_int_eq(rsData->cycleCount, 1);
+	ck_assert_int_eq(rsData->cycleEventCount, 1);
+	ck_assert_int_eq(modeData->cycleEventCount, 1);
+	ck_assert_int_eq(rsData->lastInput, 0);
+
+	qdsRunCycle(&game, QDS_INPUT_LEFT | QDS_INPUT_ROTATE_C);
+	ck_assert_int_eq(rsData->cycleCount, 2);
+	ck_assert_int_eq(rsData->cycleEventCount, 2);
+	ck_assert_int_eq(modeData->cycleEventCount, 2);
+	ck_assert_int_eq(rsData->lastInput, QDS_INPUT_LEFT | QDS_INPUT_ROTATE_C);
+}
+END_TEST
+
+TCase *caseCycle(void)
+{
+	TCase *c = tcase_create("qdsRunCycle");
+	tcase_add_checked_fixture(c, setup, teardown);
+	tcase_add_test(c, cycle);
+	return c;
 }

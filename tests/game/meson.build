@@ -21,6 +21,7 @@
 tests_playfield_src = [
     'addlines.c',
     'clear.c',
+    'cycle.c',
     'drop.c',
     'hold.c',
     'init.c',

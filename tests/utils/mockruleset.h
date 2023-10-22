@@ -58,6 +58,7 @@ extern const qdsGamemode *noHandlerGamemode;
  */
 typedef struct mockRulesetData
 {
+	int cycleEventCount;
 	int spawnCount;
 	int moveCount;
 	int rotateCount;

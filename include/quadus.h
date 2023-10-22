@@ -103,6 +103,14 @@ typedef struct
 } qdsCoords;
 
 /**
+ * Called every game cycle.
+ *
+ * Rulesets make no use of this hook; use the ruleset-specific run
+ * cycle hook instead. This is intended for game modes needing to
+ * maintain their own clocks.
+ */
+typedef void qdsCycleCallback(qdsGame *game);
+/**
  * Called on attempt to spawn a piece. Return false to cancel the
  * piece spawn.
  */
@@ -159,6 +167,7 @@ typedef int qdsCustomCall(qdsGame *, unsigned long req, void *argp);
 
 typedef struct qdsEventTable
 {
+	qdsCycleCallback *onCycle;
 	qdsSpawnCallback *onSpawn;
 	qdsMoveCallback *onMove;
 	qdsRotateCallback *onRotate;
