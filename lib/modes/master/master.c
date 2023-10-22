@@ -20,6 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "master.h"
+
 #include <calls.h>
 #include <errno.h>
 #include <limits.h>
@@ -27,20 +29,6 @@
 #include <quadus.h>
 #include <ruleset/linequeue.h>
 #include <stdlib.h>
-
-struct modeData
-{
-	short level;
-	short section;
-	short speedIndex;
-	short timingIndex;
-	unsigned char areType;
-	bool held;
-	int lines;
-};
-
-#define ARE_TYPE_NORMAL 0
-#define ARE_TYPE_LINE 1
 
 static const struct speedData
 {
@@ -75,6 +63,14 @@ static const struct timingData
 
 static const short sectionThresholds[]
 	= { 100, 200, 300, 400, 500, 600, 700, 800, 900, 999, SHRT_MAX };
+static const short sectionCoolThresholds[]
+	= { 70, 170, 270, 370, 470, 570, 670, 770, 870, 970, SHRT_MAX };
+
+static const int baseSectionCoolTime[] = {
+	TIME(0, 50), TIME(0, 50), TIME(0, 47), TIME(0, 43),
+	TIME(0, 43), TIME(0, 40), TIME(0, 40), TIME(0, 36),
+	TIME(0, 36), 0,			  0,
+};
 
 static const int levelAdvance[] = { 0, 1, 2, 4, 6 };
 
@@ -83,29 +79,70 @@ static void *init(void)
 	struct modeData *data = malloc(sizeof(struct modeData));
 	if (!data) return NULL;
 
+	data->phase = PHASE_MAIN;
 	data->level = 0;
 	data->section = 0;
+	data->cools = 0;
+	data->sectionTime = 0;
+	data->lastCoolTime = baseSectionCoolTime[0];
 	data->areType = ARE_TYPE_NORMAL;
 	data->held = false;
+	data->cool = false;
 	data->speedIndex = 0;
 	data->timingIndex = 0;
 	data->lines = 0;
 	return data;
 }
 
+static void cycle(qdsGame *game)
+{
+	struct modeData *data = qdsGetModeData(game);
+
+	if (data->phase == PHASE_MAIN) {
+		data->time += 1;
+		data->sectionTime += 1;
+	}
+}
+
+static int effectiveLevel(struct modeData *data)
+{
+	return data->level + data->cools * 100;
+}
+
 static int addLevel(struct modeData *data, int level, bool nextSection)
 {
-	if (data->level + level > 999)
+	if (data->level + level > 999) {
 		data->level = 999;
-	else if (!nextSection
-			 && data->level + level >= sectionThresholds[data->section])
-		data->level = sectionThresholds[data->section] - 1;
-	else
-		data->level += level;
+	} else if (data->level + level >= sectionThresholds[data->section]) {
+		if (!nextSection)
+			data->level = sectionThresholds[data->section] - 1;
+		else {
+			data->level += level;
+			data->sectionTime = 0;
 
-	while (data->level >= speedData[data->speedIndex + 1].level)
+			/* apply section cool */
+			if (data->cool) ++data->cools;
+			data->cool = false;
+		};
+	} else {
+		data->level += level;
+	}
+
+	/* section cool check */
+	if (data->level < sectionCoolThresholds[data->section]
+		&& data->level + level >= sectionCoolThresholds[data->section]) {
+		if (data->sectionTime <= data->lastCoolTime + TIME(0, 2)) {
+			data->cool = true;
+			data->lastCoolTime = data->sectionTime;
+		} else {
+			data->cool = false;
+			data->lastCoolTime = baseSectionCoolTime[data->section + 1];
+		}
+	}
+
+	while (effectiveLevel(data) >= speedData[data->speedIndex + 1].level)
 		data->speedIndex += 1;
-	while (data->level >= timingData[data->timingIndex + 1].level)
+	while (effectiveLevel(data) >= timingData[data->timingIndex + 1].level)
 		data->timingIndex += 1;
 	while (data->level >= sectionThresholds[data->section]) data->section += 1;
 
@@ -152,6 +189,12 @@ static bool onLineClear(qdsGame *game, int y)
 	return true;
 }
 
+static void onTopOut(qdsGame *game)
+{
+	struct modeData *data = qdsGetModeData(game);
+	data->phase = PHASE_GAME_OVER;
+}
+
 static int call(qdsGame *game, unsigned long req, void *argp)
 {
 	struct modeData *data = qdsGetModeData(game);
@@ -160,6 +203,9 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 	switch (req) {
 		case QDS_GETMODENAME:
 			*(const char **)argp = "Master";
+			return 0;
+		case QDS_GETTIME:
+			*(int *)argp = data->time;
 			return 0;
 		case QDS_GETLEVEL:
 			*(int *)argp = data->section + 1;
@@ -211,11 +257,13 @@ const qdsGamemode qdsModeMaster = {
 	.init = init,
 	.destroy = free,
 	.events = {
+		.onCycle = cycle,
 		.onSpawn = onSpawn,
 		.onHold = onHold,
 		.onLineFilled = onLineFilled,
 		.postLock = postLock,
 		.onLineClear = onLineClear,
+		.onTopOut = onTopOut,
 	},
 	.call = call,
 };
