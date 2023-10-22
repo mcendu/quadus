@@ -307,6 +307,7 @@ QDS_API extern const qdsRuleset qdsRulesetStandard;
  * Built-in gamemodes.
  */
 
+QDS_API extern const qdsGamemode qdsModeInvisible;
 QDS_API extern const qdsGamemode qdsModeMarathon;
 QDS_API extern const qdsGamemode qdsModeSprint;
 

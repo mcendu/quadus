@@ -25,7 +25,7 @@
 #include <curses.h>
 #include <piece.h>
 #include <quadus.h>
-#include <stdarg.h>
+#include <stdint.h>
 
 #include "quadustui.h"
 #include "ui.h"
@@ -102,21 +102,22 @@ static void topOutAnimation(WINDOW *w, int top, int left, qdsGame *game)
 	}
 }
 
-static void playfieldLine(WINDOW *w,
-						  const qdsTile *line,
-						  int row,
-						  int left,
-						  chtype boundary,
-						  const char *tileFilled,
-						  const char *tileEmpty)
+inline static void playfieldLine(WINDOW *w,
+								 const qdsTile *line,
+								 uint_fast16_t visibility,
+								 chtype boundary,
+								 const char *tileFilled,
+								 const char *tileEmpty)
 {
-	wmove(w, row, left);
 	wattr_set(w, 0, 0, NULL);
 	waddch(w, boundary);
 	for (int x = 0; x < 10; ++x) {
-		const char *tile = line[x] ? tileFilled : tileEmpty;
-		wattr_set(w, 0, line[x] % 8, NULL);
-		waddstr(w, tile);
+		int tile = line[x];
+		if (!(visibility & (1 << x))) tile = 0;
+
+		const char *presented = tile ? tileFilled : tileEmpty;
+		wattr_set(w, 0, tile % 8, NULL);
+		waddstr(w, presented);
 	}
 	wattr_set(w, 0, 0, NULL);
 	waddch(w, boundary);
@@ -166,22 +167,22 @@ static void playfield(WINDOW *w, int top, int left, qdsGame *game)
 		playfield = qdsGetPlayfield(game);
 
 	for (int y = 0; y < 20; ++y) {
-		playfieldLine(w,
-					  playfield[y],
-					  top + playfieldBaseY - y,
-					  left,
-					  ACS_VLINE,
-					  tileFilled,
-					  tileEmpty);
+		/* same pointer for both input and output: input is y, output is
+		 * visibility */
+		uint_fast16_t visibility = y;
+		if (qdsCall(game, QDS_GETVISIBILITY, &visibility) < 0)
+			visibility = 0x03ff; /* all visible except walls */
+		wmove(w, top + playfieldBaseY - y, left);
+		playfieldLine(
+			w, playfield[y], visibility, ACS_VLINE, tileFilled, tileEmpty);
 	}
 	for (int y = 20; y < 22; ++y) {
-		playfieldLine(w,
-					  playfield[y],
-					  top + playfieldBaseY - y,
-					  left,
-					  ' ',
-					  tileFilled,
-					  tileEmptyOverflow);
+		uint_fast16_t visibility = y;
+		if (qdsCall(game, QDS_GETVISIBILITY, &visibility) < 0)
+			visibility = 0x03ff;
+		wmove(w, top + playfieldBaseY - y, left);
+		playfieldLine(
+			w, playfield[y], visibility, ' ', tileFilled, tileEmptyOverflow);
 	}
 
 	if (data->topOut) topOutAnimation(w, top, left, game);

@@ -27,6 +27,7 @@
 #include <quadus.h>
 
 #include <errno.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -114,7 +115,7 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 	const struct levelData *lvl = &speedCurve[data->level];
 	switch (call) {
 		case QDS_GETMODENAME:
-			*(const char **)argp = "Marathon";
+			*(const char **)argp = "Invisible";
 			return 0;
 		case QDS_GETLEVEL:
 			*(int *)argp = data->level + 1;
@@ -147,11 +148,14 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 		case QDS_GETNEXTCOUNT:
 			*(int *)argp = 8;
 			return 0;
+		case QDS_GETVISIBILITY:
+			*(uint_fast16_t *)argp = 0;
+			return 0;
 	}
 	return -ENOTTY;
 }
 
-QDS_API const qdsGamemode qdsModeMarathon = {
+QDS_API const qdsGamemode qdsModeInvisible = {
 	.init = init,
 	.destroy = free,
 	.getPiece = peek,

@@ -55,6 +55,7 @@
 #define QDS_GETSUBLEVEL 20	  /* (int *) get current sub-level */
 #define QDS_GETCLEARTYPE 21	  /* (unsigned int *) get type of last line clear */
 #define QDS_GETCOMBO 22		  /* (int *) get combo */
+#define QDS_GETVISIBILITY 23  /* (uint_fast16_t *) get visibility of a line */
 
 /* line clear type format */
 #define QDS_LINECLEAR_SINGLE 1
