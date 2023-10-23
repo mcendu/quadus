@@ -264,6 +264,12 @@ QDS_API bool qdsCanRotate(const qdsGame *p, int x, int y, int rotation)
 	return true;
 }
 
+QDS_API void qdsClearPlayfield(qdsGame *p)
+{
+	memset(p->playfield, 0, sizeof(p->playfield));
+	p->height = 0;
+}
+
 QDS_API void qdsEndGame(qdsGame *p)
 {
 	EMIT(p, onTopOut, p);

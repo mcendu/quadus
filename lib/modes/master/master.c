@@ -30,49 +30,12 @@
 #include <ruleset/linequeue.h>
 #include <stdlib.h>
 
-static const struct speedData
-{
-	int level;
-	int gravity;
-} speedData[] = {
-	{ 0, 1024 },	 { 30, 1536 },	   { 35, 2048 },		 { 40, 2560 },
-	{ 50, 3072 },	 { 60, 4096 },	   { 70, 8192 },		 { 80, 12288 },
-	{ 90, 16384 },	 { 100, 20480 },   { 120, 24576 },		 { 140, 28672 },
-	{ 160, 32768 },	 { 170, 36864 },   { 200, 1024 },		 { 220, 8192 },
-	{ 230, 16384 },	 { 233, 24576 },   { 236, 32768 },		 { 239, 40960 },
-	{ 243, 49152 },	 { 247, 57344 },   { 251, 65536 },		 { 300, 131072 },
-	{ 330, 196608 }, { 360, 262144 },  { 400, 327680 },		 { 420, 262144 },
-	{ 450, 196608 }, { 500, 2097152 }, { INT_MAX, INT_MAX },
+const struct phase *SHARED(phases)[] = {
+	&SHARED(phaseMain),
+	&SHARED(phaseCreditsFading),
+	&SHARED(phaseCreditsInvisible),
+	&SHARED(phaseGameOver),
 };
-
-static const struct timingData
-{
-	short level;
-	short das;
-	short lock;
-	short lineClear;
-	short are;
-	short lineAre;
-} timingData[] = {
-	{ 0, 16, 30, 40, 27, 27 },	 { 500, 10, 30, 25, 27, 27 },
-	{ 600, 10, 30, 16, 27, 18 }, { 700, 10, 30, 12, 18, 14 },
-	{ 800, 10, 30, 6, 14, 8 },	 { 900, 8, 17, 6, 14, 8 },
-	{ 1000, 8, 17, 6, 8, 8 },	 { 1100, 8, 15, 6, 7, 7 },
-	{ 1200, 8, 15, 6, 6, 6 },	 { SHRT_MAX, 1, 1, 1, 1, 1 },
-};
-
-static const short sectionThresholds[]
-	= { 100, 200, 300, 400, 500, 600, 700, 800, 900, 999, SHRT_MAX };
-static const short sectionCoolThresholds[]
-	= { 70, 170, 270, 370, 470, 570, 670, 770, 870, 970, SHRT_MAX };
-
-static const int baseSectionCoolTime[] = {
-	TIME(0, 50), TIME(0, 50), TIME(0, 47), TIME(0, 43),
-	TIME(0, 43), TIME(0, 40), TIME(0, 40), TIME(0, 36),
-	TIME(0, 36), 0,			  0,
-};
-
-static const int levelAdvance[] = { 0, 1, 2, 4, 6 };
 
 static void *init(void)
 {
@@ -83,14 +46,17 @@ static void *init(void)
 	data->level = 0;
 	data->section = 0;
 	data->cools = 0;
+	data->time = 0;
 	data->sectionTime = 0;
-	data->lastCoolTime = baseSectionCoolTime[0];
+	data->lastCoolTime = SHARED(baseSectionCoolTime)[0];
 	data->areType = ARE_TYPE_NORMAL;
 	data->held = false;
 	data->cool = false;
 	data->speedIndex = 0;
 	data->timingIndex = 0;
 	data->lines = 0;
+	data->message = "";
+	data->messageTime = 0;
 	return data;
 }
 
@@ -98,94 +64,58 @@ static void cycle(qdsGame *game)
 {
 	struct modeData *data = qdsGetModeData(game);
 
-	if (data->phase == PHASE_MAIN) {
-		data->time += 1;
-		data->sectionTime += 1;
-	}
-}
+	if (data->messageTime > 0)
+		--data->messageTime;
+	else
+		data->message = "";
 
-static int effectiveLevel(struct modeData *data)
-{
-	return data->level + data->cools * 100;
-}
-
-static int addLevel(struct modeData *data, int level, bool nextSection)
-{
-	if (data->level + level > 999) {
-		data->level = 999;
-	} else if (data->level + level >= sectionThresholds[data->section]) {
-		if (!nextSection)
-			data->level = sectionThresholds[data->section] - 1;
-		else {
-			data->level += level;
-			data->sectionTime = 0;
-
-			/* apply section cool */
-			if (data->cool) ++data->cools;
-			data->cool = false;
-		};
-	} else {
-		data->level += level;
-	}
-
-	/* section cool check */
-	if (data->level < sectionCoolThresholds[data->section]
-		&& data->level + level >= sectionCoolThresholds[data->section]) {
-		if (data->sectionTime <= data->lastCoolTime + TIME(0, 2)) {
-			data->cool = true;
-			data->lastCoolTime = data->sectionTime;
-		} else {
-			data->cool = false;
-			data->lastCoolTime = baseSectionCoolTime[data->section + 1];
-		}
-	}
-
-	while (effectiveLevel(data) >= speedData[data->speedIndex + 1].level)
-		data->speedIndex += 1;
-	while (effectiveLevel(data) >= timingData[data->timingIndex + 1].level)
-		data->timingIndex += 1;
-	while (data->level >= sectionThresholds[data->section]) data->section += 1;
-
-	return data->level;
+	if (!SHARED(phases)[data->phase]->onCycle) return;
+	SHARED(phases)[data->phase]->onCycle(game, data);
 }
 
 static bool onHold(qdsGame *game, int piece)
 {
 	struct modeData *data = qdsGetModeData(game);
-	data->held = true;
+	if (SHARED(phases)[data->phase]->onHold)
+		SHARED(phases)[data->phase]->onHold(game, data);
 	return true;
 }
 
 static bool onSpawn(qdsGame *game, int piece)
 {
 	struct modeData *data = qdsGetModeData(game);
+	if (SHARED(phases)[data->phase]->onSpawn)
+		return SHARED(phases)[data->phase]->onSpawn(game, data);
+	return true;
+}
 
-	/* check for main mode end condition */
-	if (data->level >= 999) qdsEndGame(game);
-
-	/* normal spawn sequence */
-	data->areType = ARE_TYPE_NORMAL;
-	if (!data->held) addLevel(data, 1, false);
-	data->held = false;
+static bool onLock(qdsGame *game)
+{
+	struct modeData *data = qdsGetModeData(game);
+	if (SHARED(phases)[data->phase]->onLock)
+		SHARED(phases)[data->phase]->onLock(game, data);
 	return true;
 }
 
 static void onLineFilled(qdsGame *game, int y)
 {
-	((struct modeData *)qdsGetModeData(game))->lines += 1;
+	struct modeData *data = qdsGetModeData(game);
+	if (SHARED(phases)[data->phase]->onLineFilled)
+		SHARED(phases)[data->phase]->onLineFilled(game, data, y);
 }
 
 static void postLock(qdsGame *game)
 {
 	struct modeData *data = qdsGetModeData(game);
-	addLevel(data, levelAdvance[data->lines], true);
-	data->lines = 0;
+	if (SHARED(phases)[data->phase]->postLock)
+		SHARED(phases)[data->phase]->postLock(game, data);
 }
 
 static bool onLineClear(qdsGame *game, int y)
 {
 	struct modeData *data = qdsGetModeData(game);
-	data->areType = ARE_TYPE_LINE;
+	if (SHARED(phases)[data->phase]->onLineClear)
+		SHARED(phases)[data->phase]->onLineClear(game, data, y);
 	return true;
 }
 
@@ -195,11 +125,23 @@ static void onTopOut(qdsGame *game)
 	data->phase = PHASE_GAME_OVER;
 }
 
+extern uint_fast16_t SHARED(visible)(struct modeData *data, int y)
+{
+	return 0x03ff;
+}
+
+extern uint_fast16_t SHARED(invisible)(struct modeData *data, int y)
+{
+	return 0;
+}
+
 static int call(qdsGame *game, unsigned long req, void *argp)
 {
 	struct modeData *data = qdsGetModeData(game);
-	int speed = speedData[data->speedIndex].gravity;
-	const struct timingData *timings = &timingData[data->timingIndex];
+
+	int speed = SHARED(phases)[data->phase]->getSpeed(data);
+	const struct timingData *timings
+		= SHARED(phases)[data->phase]->getTimings(data);
 	switch (req) {
 		case QDS_GETMODENAME:
 			*(const char **)argp = "Master";
@@ -214,10 +156,13 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 			*(int *)argp = data->level;
 			return 0;
 		case QDS_GETLEVELTARGET:
-			if (sectionThresholds[data->section] == SHRT_MAX)
+			if (SHARED(sectionThresholds)[data->section] == SHRT_MAX)
 				*(int *)argp = 999;
 			else
-				*(int *)argp = sectionThresholds[data->section];
+				*(int *)argp = SHARED(sectionThresholds)[data->section];
+			return 0;
+		case QDS_GETMESSAGE:
+			*(const char **)argp = data->message;
 			return 0;
 		case QDS_GETARE:
 			if (data->areType == ARE_TYPE_LINE)
@@ -249,6 +194,10 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 		case QDS_GETNEXTCOUNT:
 			*(int *)argp = 3;
 			return 0;
+		case QDS_GETVISIBILITY:
+			*(uint_fast16_t *)argp = SHARED(phases)[data->phase]->getVisibility(
+				data, *(uint_fast16_t *)argp);
+			return 0;
 	}
 	return -ENOTTY;
 }
@@ -260,6 +209,7 @@ const qdsGamemode qdsModeMaster = {
 		.onCycle = cycle,
 		.onSpawn = onSpawn,
 		.onHold = onHold,
+		.onLock = onLock,
 		.onLineFilled = onLineFilled,
 		.postLock = postLock,
 		.onLineClear = onLineClear,

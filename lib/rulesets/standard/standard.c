@@ -170,6 +170,7 @@ static void *init(void)
 	data->held = false;
 	data->b2b = false;
 	data->reset = false;
+	data->pause = false;
 
 	data->inputState.lastInput = 0;
 	data->inputState.direction = 0;
@@ -202,11 +203,17 @@ static void gameCycle(qdsGame *restrict game, unsigned int input)
 	standardData *data = qdsGetRulesetData(game);
 	input = qdsFilterInput(game, &data->inputState, input);
 
+	if (data->pause) {
+		data->pause = false;
+		data->status = STATUS_PAUSE;
+	}
+
 	switch (data->status) {
 		case STATUS_ACTIVE:
 			doActiveCycle(data, game, input);
 			break;
 		case STATUS_PREGAME:
+		case STATUS_PAUSE:
 		case STATUS_LOCKDELAY:
 			doDelayCycle(data, game, input);
 			if (data->statusTime == 0) {
@@ -629,6 +636,10 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 			return !data->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
 		case QDS_GETCLEARTYPE:
 			*(int *)argp = data->clearType;
+			return 0;
+		case QDS_PAUSE:
+			data->pause = true;
+			data->statusTime = *(int *)argp;
 			return 0;
 		default:
 			return -ENOTTY;

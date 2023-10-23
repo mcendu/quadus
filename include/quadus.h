@@ -230,6 +230,7 @@ QDS_API const qdsUserInterface *qdsGetUi(const qdsGame *);
  */
 QDS_API void qdsSetUi(qdsGame *, const qdsUserInterface *ui, void *data);
 
+QDS_API void qdsClearPlayfield(qdsGame *);
 /**
  * End the game.
  */

@@ -22,6 +22,9 @@ quaduscore_src_modes = [
     'invisible.c',
     'marathon.c',
     'sprint.c',
+    'master/credits.c',
+    'master/data.c',
+    'master/main.c',
     'master/master.c',
 ]
 

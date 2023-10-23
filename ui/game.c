@@ -26,6 +26,7 @@
 #include <piece.h>
 #include <quadus.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "quadustui.h"
 #include "ui.h"
@@ -278,6 +279,18 @@ static void speedBar(WINDOW *w, int top, int left, qdsGame *game)
 	for (; i < 8; ++i) waddch(w, ACS_HLINE);
 }
 
+static void message(WINDOW *w, int top, int left, qdsGame *game)
+{
+	const char *message;
+	if (qdsCall(game, QDS_GETMESSAGE, &message) < 0) message = "";
+	int len = strlen(message);
+
+	int i = 0, start = (20 - len) / 2;
+	wmove(w, top, left);
+	for (i = 0; i < 20; ++i) waddch(w, ' ');
+	mvwaddstr(w, top, left + start, message);
+}
+
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
 	int score, time, level, target, combo;
@@ -299,5 +312,6 @@ void gameView(WINDOW *w, int top, int left, qdsGame *game)
 	speedBar(w, top + 19, left + 34, game);
 	if (target != 0) mvwprintw(w, top + 20, left + 34, "%6d", target);
 
+	message(w, top + 23, left + 12, game);
 	playfield(w, top, left + 11, game);
 }

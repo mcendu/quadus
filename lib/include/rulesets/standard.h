@@ -70,6 +70,7 @@ typedef struct standardData
 	bool held : 1;
 	bool b2b : 1;
 	bool reset : 1;
+	bool pause : 1;
 
 	struct qdsInputState inputState;
 	struct qdsBag gen;
@@ -83,6 +84,7 @@ enum gameStatus
 	STATUS_LOCKDELAY,
 	STATUS_LINEDELAY,
 	STATUS_GAMEOVER,
+	STATUS_PAUSE,
 };
 
 #endif /* !QDS__RULESET_STANDARD_H */
