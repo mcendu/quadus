@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 	initscr();
 	start_color();
-	cbreak();
+	raw();
 	noecho();
 	keypad(stdscr, true);
 	nodelay(stdscr, true);
