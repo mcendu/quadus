@@ -29,6 +29,7 @@
 #include <quadus.h>
 #include <ruleset/linequeue.h>
 #include <stdlib.h>
+#include <time.h>
 
 const struct phase *SHARED(phases)[] = {
 	&SHARED(phaseMain),
@@ -68,6 +69,8 @@ static void *init(void)
 
 	data->message = "";
 	data->messageTime = 0;
+
+	qdsHisInit(&data->gen, time(NULL));
 
 	return data;
 }
@@ -137,14 +140,24 @@ static void onTopOut(qdsGame *game)
 	data->phase = PHASE_GAME_OVER;
 }
 
-extern uint_fast16_t SHARED(visible)(struct modeData *data, int y)
+uint_fast16_t SHARED(visible)(struct modeData *data, int y)
 {
 	return 0x03ff;
 }
 
-extern uint_fast16_t SHARED(invisible)(struct modeData *data, int y)
+uint_fast16_t SHARED(invisible)(struct modeData *data, int y)
 {
 	return 0;
+}
+
+static int peek(const void *data, int pos)
+{
+	return qdsHisPeek(&((struct modeData *)data)->gen, pos);
+}
+
+static int draw(void *data)
+{
+	return qdsHisDraw(&((struct modeData *)data)->gen);
 }
 
 static int call(qdsGame *game, unsigned long req, void *argp)
@@ -239,5 +252,7 @@ const qdsGamemode qdsModeMaster = {
 		.onLineClear = onLineClear,
 		.onTopOut = onTopOut,
 	},
+	.getPiece = peek,
+	.shiftPiece = draw,
 	.call = call,
 };
