@@ -22,6 +22,7 @@ quaduscore_src_piecegen = [
     'bag.c',
     'his.c',
     'quadus.c',
+    'tgm.c',
 ]
 
 foreach src : quaduscore_src_piecegen

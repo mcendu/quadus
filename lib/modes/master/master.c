@@ -70,7 +70,7 @@ static void *init(void)
 	data->message = "";
 	data->messageTime = 0;
 
-	qdsHisInit(&data->gen, time(NULL));
+	qdsTgmGenInit(&data->gen, time(NULL));
 
 	return data;
 }
@@ -152,12 +152,12 @@ uint_fast16_t SHARED(invisible)(struct modeData *data, int y)
 
 static int peek(const void *data, int pos)
 {
-	return qdsHisPeek(&((struct modeData *)data)->gen, pos);
+	return qdsTgmGenPeek(&((struct modeData *)data)->gen, pos);
 }
 
 static int draw(void *data)
 {
-	return qdsHisDraw(&((struct modeData *)data)->gen);
+	return qdsTgmGenDraw(&((struct modeData *)data)->gen);
 }
 
 static int call(qdsGame *game, unsigned long req, void *argp)

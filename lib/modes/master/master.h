@@ -23,6 +23,7 @@
 #ifndef MODE_MASTER_H
 #define MODE_MASTER_H
 
+#include "piecegen/tgm.h"
 #include <piecegen/his.h>
 #include <quadus.h>
 #include <stdbool.h>
@@ -59,7 +60,7 @@ struct modeData
 
 	int tileTime[48][10];
 
-	struct qdsHis gen;
+	struct qdsTgmGen gen;
 };
 
 #define SHARED(f) qdsModeMaster__##f
