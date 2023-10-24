@@ -25,6 +25,7 @@
 #include <curses.h>
 #include <piece.h>
 #include <quadus.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -250,6 +251,7 @@ static void stat(WINDOW *w,
 	va_list ap;
 	va_start(ap, format);
 	mvwaddstr(w, top, left, name);
+	mvwaddstr(w, top + 1, left, "        ");
 	wmove(w, top + 1, left);
 	vw_printw(w, format, ap);
 	va_end(ap);
