@@ -59,6 +59,7 @@
 #define QDS_GETVISIBILITY 23  /* (uint_fast16_t *) get visibility of a line */
 #define QDS_GETGRADE 24		  /* (int *) get grade */
 #define QDS_GETGRADETEXT 25	  /* (const char **) get grade as text */
+#define QDS_SHOWGHOST 26	  /* (_Bool *) get if ghost is visible */
 
 /* game control */
 #define QDS_PAUSE 256 /* (int *) pause for specified number of cycles */

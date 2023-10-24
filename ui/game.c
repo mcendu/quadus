@@ -190,9 +190,14 @@ static void playfield(WINDOW *w, int top, int left, qdsGame *game)
 
 	int x, y;
 	x = left + 1 + 2 * qdsGetActiveX(game);
+
 	/* ghost piece */
-	y = top + playfieldBaseY - qdsGetGhostY(game);
-	piece(w, y, x, game, -1, -1, 0, tileGhost);
+	bool showGhost;
+	if (qdsCall(game, QDS_SHOWGHOST, &showGhost) < 0 || showGhost) {
+		y = top + playfieldBaseY - qdsGetGhostY(game);
+		piece(w, y, x, game, -1, -1, 0, tileGhost);
+	}
+
 	/* active piece */
 	y = top + playfieldBaseY - qdsGetActiveY(game);
 	piece(w, y, x, game, -1, -1, A_BOLD, tileFilled);

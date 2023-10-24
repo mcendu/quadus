@@ -219,6 +219,9 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 			*(uint_fast16_t *)argp = SHARED(phases)[data->phase]->getVisibility(
 				data, *(uint_fast16_t *)argp);
 			return 0;
+		case QDS_SHOWGHOST:
+			*(bool *)argp = data->level < 100;
+			return 0;
 	}
 	return -ENOTTY;
 }
