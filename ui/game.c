@@ -293,17 +293,20 @@ static void message(WINDOW *w, int top, int left, qdsGame *game)
 
 void gameView(WINDOW *w, int top, int left, qdsGame *game)
 {
+	const char *grade;
 	int score, time, level, target, combo;
 	unsigned int clearType;
 	if (qdsCall(game, QDS_GETSCORE, &score) < 0) score = 0;
 	if (qdsCall(game, QDS_GETTIME, &time) < 0) time = 0;
 	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 0;
 	if (qdsCall(game, QDS_GETLEVELTARGET, &target) < 0) target = 0;
+	if (qdsCall(game, QDS_GETGRADETEXT, &grade) < 0) grade = NULL;
 	if (qdsCall(game, QDS_GETCLEARTYPE, &clearType) < 0) clearType = 0;
 	if (qdsCall(game, QDS_GETCOMBO, &combo) < 0) combo = 0;
 
 	hold(w, top + 3, left + 2, game);
 	clearTicker(w, top + 6, left + 2, clearType, combo);
+	if (grade) stat(w, top + 13, left + 2, "GRADE", "%s", grade);
 	stat(w, top + 16, left + 2, "SCORE", "%8d", score);
 	statTime(w, top + 19, left + 2, "TIME", time);
 

@@ -18,14 +18,14 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-quaduscore_src_modes = [
-    'invisible.c',
-    'marathon.c',
-    'sprint.c',
+quaduscore_src_modes_master = [
+    'credits.c',
+    'data.c',
+    'grade.c',
+    'main.c',
+    'master.c',
 ]
 
-subdir('master')
-
-foreach src : quaduscore_src_modes
-    quaduscore_src += 'modes' / src
+foreach src : quaduscore_src_modes_master
+    quaduscore_src_modes += 'master' / src
 endforeach

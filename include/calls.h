@@ -57,10 +57,15 @@
 #define QDS_GETCLEARTYPE 21	  /* (unsigned int *) get type of last line clear */
 #define QDS_GETCOMBO 22		  /* (int *) get combo */
 #define QDS_GETVISIBILITY 23  /* (uint_fast16_t *) get visibility of a line */
-#define QDS_GETMESSAGE 24	  /* (const char **) message from game mode */
+#define QDS_GETGRADE 24		  /* (int *) get grade */
+#define QDS_GETGRADETEXT 25	  /* (const char **) get grade as text */
 
 /* game control */
 #define QDS_PAUSE 256 /* (int *) pause for specified number of cycles */
+
+/* UI */
+/* (const char **) get mode specified message */
+#define QDS_GETMESSAGE ('U' << 8) + 16
 
 /* line clear type format */
 #define QDS_LINECLEAR_SINGLE 1

@@ -38,8 +38,15 @@ struct modeData
 	short section;
 	short cools;
 
+	short grade;
+	short gradePoints;
+	short decayTimer;
+	short combo;
+
 	short speedIndex;
 	short timingIndex;
+
+	int creditsPoints;
 
 	short lines;
 	unsigned char areType;
@@ -83,6 +90,8 @@ extern const struct timingData
 	short lineAre;
 } SHARED(timingData)[];
 
+extern const char *SHARED(gradeNames)[];
+
 extern const short SHARED(sectionThresholds)[];
 extern const short SHARED(sectionCoolThresholds)[];
 extern const int SHARED(baseSectionCoolTime)[];
@@ -105,6 +114,11 @@ extern const struct phase
 
 extern uint_fast16_t SHARED(visible)(struct modeData *, int);
 extern uint_fast16_t SHARED(invisible)(struct modeData *, int);
+
+extern int SHARED(getGrade)(struct modeData *data);
+extern void SHARED(addGradePoints)(struct modeData *data, int lines);
+extern void SHARED(checkRegret)(struct modeData *data);
+extern void SHARED(decayGrade)(qdsGame *game, struct modeData *data);
 
 extern const struct phase SHARED(phaseMain);
 extern const struct phase SHARED(phaseCreditsFading);

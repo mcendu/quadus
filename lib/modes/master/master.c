@@ -42,21 +42,33 @@ static void *init(void)
 	struct modeData *data = malloc(sizeof(struct modeData));
 	if (!data) return NULL;
 
+	data->time = 0;
+	data->sectionTime = 0;
+	data->lastCoolTime = SHARED(baseSectionCoolTime)[0];
+
 	data->phase = PHASE_MAIN;
 	data->level = 0;
 	data->section = 0;
 	data->cools = 0;
-	data->time = 0;
-	data->sectionTime = 0;
-	data->lastCoolTime = SHARED(baseSectionCoolTime)[0];
+
+	data->grade = 0;
+	data->gradePoints = 0;
+	data->decayTimer = 0;
+	data->combo = 0;
+
+	data->speedIndex = 0;
+	data->timingIndex = 0;
+
+	data->creditsPoints = 0;
+
+	data->lines = 0;
 	data->areType = ARE_TYPE_NORMAL;
 	data->held = false;
 	data->cool = false;
-	data->speedIndex = 0;
-	data->timingIndex = 0;
-	data->lines = 0;
+
 	data->message = "";
 	data->messageTime = 0;
+
 	return data;
 }
 
@@ -161,6 +173,12 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 			else
 				*(int *)argp = SHARED(sectionThresholds)[data->section];
 			return 0;
+		case QDS_GETGRADE:
+			*(int *)argp = SHARED(getGrade)(data);
+			return 0;
+		case QDS_GETGRADETEXT:
+			*(const char **)argp = SHARED(gradeNames)[SHARED(getGrade)(data)];
+			return 0;
 		case QDS_GETMESSAGE:
 			*(const char **)argp = data->message;
 			return 0;
@@ -190,6 +208,9 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 			return 0;
 		case QDS_GETLOCKTIME:
 			*(int *)argp = timings->lock;
+			return 0;
+		case QDS_GETCOMBO:
+			*(int *)argp = data->combo;
 			return 0;
 		case QDS_GETNEXTCOUNT:
 			*(int *)argp = 3;

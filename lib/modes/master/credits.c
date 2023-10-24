@@ -29,13 +29,38 @@
 
 #define TIME_CREDITS (TIME_CREDITS_TRANSITION + FRAMETIME(0, 55, 30))
 
+static const unsigned char creditsLineScoreFading[] = { 4, 8, 12, 26 };
+static const unsigned char creditsLineScoreInvisible[] = { 10, 20, 30, 100 };
+
 static void cycle(qdsGame *game, struct modeData *data)
 {
 	data->sectionTime += 1;
 	if (data->sectionTime > TIME_CREDITS) {
-		qdsEndGame(game);
+		if (data->phase == PHASE_CREDITS_INVISIBLE)
+			data->creditsPoints += 160;
+		else
+			data->creditsPoints += 50;
 		data->phase = PHASE_GAME_OVER;
+		qdsEndGame(game);
 	}
+}
+
+static void onLineFilled(qdsGame *game, struct modeData *data, int y)
+{
+	data->lines += 1;
+}
+
+static void postLock(qdsGame *game, struct modeData *data)
+{
+	if (data->lines) {
+		int l = data->lines - 1;
+		if (l > 3) l = 3;
+		if (data->phase == PHASE_CREDITS_INVISIBLE)
+			data->creditsPoints += creditsLineScoreInvisible[l];
+		else
+			data->creditsPoints += creditsLineScoreFading[l];
+	}
+	data->lines = 0;
 }
 
 static int getSpeed(struct modeData *data)
@@ -89,6 +114,9 @@ const struct phase SHARED(phaseCreditsFading) = {
 	.onCycle = cycle,
 	.onLock = setTileTime,
 	.onLineClear = clearTileTimeLine,
+
+	.onLineFilled = onLineFilled,
+	.postLock = postLock,
 };
 
 const struct phase SHARED(phaseCreditsInvisible) = {
@@ -96,6 +124,9 @@ const struct phase SHARED(phaseCreditsInvisible) = {
 	.getTimings = getTimings,
 	.getVisibility = SHARED(invisible),
 	.onCycle = cycle,
+
+	.onLineFilled = onLineFilled,
+	.postLock = postLock,
 };
 
 const struct phase SHARED(phaseGameOver) = {

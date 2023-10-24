@@ -32,6 +32,8 @@ static void cycle(qdsGame *game, struct modeData *data)
 {
 	data->time += 1;
 	data->sectionTime += 1;
+
+	SHARED(decayGrade)(game, data);
 }
 
 static int effectiveLevel(struct modeData *data)
@@ -64,11 +66,14 @@ static int addLevel(struct modeData *data, int level, bool nextSection)
 			data->level = SHARED(sectionThresholds)[data->section] - 1;
 		else {
 			data->level += level;
-			data->sectionTime = 0;
+
+			SHARED(checkRegret)(data);
 
 			/* apply section cool */
 			if (data->cool) ++data->cools;
 			data->cool = false;
+
+			data->sectionTime = 0;
 		};
 	} else {
 		data->level += level;
@@ -99,7 +104,7 @@ static bool onSpawn(qdsGame *game, struct modeData *data)
 		qdsClearPlayfield(game);
 		qdsCall(game, QDS_PAUSE, &time);
 
-		if (data->cools >= 9)
+		if (data->grade >= 27 && data->cools >= 9)
 			data->phase = PHASE_CREDITS_INVISIBLE;
 		else
 			data->phase = PHASE_CREDITS_FADE;
@@ -123,6 +128,7 @@ static void onLineFilled(qdsGame *game, struct modeData *data, int y)
 static void postLock(qdsGame *game, struct modeData *data)
 {
 	addLevel(data, SHARED(levelAdvance)[data->lines], true);
+	SHARED(addGradePoints)(data, data->lines);
 	data->lines = 0;
 }
 
