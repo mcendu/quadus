@@ -6,13 +6,29 @@ on:
   pull_request:
     branches: [trunk]
 jobs:
+  format:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check code formatting
+        uses: jidicula/clang-format-action@v4.11.0
+        with:
+          clang-format-version: '16'
   build:
+    name: Build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc, clang]
-        options: [--optimization=2, --optimization=3]
+        cc:
+          - gcc
+          - clang
+        options:
+          - [--optimization=2]
+          - [--optimization=3]
+          - [--optimization=s]
         include:
           - cc: gcc
             options: [--optimization=g, -Db_sanitize=address]
