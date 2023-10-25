@@ -34,7 +34,7 @@
 
 QDS_API qdsGame *qdsNewGame(void)
 {
-	qdsGame *p = malloc(sizeof(qdsGame));
+	qdsGame *p = aligned_alloc(16, sizeof(qdsGame));
 	if (!p) return p;
 	qdsInitGame(p);
 	return p;

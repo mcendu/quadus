@@ -40,7 +40,7 @@ const struct phase *SHARED(phases)[] = {
 
 static void *init(void)
 {
-	struct modeData *data = malloc(sizeof(struct modeData));
+	struct modeData *data = aligned_alloc(16, sizeof(struct modeData));
 	if (!data) return NULL;
 
 	data->time = 0;
