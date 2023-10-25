@@ -20,9 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <qdsbuild.h>
-
-#include <game.h>
+#include "game.h"
+#include <config.h>
 #include <quadus.h>
 
 #include <assert.h>
@@ -34,7 +33,7 @@
 
 QDS_API qdsGame *qdsNewGame(void)
 {
-	qdsGame *p = aligned_alloc(16, sizeof(qdsGame));
+	qdsGame *p = aligned_alloc(alignof(qdsGame), sizeof(qdsGame));
 	if (!p) return p;
 	qdsInitGame(p);
 	return p;

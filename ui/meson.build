@@ -18,7 +18,12 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 curses_dep = dependency('curses', required: get_option('enable_tui'))
+
+if not curses_dep.found()
+    subdir_done()
+endif
 
 cfg.set('HAVE_UNISTD_H',
     cc.has_header('unistd.h', required: get_option('enable_tui')))

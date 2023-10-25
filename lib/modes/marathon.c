@@ -22,6 +22,7 @@
  */
 #include "modes/marathon.h"
 #include "piecegen/quadus.h"
+#include <config.h>
 #include <calls.h>
 #include <mode.h>
 #include <quadus.h>

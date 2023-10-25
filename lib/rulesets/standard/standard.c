@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "rulesets/standard.h"
+#include <config.h>
 #include <quadus.h>
 
 #include <calls.h>

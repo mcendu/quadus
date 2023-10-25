@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "master.h"
+#include <config.h>
 
 #include <calls.h>
 #include <errno.h>
@@ -40,7 +41,8 @@ const struct phase *SHARED(phases)[] = {
 
 static void *init(void)
 {
-	struct modeData *data = aligned_alloc(16, sizeof(struct modeData));
+	struct modeData *data
+		= aligned_alloc(alignof(struct modeData), sizeof(struct modeData));
 	if (!data) return NULL;
 
 	data->time = 0;

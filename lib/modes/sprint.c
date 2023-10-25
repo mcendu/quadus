@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "calls.h"
+#include <config.h>
 #include <mode.h>
 #include <quadus.h>
 

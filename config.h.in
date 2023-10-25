@@ -23,6 +23,30 @@
 #ifndef QDS__CONFIG_H
 #define QDS__CONFIG_H
 
+#mesondefine NEED_JEMALLOC
+
+#mesondefine NEED_MIMALLOC
+
+#mesondefine malloc
+
+#mesondefine calloc
+
+#mesondefine free
+
+#mesondefine realloc
+
+#mesondefine aligned_alloc
+
+#define rpl_aligned_alloc(align, size) @rpl_aligned_alloc@
+
 #mesondefine HAVE_LINUX_CONSOLE
+
+#ifdef NEED_JEMALLOC
+#define JEMALLOC_MANGLE
+#include <jemalloc/jemalloc.h>
+#endif
+#ifdef NEED_MIMALLOC
+#include <mimalloc.h>
+#endif
 
 #endif /* QDS__CONFIG__H */

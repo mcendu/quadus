@@ -33,6 +33,8 @@ project('quadus', 'c',
 cfg = configuration_data()
 cc = meson.get_compiler('c')
 
+add_project_arguments(['-DQDS_BUILD'], language: ['c'])
+
 if cc.get_define('__GNUC__') != ''
     # fine tune warnings
     add_project_arguments([

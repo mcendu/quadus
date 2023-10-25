@@ -19,6 +19,37 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 quaduscore_src = []
+quaduscore_deps = []
+
+if not cc.has_header_symbol('stdlib.h', 'aligned_alloc')
+    # pull in a replacement malloc
+    jemalloc_dep = dependency('jemalloc', required: false)
+    mimalloc_dep = disabler()
+
+    if not jemalloc_dep.found()
+        mimalloc_dep = dependency('mimalloc', required: false)
+    endif
+
+    if jemalloc_dep.found()
+        quaduscore_deps += jemalloc_dep
+        cfg.set('NEED_JEMALLOC', true)
+        cfg.set('rpl_aligned_alloc', '')
+    elif mimalloc_dep.found()
+        quaduscore_deps += miimalloc_dep
+        cfg.set('NEED_MIMALLOC', true)
+        cfg.set('malloc', 'mi_malloc')
+        cfg.set('calloc', 'mi_calloc')
+        cfg.set('realloc', 'mi_realloc')
+        cfg.set('free', 'mi_free')
+        cfg.set('aligned_alloc', 'rpl_aligned_alloc')
+        cfg.set('rpl_aligned_alloc', 'mi_malloc_aligned(size, align)')
+    else
+        error('aligned_alloc() not found.')
+    endif
+else
+    # silence a meson warning
+    cfg.set('rpl_aligned_alloc', '')
+endif
 
 quaduscore_internal_include = include_directories('include')
 
@@ -28,6 +59,7 @@ subdir('piecegen')
 subdir('rulesets')
 
 quaduscore_lib = library('quadus', quaduscore_src,
-    include_directories: [quaduscore_include, quaduscore_internal_include],
+    include_directories: [quaduscore_include, quaduscore_internal_include, config_include],
+    dependencies: quaduscore_deps,
     gnu_symbol_visibility: 'hidden',
     install: true)
