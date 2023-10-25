@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 tests_piecegen = [
     ['testBagGen', 'bag.c'],
+    ['testTgmGen', 'tgm.c'],
 ]
 
 foreach t : tests_piecegen
