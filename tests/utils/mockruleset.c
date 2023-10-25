@@ -60,9 +60,7 @@ static void *init(void)
 EVENT_HANDLER(
 	onCycle,
 	void,
-	{
-		data->cycleEventCount++;
-	},
+	{ data->cycleEventCount++; },
 	game,
 	qdsGame *game)
 
