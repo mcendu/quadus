@@ -35,7 +35,7 @@ if not cc.has_header_symbol('stdlib.h', 'aligned_alloc')
         cfg.set('NEED_JEMALLOC', true)
         cfg.set('rpl_aligned_alloc', '')
     elif mimalloc_dep.found()
-        quaduscore_deps += miimalloc_dep
+        quaduscore_deps += mimalloc_dep
         cfg.set('NEED_MIMALLOC', true)
         cfg.set('malloc', 'mi_malloc')
         cfg.set('calloc', 'mi_calloc')

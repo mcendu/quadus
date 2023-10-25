@@ -26,13 +26,13 @@ if not curses_dep.found()
 endif
 
 cfg.set('HAVE_UNISTD_H',
-    cc.has_header('unistd.h', required: get_option('enable_tui')))
+    cc.has_header('unistd.h', required: true))
 cfg.set('HAVE_RT_SIGNAL',
     cc.has_header_symbol('signal.h', 'SIGRTMIN',
-        required: get_option('enable_tui')))
+        required: true))
 cfg.set('HAVE_POSIX_TIMER',
     cc.has_header_symbol('time.h', 'timer_create',
-        required: get_option('enable_tui')))
+        required: true))
 
 HAVE_LINUX_CONSOLE = cc.has_header('linux/kd.h')
 cfg.set('HAVE_LINUX_CONSOLE', HAVE_LINUX_CONSOLE)
