@@ -23,22 +23,13 @@
 #ifndef QDS__CONFIG_H
 #define QDS__CONFIG_H
 
+/* Should jemalloc be used? */
 #mesondefine NEED_JEMALLOC
 
+/* Should mimalloc be used? */
 #mesondefine NEED_MIMALLOC
 
-#mesondefine malloc
-
-#mesondefine calloc
-
-#mesondefine free
-
-#mesondefine realloc
-
-#mesondefine aligned_alloc
-
-#define rpl_aligned_alloc(align, size) @rpl_aligned_alloc@
-
+/* Does ioctls pertaining to Linux console exist? */
 #mesondefine HAVE_LINUX_CONSOLE
 
 #ifdef NEED_JEMALLOC
@@ -47,6 +38,16 @@
 #endif
 #ifdef NEED_MIMALLOC
 #include <mimalloc.h>
+/*
+ * mimalloc override header use function-like macros, but we use
+ * pointers to allocator functions in several const structs. Do
+ * our own redefinitions instead.
+ */
+#define malloc mi_malloc
+#define free mi_free
+#define calloc mi_calloc
+#define realloc mi_realloc
+#define aligned_alloc mi_aligned_alloc
 #endif
 
 #endif /* QDS__CONFIG__H */

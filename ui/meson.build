@@ -52,5 +52,5 @@ quadusui_bin = executable('quadus', quadusui_src,
     include_directories: [quaduscore_include, config_include],
     link_with: [quaduscore_lib],
     link_args: ['-lrt'],
-    dependencies: [curses_dep],
+    dependencies: [malloc_deps, curses_dep],
     install: true)

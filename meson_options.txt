@@ -24,3 +24,9 @@ option('enable_tests',
 option('enable_tui',
     type: 'feature',
     description: 'Whether to build text user interface')
+option('with_jemalloc',
+    type: 'feature',
+    description: 'Use jemalloc for memory allocation')
+option('with_mimalloc',
+    type: 'feature',
+    description: 'Use mimalloc for memory allocation')
