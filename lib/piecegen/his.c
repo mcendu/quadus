@@ -36,7 +36,7 @@ QDS_API int qdsDrawHistory(qdsTile *restrict his,
 {
 	/* roll */
 	int result = gen(st);
-	if (tries > 0)
+	if (tries > 1)
 		for (int i = 0; i < len; ++i)
 			if (his[i] == result)
 				return qdsDrawHistory(his, head, len, tries - 1, gen, st);

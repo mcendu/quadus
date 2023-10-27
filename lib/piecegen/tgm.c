@@ -89,7 +89,8 @@ static int draw(struct qdsTgmGen *gen, int tries)
 {
 	/* draw */
 	int piece = drawBag(gen);
-	if (tries > 0)
+	/* with only 1 try the draw is always accepted */
+	if (tries > 1)
 		for (int i = 0; i < 4; ++i)
 			if (gen->history[i] == piece) {
 				gen->bag[piece - 1] -= 1;
