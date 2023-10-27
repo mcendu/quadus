@@ -108,11 +108,11 @@ static unsigned int readInput(unsigned int *old, void *d)
 				case KEY_DOWN:
 					flag = QDS_INPUT_SOFT_DROP;
 					break;
+				case KEY_UP:
 				case KEY_SPACE:
 					flag = QDS_INPUT_HARD_DROP;
 					break;
 				case KEY_X:
-				case KEY_UP:
 					flag = QDS_INPUT_ROTATE_C;
 					break;
 				case KEY_Z:

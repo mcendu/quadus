@@ -303,6 +303,7 @@ QDS_API int qdsCall(qdsGame *, unsigned long req, void *argp);
  */
 
 QDS_API extern const qdsRuleset qdsRulesetStandard;
+QDS_API extern const qdsRuleset qdsRulesetArcade;
 
 /*
  * Built-in gamemodes.

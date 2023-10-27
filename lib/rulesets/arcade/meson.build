@@ -18,12 +18,11 @@
 # CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-quaduscore_src_rulesets = []
+quaduscore_src_rulesets_arcade = [
+    'arcade.c',
+    'pieces.c',
+]
 
-subdir('common')
-subdir('arcade')
-subdir('standard')
-
-foreach src : quaduscore_src_rulesets
-    quaduscore_src += 'rulesets' / src
+foreach src : quaduscore_src_rulesets_arcade
+    quaduscore_src_rulesets += 'arcade' / src
 endforeach

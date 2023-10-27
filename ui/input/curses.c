@@ -40,6 +40,7 @@ static unsigned int readCursesInput(unsigned int *last, void *_)
 			case KEY_DOWN:
 				input |= QDS_INPUT_SOFT_DROP;
 				break;
+			case KEY_UP:
 			case ' ':
 				input |= QDS_INPUT_HARD_DROP;
 				break;
@@ -51,7 +52,6 @@ static unsigned int readCursesInput(unsigned int *last, void *_)
 				break;
 			case 'x':
 			case 'X':
-			case KEY_UP:
 				input |= QDS_INPUT_ROTATE_C;
 				break;
 			case 'a':

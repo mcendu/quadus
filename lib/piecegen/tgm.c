@@ -89,11 +89,12 @@ static int draw(struct qdsTgmGen *gen, int tries)
 {
 	/* draw */
 	int piece = drawBag(gen);
+	gen->bag[piece - 1] -= 1;
 	/* with only 1 try the draw is always accepted */
 	if (tries > 1)
 		for (int i = 0; i < 4; ++i)
 			if (gen->history[i] == piece) {
-				gen->bag[piece - 1] -= 1;
+				/* put most droughted piece back */
 				gen->bag[gen->histograph[1].piece - 1] += 1;
 
 				return draw(gen, tries - 1);
@@ -101,7 +102,6 @@ static int draw(struct qdsTgmGen *gen, int tries)
 
 	/* update bag data */
 	updateHistograph(gen, piece);
-	gen->bag[piece - 1] -= 1;
 	gen->bag[gen->histograph[1].piece - 1] += 1;
 
 	/* update history */
