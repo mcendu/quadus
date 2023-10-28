@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "piece.h"
 #include <qdsbuild.h>
 
 #include <game.h>
@@ -171,7 +172,7 @@ QDS_API bool qdsLock(qdsGame *p)
 	EMIT_CANCELLABLE(p, onLock, false, p);
 
 	const qdsCoords *shape = p->rs->getShape(p->piece, p->orientation);
-	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
+	QDS_SHAPE_FOREACH (b, shape) {
 		int x = p->x + b->x;
 		int y = p->y + b->y;
 		if (x < 0 || x >= 10 || y < 0 || y >= 48) continue;
@@ -252,7 +253,7 @@ QDS_API bool qdsCanRotate(const qdsGame *p, int x, int y, int rotation)
 	y += p->y;
 
 	const qdsCoords *shape = p->rs->getShape(p->piece, rotation);
-	for (const qdsCoords *b = shape; !(b->x == 127 && b->y == 127); ++b) {
+	QDS_SHAPE_FOREACH (b, shape) {
 		int bx = x + b->x;
 		int by = y + b->y;
 

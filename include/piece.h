@@ -56,8 +56,10 @@ QDS_API extern const qdsPiecedef qdsPieceNone;
 /**
  * Utility macros.
  */
-#define QDS_SHAPE_FOREACH(i, shape) \
-	for (const qdsCoords *(i) = (shape); !((i)->x == 127 && (i)->y == 127); ++i)
+#define QDS_SHAPE_FOREACH(i, shape)                     \
+	for (const qdsCoords *(i) = (shape);                \
+		 !((i)->x == SCHAR_MAX && (i)->y == SCHAR_MAX); \
+		 ++i)
 
 /*
  * Tetromino identifiers.

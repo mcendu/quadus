@@ -23,9 +23,9 @@
 #include <piece.h>
 #include <qdsbuild.h>
 
-#define END      \
-	{            \
-		127, 127 \
+#define END                  \
+	{                        \
+		SCHAR_MAX, SCHAR_MAX \
 	}
 
 typedef qdsPiecedef piecedef;

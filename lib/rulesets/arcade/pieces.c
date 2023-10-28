@@ -21,12 +21,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcade.h"
-#include "piece.h"
-#include "quadus.h"
+#include <limits.h>
+#include <piece.h>
+#include <quadus.h>
 
-#define END      \
-	{            \
-		127, 127 \
+#define END                  \
+	{                        \
+		SCHAR_MAX, SCHAR_MAX \
 	}
 
 const qdsPiecedef RSSYM(pieceT) = {

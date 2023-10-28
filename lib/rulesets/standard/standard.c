@@ -34,44 +34,56 @@
 #include <ruleset/twist.h>
 
 #include <errno.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 
+#define KEND                 \
+	{                        \
+		SCHAR_MAX, SCHAR_MAX \
+	}
+
+struct kickData
+{
+	const qdsCoords (*cw)[8];
+	const qdsCoords (*ccw)[8];
+};
+
 static const qdsCoords kicksNormalClockwise[4][8] = {
-	{ { 0, 0 }, { -1, 0 }, { -1, +1 }, { 0, -2 }, { -1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { +1, 0 }, { +1, -1 }, { 0, +2 }, { +1, +2 }, { 127, 127 } },
-	{ { 0, 0 }, { +1, 0 }, { +1, +1 }, { 0, -2 }, { +1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, +2 }, { -1, +2 }, { 127, 127 } },
+	{ { 0, 0 }, { -1, 0 }, { -1, +1 }, { 0, -2 }, { -1, -2 }, KEND },
+	{ { 0, 0 }, { +1, 0 }, { +1, -1 }, { 0, +2 }, { +1, +2 }, KEND },
+	{ { 0, 0 }, { +1, 0 }, { +1, +1 }, { 0, -2 }, { +1, -2 }, KEND },
+	{ { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, +2 }, { -1, +2 }, KEND },
 };
 
 static const qdsCoords kicksNormalCounterClockwise[4][8] = {
-	{ { 0, 0 }, { +1, 0 }, { +1, +1 }, { 0, -2 }, { +1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { +1, 0 }, { +1, -1 }, { 0, +2 }, { +1, +2 }, { 127, 127 } },
-	{ { 0, 0 }, { -1, 0 }, { -1, +1 }, { 0, -2 }, { -1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, +2 }, { -1, +2 }, { 127, 127 } },
+	{ { 0, 0 }, { +1, 0 }, { +1, +1 }, { 0, -2 }, { +1, -2 }, KEND },
+	{ { 0, 0 }, { +1, 0 }, { +1, -1 }, { 0, +2 }, { +1, +2 }, KEND },
+	{ { 0, 0 }, { -1, 0 }, { -1, +1 }, { 0, -2 }, { -1, -2 }, KEND },
+	{ { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, +2 }, { -1, +2 }, KEND },
 };
 
-static const qdsCoords (*kicksNormal[2])[8] = {
+static const struct kickData kicksNormal = {
 	kicksNormalClockwise,
 	kicksNormalCounterClockwise,
 };
 
 static const qdsCoords kicksIClockwise[4][8] = {
-	{ { 0, 0 }, { -2, 0 }, { +1, 0 }, { -2, -1 }, { +1, +2 }, { 127, 127 } },
-	{ { 0, 0 }, { -1, 0 }, { +2, 0 }, { -1, +2 }, { +2, -1 }, { 127, 127 } },
-	{ { 0, 0 }, { +2, 0 }, { -1, 0 }, { +2, +1 }, { -1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { +1, 0 }, { -2, 0 }, { +1, -2 }, { -2, +1 }, { 127, 127 } },
+	{ { 0, 0 }, { -2, 0 }, { +1, 0 }, { -2, -1 }, { +1, +2 }, KEND },
+	{ { 0, 0 }, { -1, 0 }, { +2, 0 }, { -1, +2 }, { +2, -1 }, KEND },
+	{ { 0, 0 }, { +2, 0 }, { -1, 0 }, { +2, +1 }, { -1, -2 }, KEND },
+	{ { 0, 0 }, { +1, 0 }, { -2, 0 }, { +1, -2 }, { -2, +1 }, KEND },
 };
 
 static const qdsCoords kicksICounterClockwise[4][8] = {
-	{ { 0, 0 }, { -1, 0 }, { +2, 0 }, { -1, +2 }, { +2, -1 }, { 127, 127 } },
-	{ { 0, 0 }, { +2, 0 }, { -1, 0 }, { +2, +1 }, { -1, -2 }, { 127, 127 } },
-	{ { 0, 0 }, { +1, 0 }, { -2, 0 }, { +1, -2 }, { -2, +1 }, { 127, 127 } },
-	{ { 0, 0 }, { -2, 0 }, { +1, 0 }, { -2, -1 }, { +1, +2 }, { 127, 127 } },
+	{ { 0, 0 }, { -1, 0 }, { +2, 0 }, { -1, +2 }, { +2, -1 }, KEND },
+	{ { 0, 0 }, { +2, 0 }, { -1, 0 }, { +2, +1 }, { -1, -2 }, KEND },
+	{ { 0, 0 }, { +1, 0 }, { -2, 0 }, { +1, -2 }, { -2, +1 }, KEND },
+	{ { 0, 0 }, { -2, 0 }, { +1, 0 }, { -2, -1 }, { +1, +2 }, KEND },
 };
 
-static const qdsCoords (*kicksI[2])[8] = {
+static const struct kickData kicksI = {
 	kicksIClockwise,
 	kicksICounterClockwise,
 };
@@ -79,16 +91,16 @@ static const qdsCoords (*kicksI[2])[8] = {
 static const struct pieceData
 {
 	const qdsPiecedef *shape;
-	const qdsCoords (**kicks)[8];
+	const struct kickData *kicks;
 } pieces[] = {
-	[QDS_PIECE_NONE] = { &qdsPieceNone, kicksNormal },
-	[QDS_PIECE_I] = { &qdsPieceI, kicksI },
-	[QDS_PIECE_J] = { &qdsPieceJ, kicksNormal },
-	[QDS_PIECE_L] = { &qdsPieceL, kicksNormal },
-	[QDS_PIECE_O] = { &qdsPieceO, kicksNormal },
-	[QDS_PIECE_S] = { &qdsPieceS, kicksNormal },
-	[QDS_PIECE_T] = { &qdsPieceT, kicksNormal },
-	[QDS_PIECE_Z] = { &qdsPieceZ, kicksNormal },
+	[QDS_PIECE_NONE] = { &qdsPieceNone, &kicksNormal },
+	[QDS_PIECE_I] = { &qdsPieceI, &kicksI },
+	[QDS_PIECE_J] = { &qdsPieceJ, &kicksNormal },
+	[QDS_PIECE_L] = { &qdsPieceL, &kicksNormal },
+	[QDS_PIECE_O] = { &qdsPieceO, &kicksNormal },
+	[QDS_PIECE_S] = { &qdsPieceS, &kicksNormal },
+	[QDS_PIECE_T] = { &qdsPieceT, &kicksNormal },
+	[QDS_PIECE_Z] = { &qdsPieceZ, &kicksNormal },
 };
 
 static const int dropScore[4][5] = {
@@ -360,13 +372,13 @@ static int canRotate(qdsGame *restrict game,
 
 	if (rotation > 0) {
 		rotation = 1;
-		kicks = pieces[piece].kicks[0][orientation];
+		kicks = pieces[piece].kicks->cw[orientation];
 	} else {
 		rotation = -1;
-		kicks = pieces[piece].kicks[1][orientation];
+		kicks = pieces[piece].kicks->ccw[orientation];
 	}
 
-	for (const qdsCoords *k = kicks; !(k->x == 127 && k->y == 127); ++k) {
+	QDS_SHAPE_FOREACH (k, kicks) {
 		if (qdsCanRotate(game, k->x, k->y, rotation)) {
 			*x = k->x;
 			*y = k->y;

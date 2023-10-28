@@ -90,7 +90,7 @@ typedef struct qdsUserInterface qdsUserInterface;
  * Represents coordinates in a piece shape.
  *
  * A shape is an array of tiles, represented as coordinates relative to
- * its rotation center, ending with { 127, 127 }.
+ * its rotation center, ending with { SCHAR_MAX, SCHAR_MAX }.
  */
 typedef struct
 #if defined(__GNUC__)
