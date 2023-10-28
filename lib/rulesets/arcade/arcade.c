@@ -321,9 +321,7 @@ static int canRotate(qdsGame *restrict game,
 			return QDS_ROTATE_FAILED;
 		case QDS_PIECE_J:
 		case QDS_PIECE_L:
-		case QDS_PIECE_S:
 		case QDS_PIECE_T:
-		case QDS_PIECE_Z:
 			/* center-column rule */
 			qdsGetActivePosition(game, &cx, &cy);
 			for (int dy = 2; dy >= 0; --dy)
