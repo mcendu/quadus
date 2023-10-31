@@ -143,7 +143,7 @@ static const qdsCoords *getShape(int type, int orientation)
 static void gameCycle(qdsGame *restrict game, unsigned int input)
 {
 	arcadeData *data = qdsGetRulesetData(game);
-	input = qdsFilterInput(game, &data->inputState, input);
+	input = qdsFilterDirections(game, &data->inputState, input);
 
 	if (data->pause) {
 		data->pause = false;

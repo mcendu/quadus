@@ -78,7 +78,8 @@ static unsigned int readInput(unsigned int *old, void *d)
 	unsigned char rawinput[24];
 	int count;
 
-	input &= QDS_INPUT_LEFT | QDS_INPUT_RIGHT | QDS_INPUT_SOFT_DROP;
+	input &= QDS_INPUT_LEFT | QDS_INPUT_RIGHT | QDS_INPUT_SOFT_DROP
+			 | QDS_INPUT_HARD_DROP;
 
 	/* read */
 	while ((count = read(data->fd, rawinput, 24)) > 0) {

@@ -46,9 +46,9 @@ struct qdsInputState
 /**
  * Convert raw input to effective input.
  */
-QDS_API unsigned int qdsFilterInput(qdsGame *game,
-									qdsInputState *istate,
-									unsigned int input);
+QDS_API unsigned int qdsFilterDirections(qdsGame *game,
+										 qdsInputState *istate,
+										 unsigned int input);
 
 /**
  * Interrupt autorepeat and reset the repeat timer.

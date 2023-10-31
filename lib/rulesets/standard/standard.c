@@ -214,7 +214,10 @@ static int addLevelMultipliedScore(standardData *restrict data,
 static void gameCycle(qdsGame *restrict game, unsigned int input)
 {
 	standardData *data = qdsGetRulesetData(game);
-	input = qdsFilterInput(game, &data->inputState, input);
+
+	unsigned int effective = input & ~(data->inputState.lastInput);
+	effective |= qdsFilterDirections(game, &data->inputState, input)
+				 & ~(QDS_INPUT_HARD_DROP);
 
 	if (data->pause) {
 		data->pause = false;
@@ -223,20 +226,20 @@ static void gameCycle(qdsGame *restrict game, unsigned int input)
 
 	switch (data->status) {
 		case STATUS_ACTIVE:
-			doActiveCycle(data, game, input);
+			doActiveCycle(data, game, effective);
 			break;
 		case STATUS_PREGAME:
 		case STATUS_PAUSE:
 		case STATUS_LOCKDELAY:
-			doDelayCycle(data, game, input);
+			doDelayCycle(data, game, effective);
 			if (data->statusTime == 0) {
 				spawnPiece(data, game, data->delayInput);
 			}
 			break;
 		case STATUS_LINEDELAY:
-			doDelayCycle(data, game, input);
+			doDelayCycle(data, game, effective);
 			if (data->statusTime == 0) {
-				clearLines(data, game, input);
+				clearLines(data, game, effective);
 			}
 			break;
 		default: /* game over or invalid state */

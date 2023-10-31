@@ -24,9 +24,9 @@
 #include <quadus.h>
 #include <ruleset/input.h>
 
-QDS_API unsigned int qdsFilterInput(qdsGame *game,
-									qdsInputState *istate,
-									unsigned int input)
+QDS_API unsigned int qdsFilterDirections(qdsGame *game,
+										 qdsInputState *istate,
+										 unsigned int input)
 {
 	/* normal inputs */
 	unsigned effective = input & ~(QDS_INPUT_LEFT | QDS_INPUT_RIGHT);
