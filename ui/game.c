@@ -53,7 +53,7 @@ static void clearTicker(WINDOW *w,
 						int combo)
 {
 	int lines = clearType & QDS_LINECLEAR_MAX;
-	if (lines >= 24) lines = 24;
+	if (lines > 23) lines = 23;
 	const char *clearName = clearTypes[lines];
 
 	for (int i = 0; i < 7; ++i) mvwaddstr(w, top + i, left, "        ");
