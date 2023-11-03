@@ -20,12 +20,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <piecegen/bag.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/bag.h>
+#include <quadus/ruleset/rand.h>
 
 #include <string.h>
-
-#include <piece.h>
-#include <ruleset/rand.h>
 
 static void genBag(qdsTile *q, qdsRandState *rng)
 {

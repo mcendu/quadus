@@ -21,11 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "modes/marathon.h"
-#include "piecegen/quadus.h"
-#include <calls.h>
 #include <config.h>
-#include <mode.h>
 #include <quadus.h>
+#include <quadus/calls.h>
+#include <quadus/mode.h>
+#include <quadus/piecegen/quadus.h>
 
 #include <errno.h>
 #include <stdint.h>

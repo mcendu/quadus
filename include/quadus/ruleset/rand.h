@@ -20,36 +20,26 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef QDS__PIECEGEN_HIS_H
-#define QDS__PIECEGEN_HIS_H
-
-#include "../quadus.h"
-#include "../ruleset/rand.h"
-
 /**
- * Draw a piece while performing history checking.
+ * Reentrant pseudorandom number generator.
  */
-QDS_API int qdsDrawHistory(qdsTile *history,
-						   int *head,
-						   int length,
-						   int tries,
-						   int (*gen)(void *st),
-						   void *restrict st);
+#ifndef QDS__RULESET_RAND_H
+#define QDS__RULESET_RAND_H
 
-/**
- * Data for an H4Rx generator.
- */
-struct qdsHis
-{
-	qdsTile queue[8];
-	qdsTile history[4];
-	int queueHead;
-	int hisHead;
-	qdsRandState rng;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-QDS_API void qdsHisInit(struct qdsHis *q, unsigned seed);
-QDS_API int qdsHisPeek(const struct qdsHis *q, int pos);
-QDS_API int qdsHisDraw(struct qdsHis *q);
+#include <quadus.h>
+#include <stdint.h>
 
-#endif /* !QDS__PIECEGEN_HIS_H */
+typedef uint64_t qdsRandState;
+
+QDS_API int qdsRand(qdsRandState *state);
+QDS_API void qdsSrand(unsigned int seed, qdsRandState *state);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* !QDS__RULESET_RAND_H */

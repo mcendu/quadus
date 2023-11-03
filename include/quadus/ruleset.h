@@ -33,8 +33,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "piece.h"
-#include "quadus.h"
+#include <quadus.h>
+#include <quadus/piece.h>
 
 typedef struct qdsRuleset
 {

@@ -23,14 +23,13 @@
 #include "arcade.h"
 #include <config.h>
 #include <quadus.h>
-
-#include <calls.h>
-#include <piece.h>
-#include <piecegen/tgm.h>
-#include <ruleset.h>
-#include <ruleset/input.h>
-#include <ruleset/linequeue.h>
-#include <ruleset/twist.h>
+#include <quadus/calls.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/tgm.h>
+#include <quadus/ruleset.h>
+#include <quadus/ruleset/input.h>
+#include <quadus/ruleset/linequeue.h>
+#include <quadus/ruleset/twist.h>
 
 #include <errno.h>
 #include <limits.h>

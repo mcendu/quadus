@@ -25,9 +25,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include <piece.h>
 #include <quadus.h>
-#include <ruleset.h>
+#include <quadus/piece.h>
+#include <quadus/ruleset.h>
 
 /**
  * Define mock ruleset and gamemode event handlers.

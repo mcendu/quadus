@@ -25,7 +25,7 @@
 #include <string.h>
 
 #include <quadus.h>
-#include <ruleset/input.h>
+#include <quadus/ruleset/input.h>
 
 qdsInputState *istate = &(qdsInputState){};
 

@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <calls.h>
-#include <curses.h>
-#include <piece.h>
+#include "quadustui.h"
 #include <quadus.h>
+#include <quadus/calls.h>
+#include <quadus/piece.h>
+#include <quadus/ui.h>
+
+#include <curses.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
-
-#include "quadustui.h"
-#include "ui.h"
 
 static const char tileFilled[] = "[]";
 static const char tileEmpty[] = ". ";

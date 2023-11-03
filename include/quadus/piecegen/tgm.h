@@ -23,8 +23,8 @@
 #ifndef QDS__PIECEGEN_TGM_H
 #define QDS__PIECEGEN_TGM_H
 
-#include "../quadus.h"
-#include "../ruleset/rand.h"
+#include <quadus.h>
+#include <quadus/ruleset/rand.h>
 
 #include <stdalign.h>
 

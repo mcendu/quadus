@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <check.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include "rulesets/standard.h"
 
 #include "mockgen.h"
 #include "mockruleset.h"
-#include <calls.h>
 #include <errno.h>
 #include <quadus.h>
-#include <ruleset.h>
-#include <rulesets/standard.h>
+#include <quadus/calls.h>
+#include <quadus/ruleset.h>
+#include <stdlib.h>
 
 static qdsGame *game;
 static qdsGamemode mode;

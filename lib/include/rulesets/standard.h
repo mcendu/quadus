@@ -23,9 +23,9 @@
 #ifndef QDS__RULESET_STANDARD_H
 #define QDS__RULESET_STANDARD_H
 
-#include <piecegen/bag.h>
-#include <ruleset/input.h>
-#include <ruleset/linequeue.h>
+#include <quadus/piecegen/bag.h>
+#include <quadus/ruleset/input.h>
+#include <quadus/ruleset/linequeue.h>
 #include <stdbool.h>
 
 typedef struct standardData

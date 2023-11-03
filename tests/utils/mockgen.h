@@ -23,7 +23,7 @@
 #ifndef MOCKGEN_H
 #define MOCKGEN_H
 
-#include <mode.h>
+#include <quadus/mode.h>
 
 extern void setMockSequence(qdsGame *game, const int *sequence, int count);
 

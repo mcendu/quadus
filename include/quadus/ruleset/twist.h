@@ -20,34 +20,29 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef QDS__PIECEGEN_BAG_H
-#define QDS__PIECEGEN_BAG_H
+/*
+ * Utilities for checking for twists.
+ */
+#ifndef QDS__RULESET_TWIST_H
+#define QDS__RULESET_TWIST_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../quadus.h"
-#include "../ruleset/rand.h"
+#include <quadus.h>
 
 /**
- * State for the standard "7-bag" piece generator.
+ * Check for a twist via the immobile method.
  */
-struct qdsBag
-{
-	qdsRandState rng;
-	qdsTile pieces[14];
-	unsigned char head;
-};
-
-#define QDS_BAG_DEPTH 7
-
-QDS_API void qdsBagInit(struct qdsBag *q, unsigned seed);
-QDS_API int qdsBagPeek(const struct qdsBag *q, int pos);
-QDS_API int qdsBagDraw(struct qdsBag *q);
+QDS_API bool qdsCheckTwistImmobile(qdsGame *game, int x, int y, int rotation);
+/**
+ * Check for a twist via the three-corner method.
+ */
+QDS_API bool qdsCheckTwist3Corner(qdsGame *game, int x, int y, int rotation);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__PIECEGEN_BAG_H */
+#endif /* !QDS__RULESET_TWIST_H */

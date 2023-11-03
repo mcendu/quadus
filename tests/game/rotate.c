@@ -20,17 +20,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <assert.h>
 #include <check.h>
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "game.h"
 #include "mockruleset.h"
-#include <game.h>
-#include <piece.h>
-#include <quadus.h>
 
 static qdsGame game[1];
 static mockRulesetData *rsData;

@@ -25,10 +25,10 @@
 
 #include <curses.h>
 #include <quadus.h>
-#include <ruleset/linequeue.h>
+#include <quadus/ruleset/linequeue.h>
+#include <quadus/ui.h>
 #include <setjmp.h>
 #include <stdalign.h>
-#include <ui.h>
 
 #define PAIR_ACCENT 8
 

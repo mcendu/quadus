@@ -26,11 +26,10 @@
 #ifndef QDS__PLAYFIELD_H
 #define QDS__PLAYFIELD_H
 
-#include "quadus.h"
+#include <quadus.h>
+#include <quadus/mode.h>
+#include <quadus/ruleset.h>
 #include <stdalign.h>
-
-#include <mode.h>
-#include <ruleset.h>
 
 /**
  * Definition of qdsPlayfield.

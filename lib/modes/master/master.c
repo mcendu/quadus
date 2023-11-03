@@ -22,13 +22,13 @@
  */
 #include "master.h"
 #include <config.h>
+#include <quadus.h>
+#include <quadus/calls.h>
+#include <quadus/mode.h>
+#include <quadus/ruleset/linequeue.h>
 
-#include <calls.h>
 #include <errno.h>
 #include <limits.h>
-#include <mode.h>
-#include <quadus.h>
-#include <ruleset/linequeue.h>
 #include <stdlib.h>
 #include <time.h>
 

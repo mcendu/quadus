@@ -20,12 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "game.h"
 #include "mockruleset.h"
-#include "piece.h"
 #include <check.h>
-#include <game.h>
-#include <mode.h>
-#include <ruleset.h>
 #include <stdbool.h>
 
 static qdsGame gamed;

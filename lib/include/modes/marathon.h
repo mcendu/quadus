@@ -23,7 +23,7 @@
 #ifndef MODES_MARATHON_H
 #define MODES_MARATHON_H
 
-#include <piecegen/quadus.h>
+#include <quadus/piecegen/quadus.h>
 
 typedef struct modeData
 {

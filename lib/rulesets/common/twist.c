@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <quadus.h>
-#include <ruleset.h>
-#include <ruleset/twist.h>
+#include <quadus/ruleset.h>
+#include <quadus/ruleset/twist.h>
 
 #include <stdbool.h>
 

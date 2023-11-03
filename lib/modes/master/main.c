@@ -21,9 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "master.h"
-#include <calls.h>
-#include <mode.h>
 #include <quadus.h>
+#include <quadus/calls.h>
+#include <quadus/mode.h>
 
 #include <limits.h>
 #include <stdint.h>

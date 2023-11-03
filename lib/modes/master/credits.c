@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "master.h"
-#include <piece.h>
 #include <quadus.h>
+#include <quadus/piece.h>
 
 #include <stdint.h>
 #include <string.h>

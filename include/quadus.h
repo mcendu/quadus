@@ -30,7 +30,7 @@ extern "C" {
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "qdsbuild.h"
+#include <quadus/qdsbuild.h>
 
 #define QDS_INPUT_LEFT 1
 #define QDS_INPUT_RIGHT 2

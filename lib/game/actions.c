@@ -20,19 +20,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "piece.h"
-#include <qdsbuild.h>
-
-#include <game.h>
+#include "game.h"
 #include <quadus.h>
+#include <quadus/mode.h>
+#include <quadus/piece.h>
+#include <quadus/ruleset.h>
+#include <quadus/ui.h>
 
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
-
-#include <mode.h>
-#include <ruleset.h>
-#include <ui.h>
 
 #define EMIT(p, e, ...)                                                       \
 	do {                                                                      \

@@ -20,48 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef QDS__RULESET_INPUT_H
-#define QDS__RULESET_INPUT_H
+#ifndef QDS__PIECEGEN_BAG_H
+#define QDS__PIECEGEN_BAG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../calls.h"
-#include "../quadus.h"
+#include <quadus.h>
+#include <quadus/ruleset/rand.h>
 
-#define QDS_DEFAULT_DAS 10
-#define QDS_DEFAULT_ARR 2
-#define QDS_DEFAULT_DCD 6
-
-typedef struct qdsInputState qdsInputState;
-
-struct qdsInputState
+/**
+ * State for the standard "7-bag" piece generator.
+ */
+struct qdsBag
 {
-	unsigned int lastInput;
-	short repeatTimer;
-	short direction;
+	qdsRandState rng;
+	qdsTile pieces[14];
+	unsigned char head;
 };
 
-/**
- * Convert raw input to effective input.
- */
-QDS_API unsigned int qdsFilterDirections(qdsGame *game,
-										 qdsInputState *istate,
-										 unsigned int input);
+#define QDS_BAG_DEPTH 7
 
-/**
- * Interrupt autorepeat and reset the repeat timer.
- */
-inline static void qdsInterruptRepeat(qdsGame *game, qdsInputState *istate)
-{
-	int dcd;
-	if (!game || qdsCall(game, QDS_GETDCD, &dcd) < 0) dcd = QDS_DEFAULT_DCD;
-	istate->repeatTimer = dcd;
-}
+QDS_API void qdsBagInit(struct qdsBag *q, unsigned seed);
+QDS_API int qdsBagPeek(const struct qdsBag *q, int pos);
+QDS_API int qdsBagDraw(struct qdsBag *q);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__RULESET_INPUT_H */
+#endif /* !QDS__PIECEGEN_BAG_H */

@@ -21,13 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <check.h>
-
 #include <limits.h>
 
+#include "game.h"
 #include "mockruleset.h"
-#include "piece.h"
-#include <game.h>
-#include <quadus.h>
 
 static qdsGame *game = &(qdsGame){};
 static mockRulesetData *rsData;

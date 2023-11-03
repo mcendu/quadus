@@ -25,8 +25,8 @@
 
 #include <stdbool.h>
 
-#include <mode.h>
-#include <ruleset.h>
+#include <quadus/mode.h>
+#include <quadus/ruleset.h>
 
 /**
  * Ruleset for mocking in unit tests.

@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <quadus.h>
-#include <ruleset/rand.h>
+#include <quadus/ruleset/rand.h>
 
 /* https://doi.org/10.1002/spe.3030 */
 #define A 0xd1342543de82ef95ul;

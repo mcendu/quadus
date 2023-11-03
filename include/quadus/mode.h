@@ -21,26 +21,50 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * Reentrant pseudorandom number generator.
+ * Interface definition for Quadus gamemodes.
  */
-#ifndef QDS__RULESET_RAND_H
-#define QDS__RULESET_RAND_H
+#ifndef QDS__MODE_H
+#define QDS__MODE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "../quadus.h"
+#include <stdbool.h>
 
-#include <stdint.h>
+#include <quadus.h>
 
-typedef uint64_t qdsRandState;
+typedef struct qdsGamemode
+{
+	/**
+	 * Allocate and initialize data used by the game mode.
+	 */
+	void *(*init)();
+	/**
+	 * Deallocate data used by the game mode.
+	 */
+	void (*destroy)(void *modeData);
 
-QDS_API int qdsRand(qdsRandState *state);
-QDS_API void qdsSrand(unsigned int seed, qdsRandState *state);
+	qdsEventTable events;
+	qdsCustomCall *call;
+
+	/**
+	 * Get a piece in the piece queue.
+	 */
+	int (*getPiece)(const void *rsData, int position);
+	/**
+	 * Remove and return the topmost piece from the piece queue.
+	 */
+	int (*shiftPiece)(void *rsData);
+} qdsGamemode;
+
+/**
+ * Get a pointer to the gamemode's data.
+ */
+QDS_API void *qdsGetModeData(const qdsGame *);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__RULESET_RAND_H */
+#endif /* !QDS__MODE_H */

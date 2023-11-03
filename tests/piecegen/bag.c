@@ -21,9 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <check.h>
-#include <piece.h>
-#include <piecegen/bag.h>
 #include <quadus.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/bag.h>
 
 #define I QDS_PIECE_I
 #define J QDS_PIECE_J

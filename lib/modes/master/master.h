@@ -23,9 +23,8 @@
 #ifndef MODE_MASTER_H
 #define MODE_MASTER_H
 
-#include "piecegen/tgm.h"
-#include <piecegen/his.h>
 #include <quadus.h>
+#include <quadus/piecegen/tgm.h>
 #include <stdbool.h>
 #include <stdint.h>
 

@@ -22,10 +22,8 @@
  */
 #include <check.h>
 
+#include "game.h"
 #include "mockruleset.h"
-#include <game.h>
-#include <piece.h>
-#include <quadus.h>
 #include <string.h>
 
 static qdsGame game[1];

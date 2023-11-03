@@ -24,7 +24,6 @@
 #include <check.h>
 
 #include "mockruleset.h"
-#include "piece.h"
 #include <game.h>
 #include <quadus.h>
 

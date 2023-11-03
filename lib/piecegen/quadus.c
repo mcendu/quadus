@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <piecegen/quadus.h>
 #include <quadus.h>
-#include <ruleset/rand.h>
+#include <quadus/piecegen/quadus.h>
+#include <quadus/ruleset/rand.h>
 
 #define INITIAL_WEIGHT 7
 

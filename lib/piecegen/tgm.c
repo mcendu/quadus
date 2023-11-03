@@ -20,10 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <piecegen/tgm.h>
-
-#include <piece.h>
-#include <piecegen/his.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/tgm.h>
 #include <string.h>
 
 #define HISTOGRAPH_SIZE 7

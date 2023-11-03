@@ -20,9 +20,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <calls.h>
 #include <quadus.h>
-#include <ruleset/input.h>
+#include <quadus/calls.h>
+#include <quadus/ruleset/input.h>
 
 QDS_API unsigned int qdsFilterDirections(qdsGame *game,
 										 qdsInputState *istate,

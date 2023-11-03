@@ -20,10 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "calls.h"
 #include <config.h>
-#include <mode.h>
 #include <quadus.h>
+#include <quadus/calls.h>
+#include <quadus/mode.h>
 
 #include <errno.h>
 #include <stdlib.h>

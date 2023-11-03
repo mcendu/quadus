@@ -29,8 +29,8 @@
 #include "game.h"
 #include "mockruleset.h"
 #include <quadus.h>
-#include <ruleset.h>
-#include <ruleset/linequeue.h>
+#include <quadus/ruleset.h>
+#include <quadus/ruleset/linequeue.h>
 
 static qdsGame *game;
 static struct qdsPendingLines *q;

@@ -23,11 +23,11 @@
 #ifndef QDS__RULESET_ARCADE_H
 #define QDS__RULESET_ARCADE_H
 
-#include <piece.h>
-#include <piecegen/tgm.h>
 #include <quadus.h>
-#include <ruleset/input.h>
-#include <ruleset/linequeue.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/tgm.h>
+#include <quadus/ruleset/input.h>
+#include <quadus/ruleset/linequeue.h>
 
 #define RSSYM(f) qdsRulesetArcade__##f
 

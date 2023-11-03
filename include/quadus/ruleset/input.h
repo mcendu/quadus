@@ -20,28 +20,48 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/**
- * Interface for the controlling application.
- */
-#ifndef QDS__UI_H
-#define QDS__UI_H
+#ifndef QDS__RULESET_INPUT_H
+#define QDS__RULESET_INPUT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "quadus.h"
+#include <quadus.h>
+#include <quadus/calls.h>
 
-struct qdsUserInterface
+#define QDS_DEFAULT_DAS 10
+#define QDS_DEFAULT_ARR 2
+#define QDS_DEFAULT_DCD 6
+
+typedef struct qdsInputState qdsInputState;
+
+struct qdsInputState
 {
-	qdsEventTable events;
-	qdsCustomCall *call;
+	unsigned int lastInput;
+	short repeatTimer;
+	short direction;
 };
 
-QDS_API void *qdsGetUiData(const qdsGame *);
+/**
+ * Convert raw input to effective input.
+ */
+QDS_API unsigned int qdsFilterDirections(qdsGame *game,
+										 qdsInputState *istate,
+										 unsigned int input);
+
+/**
+ * Interrupt autorepeat and reset the repeat timer.
+ */
+inline static void qdsInterruptRepeat(qdsGame *game, qdsInputState *istate)
+{
+	int dcd;
+	if (!game || qdsCall(game, QDS_GETDCD, &dcd) < 0) dcd = QDS_DEFAULT_DCD;
+	istate->repeatTimer = dcd;
+}
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* QDS__UI_H */
+#endif /* !QDS__RULESET_INPUT_H */

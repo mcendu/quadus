@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-#include "quadus.h"
 #include <limits.h>
+#include <quadus.h>
 
 /**
  * Definition for a piece.

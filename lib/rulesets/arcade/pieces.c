@@ -21,9 +21,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "arcade.h"
-#include <limits.h>
-#include <piece.h>
 #include <quadus.h>
+#include <quadus/piece.h>
+
+#include <limits.h>
 
 #define END                  \
 	{                        \

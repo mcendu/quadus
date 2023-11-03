@@ -23,13 +23,12 @@
 #include "game.h"
 #include <config.h>
 #include <quadus.h>
+#include <quadus/mode.h>
+#include <quadus/ruleset.h>
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <mode.h>
-#include <ruleset.h>
 
 QDS_API qdsGame *qdsNewGame(void)
 {

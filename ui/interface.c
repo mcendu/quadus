@@ -20,13 +20,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "calls.h"
 #include "quadustui.h"
 #include <quadus.h>
-#include <ruleset/linequeue.h>
+#include <quadus/calls.h>
+#include <quadus/ruleset/linequeue.h>
+#include <quadus/ui.h>
 #include <stdbool.h>
 #include <string.h>
-#include <ui.h>
 
 void initUiData(uiState *data)
 {

@@ -20,9 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <ruleset/linequeue.h>
-
-#include <ruleset.h>
+#include <quadus/ruleset/linequeue.h>
 #include <stddef.h>
 
 QDS_API void qdsQueueLine(struct qdsPendingLines *q, int y)

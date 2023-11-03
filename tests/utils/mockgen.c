@@ -22,8 +22,8 @@
  */
 #include "mockgen.h"
 
-#include <mode.h>
 #include <quadus.h>
+#include <quadus/mode.h>
 
 #include <assert.h>
 #include <stdlib.h>

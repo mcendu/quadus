@@ -21,50 +21,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * Interface definition for Quadus gamemodes.
+ * Interface for the controlling application.
  */
-#ifndef QDS__MODE_H
-#define QDS__MODE_H
+#ifndef QDS__UI_H
+#define QDS__UI_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdbool.h>
+#include <quadus.h>
 
-#include "quadus.h"
-
-typedef struct qdsGamemode
+struct qdsUserInterface
 {
-	/**
-	 * Allocate and initialize data used by the game mode.
-	 */
-	void *(*init)();
-	/**
-	 * Deallocate data used by the game mode.
-	 */
-	void (*destroy)(void *modeData);
-
 	qdsEventTable events;
 	qdsCustomCall *call;
+};
 
-	/**
-	 * Get a piece in the piece queue.
-	 */
-	int (*getPiece)(const void *rsData, int position);
-	/**
-	 * Remove and return the topmost piece from the piece queue.
-	 */
-	int (*shiftPiece)(void *rsData);
-} qdsGamemode;
-
-/**
- * Get a pointer to the gamemode's data.
- */
-QDS_API void *qdsGetModeData(const qdsGame *);
+QDS_API void *qdsGetUiData(const qdsGame *);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !QDS__MODE_H */
+#endif /* QDS__UI_H */

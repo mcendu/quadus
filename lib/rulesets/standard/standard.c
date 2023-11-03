@@ -23,15 +23,14 @@
 #include "rulesets/standard.h"
 #include <config.h>
 #include <quadus.h>
-
-#include <calls.h>
-#include <piece.h>
-#include <piecegen/bag.h>
-#include <ruleset.h>
-#include <ruleset/input.h>
-#include <ruleset/linequeue.h>
-#include <ruleset/rand.h>
-#include <ruleset/twist.h>
+#include <quadus/calls.h>
+#include <quadus/piece.h>
+#include <quadus/piecegen/bag.h>
+#include <quadus/ruleset.h>
+#include <quadus/ruleset/input.h>
+#include <quadus/ruleset/linequeue.h>
+#include <quadus/ruleset/rand.h>
+#include <quadus/ruleset/twist.h>
 
 #include <errno.h>
 #include <limits.h>

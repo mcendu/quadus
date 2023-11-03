@@ -23,7 +23,6 @@
 #ifndef QDS__CALLS_H
 #define QDS__CALLS_H
 
-#include "quadus.h"
 #include <stdbool.h>
 
 /* metadata */

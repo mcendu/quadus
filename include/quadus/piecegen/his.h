@@ -20,29 +20,36 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/*
- * Utilities for checking for twists.
- */
-#ifndef QDS__RULESET_TWIST_H
-#define QDS__RULESET_TWIST_H
+#ifndef QDS__PIECEGEN_HIS_H
+#define QDS__PIECEGEN_HIS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "../quadus.h"
+#include <quadus.h>
+#include <quadus/ruleset/rand.h>
 
 /**
- * Check for a twist via the immobile method.
+ * Draw a piece while performing history checking.
  */
-QDS_API bool qdsCheckTwistImmobile(qdsGame *game, int x, int y, int rotation);
+QDS_API int qdsDrawHistory(qdsTile *history,
+						   int *head,
+						   int length,
+						   int tries,
+						   int (*gen)(void *st),
+						   void *restrict st);
+
 /**
- * Check for a twist via the three-corner method.
+ * Data for an H4Rx generator.
  */
-QDS_API bool qdsCheckTwist3Corner(qdsGame *game, int x, int y, int rotation);
+struct qdsHis
+{
+	qdsTile queue[8];
+	qdsTile history[4];
+	int queueHead;
+	int hisHead;
+	qdsRandState rng;
+};
 
-#ifdef __cplusplus
-}
-#endif
+QDS_API void qdsHisInit(struct qdsHis *q, unsigned seed);
+QDS_API int qdsHisPeek(const struct qdsHis *q, int pos);
+QDS_API int qdsHisDraw(struct qdsHis *q);
 
-#endif /* !QDS__RULESET_TWIST_H */
+#endif /* !QDS__PIECEGEN_HIS_H */
