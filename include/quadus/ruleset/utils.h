@@ -32,6 +32,9 @@ extern "C" {
 #include <quadus/ruleset/linequeue.h>
 #include <stdbool.h>
 
+/**
+ * The state of the ruleset.
+ */
 typedef struct qdsRulesetState
 {
 	/**
@@ -87,8 +90,14 @@ typedef struct qdsRulesetState
 #define QDS_STATUS_PAUSE 5
 #define QDS_STATUS_GAMEOVER 6
 
+/**
+ * Initialize the base ruleset state.
+ */
 QDS_API void qdsInitRulesetState(qdsRulesetState *);
 
+/**
+ * Run a ruleset cycle with user-defined active cycle action.
+ */
 QDS_API void qdsRulesetCycle(qdsRulesetState *,
 							 qdsGame *,
 							 void (*activeCycle)(qdsRulesetState *,
@@ -96,25 +105,57 @@ QDS_API void qdsRulesetCycle(qdsRulesetState *,
 												 unsigned int input),
 							 unsigned int input);
 
+/**
+ * Spawn a new piece and transition to the active state.
+ */
 QDS_API void qdsProcessSpawn(qdsRulesetState *, qdsGame *, unsigned int input);
+/**
+ * Process hold input.
+ */
 QDS_API void qdsProcessHold(qdsRulesetState *, qdsGame *, unsigned int input);
+/**
+ * Process rotation inputs.
+ */
 QDS_API int qdsProcessRotation(qdsRulesetState *,
 							   qdsGame *,
 							   unsigned int input);
+/**
+ * Process movement inputs.
+ */
 QDS_API int qdsProcessMovement(qdsRulesetState *,
 							   qdsGame *,
 							   unsigned int input);
+/**
+ * Process gravity and soft drop.
+ */
 QDS_API void qdsProcessGravity(qdsRulesetState *,
 							   qdsGame *,
 							   unsigned int input);
+/**
+ * Process piece locking, transitioning to lock delay or line delay
+ * depending on whether lines are cleared.
+ */
 QDS_API void qdsProcessLock(qdsRulesetState *, qdsGame *);
+/**
+ * Clear pending lines and enter lock delay.
+ */
 QDS_API void qdsProcessLineClear(qdsRulesetState *,
 								 qdsGame *,
 								 unsigned int input);
 
+/**
+ * Set appropriate states on spawn.
+ */
 QDS_API void qdsHandleSpawn(qdsRulesetState *);
+/**
+ * Determine the type of a piece lock or line clear and set the
+ * lock type field appropriately.
+ */
 QDS_API unsigned int qdsCheckLockType(qdsRulesetState *, qdsGame *);
 
+/**
+ * Process activity made during a non-active state.
+ */
 QDS_API void qdsProcessDelay(qdsRulesetState *, qdsGame *, unsigned int input);
 
 QDS_API int qdsUtilCallHandler(qdsRulesetState *,
