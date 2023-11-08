@@ -128,9 +128,3 @@ const struct phase SHARED(phaseCreditsInvisible) = {
 	.onLineFilled = onLineFilled,
 	.postLock = postLock,
 };
-
-const struct phase SHARED(phaseGameOver) = {
-	.getSpeed = getSpeed,
-	.getTimings = getTimings,
-	.getVisibility = SHARED(visible),
-};
