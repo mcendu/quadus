@@ -73,6 +73,7 @@ static bool isConsole(int fd)
 
 static unsigned int readInput(unsigned int *old, void *d)
 {
+	alarm(5); // without an alarm there is no rescue if the app hang
 	struct linuxInputData *data = d;
 	unsigned int input = *old;
 	unsigned char rawinput[24];

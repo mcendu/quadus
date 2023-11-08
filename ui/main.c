@@ -39,7 +39,7 @@
 
 jmp_buf cleanupJump;
 
-static void loop(int signo, siginfo_t *siginfo, void *p);
+static void loop(struct uiState *state);
 static void cleanup(int signo);
 
 static inline void initInput(const struct inputHandler **handler, void **data)
@@ -61,6 +61,7 @@ int main(int argc, char **argv)
 	sigset_t vblankWaitSet;
 	sigemptyset(&vblankWaitSet);
 	sigaddset(&vblankWaitSet, SIGVBLANK);
+	sigprocmask(SIG_BLOCK, &vblankWaitSet, NULL);
 
 	struct uiState state;
 	state.time = 0;
@@ -151,23 +152,20 @@ int main(int argc, char **argv)
 	signal(SIGXCPU, cleanup);
 	signal(SIGXFSZ, cleanup);
 
-	sigaction(SIGVBLANK,
-			  &(const struct sigaction){
-				  .sa_flags = SA_SIGINFO,
-				  .sa_sigaction = loop,
-				  .sa_mask = vblankWaitSet,
-			  },
-			  NULL);
+	sigset_t waitedSignals = vblankWaitSet;
+	sigaddset(&waitedSignals, SIGINT);
+	sigprocmask(SIG_BLOCK, &waitedSignals, NULL);
 
 	while (1) {
-		pause();
+		int sig;
+		sigwait(&waitedSignals, &sig);
+		if (sig == SIGINT) longjmp(cleanupJump, sig);
+		loop(&state);
 	}
 }
 
-static void loop(int signo, siginfo_t *siginfo, void *p)
+static void loop(struct uiState *state)
 {
-	alarm(5);
-	struct uiState *state = siginfo->si_value.sival_ptr;
 	qdsGame *game = state->game;
 
 	state->inputHandler->read(&state->input, state->inputData);
