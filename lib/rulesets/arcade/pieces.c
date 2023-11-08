@@ -75,7 +75,7 @@ const qdsPiecedef RSSYM(pieceS) = {
 
 const qdsPiecedef RSSYM(pieceI) = {
 	(const qdsCoords[]){ { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 }, END },
-	(const qdsCoords[]){ { 0, -2 }, { 0, -1 }, { 0, 0 }, { 0, 1 }, END },
-	(const qdsCoords[]){ { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 }, END },
 	(const qdsCoords[]){ { 1, -2 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, END },
+	(const qdsCoords[]){ { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 }, END },
+	(const qdsCoords[]){ { 0, -2 }, { 0, -1 }, { 0, 0 }, { 0, 1 }, END },
 };

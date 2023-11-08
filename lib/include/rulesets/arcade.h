@@ -28,79 +28,22 @@
 #include <quadus/piecegen/tgm.h>
 #include <quadus/ruleset/input.h>
 #include <quadus/ruleset/linequeue.h>
+#include <quadus/ruleset/utils.h>
 
 #define RSSYM(f) qdsRulesetArcade__##f
 
 typedef struct arcadeData
 {
-	/**
-	 * Status of the game.
-	 */
-	unsigned short status;
-	/**
-	 * Time remaining for the current status.
-	 */
-	short statusTime;
+	qdsRulesetState baseState;
 
-	/**
-	 * Subtile vertical position of the active mino.
-	 */
-	unsigned int subY;
-	/**
-	 * Number of game ticks left until lock.
-	 */
-	unsigned short lockTimer;
-	/**
-	 * Number of lock delay resets left.
-	 */
-	unsigned short resetsLeft;
-	/**
-	 * Input entered during delay.
-	 */
-	unsigned int delayInput;
-	/**
-	 * Number of consecutive line clears.
-	 */
-	unsigned int combo;
-	/**
-	 * The result of the last twist check, or 0.
-	 */
-	unsigned int twistCheckResult;
-	/**
-	 * Properties of the last piece lock.
-	 */
-	unsigned int clearType;
-
-	/**
-	 * Queue of lines to be cleared.
-	 */
-	struct qdsPendingLines pendingLines;
-	/**
-	 * Input state.
-	 */
 	struct qdsInputState inputState;
-
-	bool held : 1;
-	bool b2b : 1;
-	bool reset : 1;
-	bool pause : 1;
-
 	struct qdsTgmGen gen;
 
 	unsigned int time;
 	unsigned int lines;
 	unsigned int score;
+	unsigned int combo;
 } arcadeData;
-
-enum gameStatus
-{
-	STATUS_PREGAME,
-	STATUS_ACTIVE,
-	STATUS_LOCKDELAY,
-	STATUS_LINEDELAY,
-	STATUS_GAMEOVER,
-	STATUS_PAUSE,
-};
 
 extern const qdsPiecedef RSSYM(pieceT);
 extern const qdsPiecedef RSSYM(pieceJ);

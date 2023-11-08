@@ -126,6 +126,7 @@ QDS_API void qdsProcessGravity(qdsRulesetState *restrict state,
 							   unsigned int input)
 {
 	if (qdsGrounded(game)) {
+		state->subY = 0;
 		if (--state->lockTimer == 0) return qdsProcessLock(state, game);
 	} else {
 		int gravity, dropType = QDS_DROP_GRAVITY;
