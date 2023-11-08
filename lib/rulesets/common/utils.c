@@ -43,6 +43,7 @@ QDS_API void qdsInitRulesetState(qdsRulesetState *state)
 	state->b2b = false;
 	state->reset = false;
 	state->pause = false;
+	state->spawning = false;
 }
 
 QDS_API void qdsProcessSpawn(qdsRulesetState *restrict state,
@@ -53,12 +54,14 @@ QDS_API void qdsProcessSpawn(qdsRulesetState *restrict state,
 	state->delayInput = 0;
 	state->held = false;
 
+	state->spawning = true;
 	qdsSpawn(game, 0);
 
 	qdsProcessHold(state, game, input);
 	qdsProcessRotation(state, game, input);
-
 	if (qdsOverlaps(game)) qdsEndGame(game);
+
+	state->spawning = false;
 
 	qdsProcessGravity(state, game, input & QDS_INPUT_SOFT_DROP);
 }

@@ -80,6 +80,7 @@ typedef struct qdsRulesetState
 	bool b2b : 1;
 	bool reset : 1;
 	bool pause : 1;
+	bool spawning : 1;
 } qdsRulesetState;
 
 #define QDS_STATUS_INIT 0
@@ -144,7 +145,7 @@ QDS_API void qdsProcessLineClear(qdsRulesetState *,
 								 unsigned int input);
 
 /**
- * Set appropriate states on spawn.
+ * Set appropriate states on spawn or piece hold.
  */
 QDS_API void qdsHandleSpawn(qdsRulesetState *);
 /**
