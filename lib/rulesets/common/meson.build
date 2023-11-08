@@ -24,6 +24,7 @@ quaduscore_src_rulesets_common = [
     'piece.c',
     'rand.c',
     'twist.c',
+    'utils.c',
 ]
 
 foreach src : quaduscore_src_rulesets_common

@@ -31,6 +31,7 @@
 #include <quadus/ruleset/linequeue.h>
 #include <quadus/ruleset/rand.h>
 #include <quadus/ruleset/twist.h>
+#include <quadus/ruleset/utils.h>
 
 #include <errno.h>
 #include <limits.h>
@@ -114,82 +115,22 @@ static const int allClearBonus[] = { 0, 800, 1200, 1800, 2000 };
 #define DEFAULT_LOCKTIME 30
 #define DEFAULT_GRAVITY (65536 / 60)
 
-/**
- * Run active cycle game logic.
- */
-static void doActiveCycle(standardData *data, qdsGame *game, unsigned input);
-/**
- * Run delay cycle game logic.
- */
-static void doDelayCycle(standardData *data, qdsGame *game, unsigned input);
-
-/**
- * Transition from delay to active state.
- */
-static void spawnPiece(standardData *data, qdsGame *game, unsigned int input);
-/**
- * End line delay, clear pending lines and transition to the next state.
- */
-static void clearLines(standardData *data, qdsGame *game, unsigned int input);
-/**
- * Process horizontal piece movement.
- */
-static void doMovement(standardData *data, qdsGame *game, unsigned int input);
-/**
- * Process piece rotation.
- */
-static void doRotate(standardData *data, qdsGame *game, unsigned int input);
-/**
- * Process piece holding.
- */
-static void doHold(standardData *data, qdsGame *game, unsigned int input);
-/**
- * Process gravity, soft dropping and hard dropping.
- */
-static void doGravity(standardData *data, qdsGame *game, unsigned int input);
-/**
- * Process locking.
- */
-static void doLock(standardData *data, qdsGame *game);
-/**
- * Reset lock timer.
- */
-static bool resetLock(standardData *data, qdsGame *game, bool refresh);
-/**
- * Add to score a number of points multiplied by level.
- */
-static int addLevelMultipliedScore(standardData *data,
-								   qdsGame *game,
-								   int points);
-
 static void *init(void)
 {
 	standardData *data = malloc(sizeof(standardData));
 	if (!data) return NULL;
 
+	qdsInitRulesetState(&data->baseState);
+
 	data->time = 0;
 	data->lines = 0;
 	data->score = 0;
 	data->combo = 0;
-	data->subY = 0;
-	data->status = STATUS_PREGAME;
-	data->statusTime = 1;
-	data->delayInput = 0;
-	data->lockTimer = 30;
-	data->resetsLeft = 15;
-	data->twistCheckResult = 0;
-	data->clearType = 0;
-	data->held = false;
-	data->b2b = false;
-	data->reset = false;
-	data->pause = false;
 
 	data->inputState.lastInput = 0;
 	data->inputState.direction = 0;
 
 	qdsBagInit(&data->gen, time(NULL));
-
-	data->pendingLines.lines = 0;
 
 	return data;
 }
@@ -210,113 +151,32 @@ static int addLevelMultipliedScore(standardData *restrict data,
 	return data->score;
 }
 
-static void gameCycle(qdsGame *restrict game, unsigned int input)
+static bool resetLock(standardData *restrict data,
+					  qdsGame *restrict game,
+					  bool refresh)
 {
-	standardData *data = qdsGetRulesetData(game);
-
-	unsigned int effective = input & ~(data->inputState.lastInput);
-	effective |= qdsFilterDirections(game, &data->inputState, input)
-				 & ~(QDS_INPUT_HARD_DROP);
-
-	if (data->pause) {
-		data->pause = false;
-		data->status = STATUS_PAUSE;
+	if (refresh) {
+		int resets;
+		if (qdsCall(game, QDS_GETRESETS, &resets) < 0) resets = 15;
+		data->baseState.resetsLeft = resets;
+	} else {
+		if (data->baseState.resetsLeft == 0) return false;
+		data->baseState.resetsLeft -= 1;
 	}
 
-	switch (data->status) {
-		case STATUS_ACTIVE:
-			doActiveCycle(data, game, effective);
-			break;
-		case STATUS_PREGAME:
-		case STATUS_PAUSE:
-		case STATUS_LOCKDELAY:
-			doDelayCycle(data, game, effective);
-			if (data->statusTime == 0) {
-				spawnPiece(data, game, data->delayInput);
-			}
-			break;
-		case STATUS_LINEDELAY:
-			doDelayCycle(data, game, effective);
-			if (data->statusTime == 0) {
-				clearLines(data, game, effective);
-			}
-			break;
-		default: /* game over or invalid state */
-			return;
-	}
-
-	data->time += 1;
-}
-
-static void doActiveCycle(standardData *restrict data,
-						  qdsGame *restrict game,
-						  unsigned int input)
-{
-	doHold(data, game, input);
-	doMovement(data, game, input);
-	doRotate(data, game, input);
-	doGravity(data, game, input);
-}
-
-static void doDelayCycle(standardData *restrict data,
-						 qdsGame *restrict game,
-						 unsigned int input)
-{
-	/* initial rotation */
-	if (input & (QDS_INPUT_ROTATE_C | QDS_INPUT_ROTATE_CC)) {
-		data->delayInput &= ~(QDS_INPUT_ROTATE_C | QDS_INPUT_ROTATE_CC);
-		data->delayInput |= input & (QDS_INPUT_ROTATE_C | QDS_INPUT_ROTATE_CC);
-	}
-
-	/* initial hold */
-	if (input & QDS_INPUT_HOLD) {
-		/* allow initial hold to be cancelled */
-		data->delayInput ^= QDS_INPUT_HOLD;
-	}
-
-	data->statusTime -= 1;
-}
-
-static void spawnPiece(standardData *restrict data,
-					   qdsGame *restrict game,
-					   unsigned int input)
-{
-	data->status = STATUS_ACTIVE;
-	data->delayInput = 0;
-	data->held = false;
-
-	qdsSpawn(game, 0);
-
-	doHold(data, game, input);
-	doRotate(data, game, input);
-
-	if (qdsOverlaps(game)) qdsEndGame(game);
-
-	doGravity(data, game, input & QDS_INPUT_SOFT_DROP);
+	int lockTime;
+	if (qdsCall(game, QDS_GETLOCKTIME, &lockTime) < 0)
+		lockTime = DEFAULT_LOCKTIME;
+	data->baseState.lockTimer = lockTime;
+	return true;
 }
 
 static bool onSpawn(qdsGame *restrict game, int piece)
 {
 	standardData *data = qdsGetRulesetData(game);
-	data->subY = 0;
-	data->twistCheckResult = 0;
+	qdsHandleSpawn(&data->baseState);
 	resetLock(data, game, true);
 	return true;
-}
-
-static void clearLines(standardData *restrict data,
-					   qdsGame *restrict game,
-					   unsigned int input)
-{
-	qdsClearQueuedLines(game, &data->pendingLines);
-
-	unsigned int are;
-	if (qdsCall(game, QDS_GETARE, &are) < 0 || are == 0) {
-		return spawnPiece(data, game, data->delayInput);
-	} else {
-		data->status = STATUS_LOCKDELAY;
-		data->statusTime = are;
-	}
 }
 
 static void doMovement(standardData *restrict data,
@@ -324,41 +184,18 @@ static void doMovement(standardData *restrict data,
 					   unsigned int input)
 {
 	bool grounded = qdsGrounded(game);
-	int direction;
-
-	if (input & QDS_INPUT_LEFT) {
-		direction = -1;
-	} else if (input & QDS_INPUT_RIGHT) {
-		direction = 1;
-	} else {
-		return;
-	}
-
-	if (!qdsMove(game, direction)) return;
-
-	if (grounded) data->reset = true;
-	data->twistCheckResult = 0;
+	if (qdsProcessMovement(&data->baseState, game, input) && grounded)
+		data->baseState.reset = true;
 }
 
 static void doRotate(standardData *restrict data,
 					 qdsGame *restrict game,
 					 unsigned int input)
 {
-	int rotation;
-	if (input & QDS_INPUT_ROTATE_C) {
-		rotation = QDS_ROTATION_CLOCKWISE;
-	} else if (input & QDS_INPUT_ROTATE_CC) {
-		rotation = QDS_ROTATION_COUNTERCLOCKWISE;
-	} else {
-		return;
-	}
-
 	bool grounded = qdsGrounded(game);
-	int rotateResult = qdsRotate(game, rotation);
-	if (rotateResult == QDS_ROTATE_FAILED) return;
-
-	if (grounded) data->reset = true;
-	data->twistCheckResult = rotateResult;
+	if (qdsProcessRotation(&data->baseState, game, input) != QDS_ROTATE_FAILED
+		&& grounded)
+		data->baseState.reset = true;
 }
 
 static int canRotate(qdsGame *restrict game,
@@ -400,52 +237,23 @@ static int canRotate(qdsGame *restrict game,
 	return QDS_ROTATE_FAILED;
 }
 
-static void doHold(standardData *restrict data,
-				   qdsGame *restrict game,
-				   unsigned int input)
-{
-	if (!(input & QDS_INPUT_HOLD)) return;
-
-	if (data->held && (qdsCall(game, QDS_GETINFINIHOLD, NULL) <= 0)) return;
-	qdsHold(game);
-	data->held = true;
-}
-
 static void doGravity(standardData *restrict data,
 					  qdsGame *restrict game,
 					  unsigned int input)
 {
 	if (input & QDS_INPUT_HARD_DROP) {
 		qdsDrop(game, QDS_DROP_HARD, 48);
-		return doLock(data, game);
+		return qdsProcessLock(&data->baseState, game);
 	}
 
 	bool reset = false;
-	if (data->reset) {
+	if (data->baseState.reset) {
 		reset = resetLock(data, game, false);
-		data->reset = false;
+		data->baseState.reset = false;
 	}
 
-	if (qdsGrounded(game)) {
-		if (!reset && --data->lockTimer == 0) return doLock(data, game);
-	} else {
-		int gravity, dropType;
-		if (input & QDS_INPUT_SOFT_DROP) {
-			if (qdsCall(game, QDS_GETSDG, &gravity) < 0) gravity = 32768;
-			dropType = QDS_DROP_SOFT;
-		} else {
-			if (qdsCall(game, QDS_GETGRAVITY, &gravity) < 0)
-				gravity = DEFAULT_GRAVITY;
-			dropType = QDS_DROP_GRAVITY;
-		}
-
-		data->subY += gravity;
-		qdsDrop(game, dropType, data->subY / 65536);
-		if (qdsGrounded(game))
-			data->subY = 0;
-		else
-			data->subY %= 65536;
-	}
+	if (!reset || !qdsGrounded(game))
+		return qdsProcessGravity(&data->baseState, game, input);
 }
 
 static bool onDrop(qdsGame *restrict game, int type, int distance)
@@ -453,7 +261,7 @@ static bool onDrop(qdsGame *restrict game, int type, int distance)
 	standardData *data = qdsGetRulesetData(game);
 	if (type == QDS_DROP_HARD) data->score += distance * 2;
 	if (type == QDS_DROP_SOFT) data->score += distance;
-	if (distance > 0) data->twistCheckResult = 0;
+	if (distance > 0) data->baseState.twistCheckResult = 0;
 	return true;
 }
 
@@ -475,89 +283,39 @@ static void scoreLineClear(standardData *restrict data,
 static void addLockScore(qdsGame *restrict game)
 {
 	standardData *restrict data = qdsGetRulesetData(game);
+	scoreLineClear(data, game, qdsCheckLockType(&data->baseState, game));
 
-	unsigned int clearType = data->clearType;
-
-	int lines = data->pendingLines.lines;
-	clearType |= lines;
-
-	if (data->twistCheckResult >= QDS_ROTATE_TWIST)
-		clearType |= data->twistCheckResult << 8;
-
-	if (lines > 0) {
-		/* check for perfect clear */
-		if (qdsGetFieldHeight(game) == lines)
-			clearType |= QDS_LINECLEAR_ALLCLEAR;
-
-		/* check for back-to-back */
-		bool b2b = lines >= 4 || data->twistCheckResult >= QDS_ROTATE_TWIST;
-		if (b2b && data->b2b) clearType |= QDS_LINECLEAR_B2B;
-		data->b2b = b2b;
-
-		/* add line clear score */
-		data->clearType = clearType;
-		scoreLineClear(data, game, clearType);
-
+	if (data->baseState.pendingLines.lines > 0) {
 		/* add combo bonus */
 		addLevelMultipliedScore(data, game, 50 * data->combo++);
 	} else {
 		/* break combo */
 		data->combo = 0;
-
-		/* add twist bonus */
-		scoreLineClear(data, game, clearType);
-	}
-
-	data->clearType = clearType;
-}
-
-static void doLock(standardData *restrict data, qdsGame *restrict game)
-{
-	/* save active piece data for QDS_GETCLEARTYPE use */
-	data->clearType = qdsGetActivePieceType(game) << 16;
-
-	/* the rest is normal lock course */
-	if (!qdsLock(game)) return;
-	qdsInterruptRepeat(game, &data->inputState);
-
-	int lines = data->pendingLines.lines;
-	unsigned int delay;
-
-	if (lines > 0) {
-		/* go to line delay */
-		if (qdsCall(game, QDS_GETLINEDELAY, &delay) < 0 || delay == 0)
-			return clearLines(data, game, 0);
-		data->status = STATUS_LINEDELAY;
-		data->statusTime = delay;
-	} else {
-		/* go to lock delay */
-		if (qdsCall(game, QDS_GETARE, &delay) < 0 || delay == 0) {
-			return spawnPiece(data, game, data->delayInput);
-		} else {
-			data->status = STATUS_LOCKDELAY;
-			data->statusTime = delay;
-		}
 	}
 }
 
-static bool resetLock(standardData *restrict data,
-					  qdsGame *restrict game,
-					  bool refresh)
+static void doActiveCycle(qdsRulesetState *restrict data,
+						  qdsGame *restrict game,
+						  unsigned int input)
 {
-	if (refresh) {
-		int resets;
-		if (qdsCall(game, QDS_GETRESETS, &resets) < 0) resets = 15;
-		data->resetsLeft = resets;
-	} else {
-		if (data->resetsLeft == 0) return false;
-		data->resetsLeft -= 1;
-	}
+	qdsProcessHold(data, game, input);
+	/* baseState is the first element of standardData */
+	doMovement((standardData *)data, game, input);
+	doRotate((standardData *)data, game, input);
+	doGravity((standardData *)data, game, input);
+}
 
-	int lockTime;
-	if (qdsCall(game, QDS_GETLOCKTIME, &lockTime) < 0)
-		lockTime = DEFAULT_LOCKTIME;
-	data->lockTimer = lockTime;
-	return true;
+static void gameCycle(qdsGame *restrict game, unsigned int input)
+{
+	standardData *data = qdsGetRulesetData(game);
+
+	unsigned int effective = input & ~(data->inputState.lastInput);
+	effective |= qdsFilterDirections(game, &data->inputState, input)
+				 & ~(QDS_INPUT_HARD_DROP);
+
+	qdsRulesetCycle(&data->baseState, game, doActiveCycle, effective);
+
+	data->time += 1;
 }
 
 static int spawnX(qdsGame *game)
@@ -582,13 +340,14 @@ static int drawNext(void *data)
 
 static void onTopOut(qdsGame *restrict game)
 {
-	((standardData *)qdsGetRulesetData(game))->status = STATUS_GAMEOVER;
+	((standardData *)qdsGetRulesetData(game))->baseState.status
+		= QDS_STATUS_GAMEOVER;
 }
 
 static void onLineFilled(qdsGame *restrict game, int y)
 {
 	standardData *data = qdsGetRulesetData(game);
-	qdsQueueLine(&data->pendingLines, y);
+	qdsQueueLine(&data->baseState.pendingLines, y);
 	data->lines += 1;
 }
 
@@ -605,6 +364,9 @@ static int getSoftDropGravity(qdsGame *game, int *result)
 static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 {
 	standardData *data = qdsGetRulesetData(game);
+
+	int baseCallReturn = qdsUtilCallHandler(&data->baseState, game, call, argp);
+	if (baseCallReturn >= 0) return baseCallReturn;
 
 	switch (call) {
 		case QDS_GETRULESETNAME:
@@ -625,9 +387,6 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_GETGRAVITY:
 			*(int *)argp = DEFAULT_GRAVITY;
 			return 0;
-		case QDS_GETDCD:
-			*(int *)argp = QDS_DEFAULT_DCD;
-			return 0;
 		case QDS_GETSDG:
 			return getSoftDropGravity(game, argp);
 		case QDS_GETARE:
@@ -646,15 +405,6 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 			return 0;
 		case QDS_GETRESETS:
 			*(int *)argp = 15;
-			return 0;
-		case QDS_CANHOLD:
-			return !data->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
-		case QDS_GETCLEARTYPE:
-			*(int *)argp = data->clearType;
-			return 0;
-		case QDS_PAUSE:
-			data->pause = true;
-			data->statusTime = *(int *)argp;
 			return 0;
 		default:
 			return -ENOTTY;

@@ -20,18 +20,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef QDS__RULESET_ARCADE_H
-#define QDS__RULESET_ARCADE_H
+#ifndef QDS__RULESET_UTILS_H
+#define QDS__RULESET_UTILS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <quadus.h>
-#include <quadus/piece.h>
-#include <quadus/piecegen/tgm.h>
 #include <quadus/ruleset/input.h>
 #include <quadus/ruleset/linequeue.h>
+#include <stdbool.h>
 
-#define RSSYM(f) qdsRulesetArcade__##f
-
-typedef struct arcadeData
+typedef struct qdsRulesetState
 {
 	/**
 	 * Status of the game.
@@ -59,10 +60,6 @@ typedef struct arcadeData
 	 */
 	unsigned int delayInput;
 	/**
-	 * Number of consecutive line clears.
-	 */
-	unsigned int combo;
-	/**
 	 * The result of the last twist check, or 0.
 	 */
 	unsigned int twistCheckResult;
@@ -75,39 +72,58 @@ typedef struct arcadeData
 	 * Queue of lines to be cleared.
 	 */
 	struct qdsPendingLines pendingLines;
-	/**
-	 * Input state.
-	 */
-	struct qdsInputState inputState;
 
 	bool held : 1;
 	bool b2b : 1;
 	bool reset : 1;
 	bool pause : 1;
+} qdsRulesetState;
 
-	struct qdsTgmGen gen;
+#define QDS_STATUS_INIT 0
+#define QDS_STATUS_ACTIVE 1
+#define QDS_STATUS_LOCKDELAY 2
+#define QDS_STATUS_LINEDELAY 3
+#define QDS_STATUS_PREGAME 4
+#define QDS_STATUS_PAUSE 5
+#define QDS_STATUS_GAMEOVER 6
 
-	unsigned int time;
-	unsigned int lines;
-	unsigned int score;
-} arcadeData;
+QDS_API void qdsInitRulesetState(qdsRulesetState *);
 
-enum gameStatus
-{
-	STATUS_PREGAME,
-	STATUS_ACTIVE,
-	STATUS_LOCKDELAY,
-	STATUS_LINEDELAY,
-	STATUS_GAMEOVER,
-	STATUS_PAUSE,
-};
+QDS_API void qdsRulesetCycle(qdsRulesetState *,
+							 qdsGame *,
+							 void (*activeCycle)(qdsRulesetState *,
+												 qdsGame *,
+												 unsigned int input),
+							 unsigned int input);
 
-extern const qdsPiecedef RSSYM(pieceT);
-extern const qdsPiecedef RSSYM(pieceJ);
-extern const qdsPiecedef RSSYM(pieceL);
-extern const qdsPiecedef RSSYM(pieceO);
-extern const qdsPiecedef RSSYM(pieceZ);
-extern const qdsPiecedef RSSYM(pieceS);
-extern const qdsPiecedef RSSYM(pieceI);
+QDS_API void qdsProcessSpawn(qdsRulesetState *, qdsGame *, unsigned int input);
+QDS_API void qdsProcessHold(qdsRulesetState *, qdsGame *, unsigned int input);
+QDS_API int qdsProcessRotation(qdsRulesetState *,
+							   qdsGame *,
+							   unsigned int input);
+QDS_API int qdsProcessMovement(qdsRulesetState *,
+							   qdsGame *,
+							   unsigned int input);
+QDS_API void qdsProcessGravity(qdsRulesetState *,
+							   qdsGame *,
+							   unsigned int input);
+QDS_API void qdsProcessLock(qdsRulesetState *, qdsGame *);
+QDS_API void qdsProcessLineClear(qdsRulesetState *,
+								 qdsGame *,
+								 unsigned int input);
 
-#endif /* !QDS__RULESET_ARCADE_H */
+QDS_API void qdsHandleSpawn(qdsRulesetState *);
+QDS_API unsigned int qdsCheckLockType(qdsRulesetState *, qdsGame *);
+
+QDS_API void qdsProcessDelay(qdsRulesetState *, qdsGame *, unsigned int input);
+
+QDS_API int qdsUtilCallHandler(qdsRulesetState *,
+							   qdsGame *,
+							   unsigned long call,
+							   void *argp);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* QDS__RULESET_UTILS_H */

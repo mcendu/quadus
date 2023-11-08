@@ -26,65 +26,20 @@
 #include <quadus/piecegen/bag.h>
 #include <quadus/ruleset/input.h>
 #include <quadus/ruleset/linequeue.h>
+#include <quadus/ruleset/utils.h>
 #include <stdbool.h>
 
 typedef struct standardData
 {
+	qdsRulesetState baseState;
+
+	struct qdsBag gen;
+	struct qdsInputState inputState;
+
 	unsigned int time;
 	unsigned int lines;
 	unsigned int score;
 	unsigned int combo;
-
-	/**
-	 * Status of the game.
-	 */
-	unsigned short status;
-	/**
-	 * Time remaining for the current status.
-	 */
-	short statusTime;
-
-	/**
-	 * Subtile vertical position of the active mino.
-	 */
-	unsigned int subY;
-	/**
-	 * Number of game ticks left until lock.
-	 */
-	unsigned short lockTimer;
-	/**
-	 * Number of lock delay resets left.
-	 */
-	unsigned short resetsLeft;
-	/**
-	 * Input entered during delay.
-	 */
-	unsigned int delayInput;
-
-	/**
-	 * The result of the last twist check or 0.
-	 */
-	unsigned int twistCheckResult;
-	unsigned int clearType;
-
-	bool held : 1;
-	bool b2b : 1;
-	bool reset : 1;
-	bool pause : 1;
-
-	struct qdsInputState inputState;
-	struct qdsBag gen;
-	struct qdsPendingLines pendingLines;
 } standardData;
-
-enum gameStatus
-{
-	STATUS_PREGAME,
-	STATUS_ACTIVE,
-	STATUS_LOCKDELAY,
-	STATUS_LINEDELAY,
-	STATUS_GAMEOVER,
-	STATUS_PAUSE,
-};
 
 #endif /* !QDS__RULESET_STANDARD_H */
