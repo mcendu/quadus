@@ -351,22 +351,9 @@ static void onLineFilled(qdsGame *restrict game, int y)
 	data->lines += 1;
 }
 
-static int getSoftDropGravity(qdsGame *game, int *result)
-{
-	int sdf, g;
-	if (qdsCall(game, QDS_GETSDF, &sdf) < 0) return -ENOTTY;
-	if (qdsCall(game, QDS_GETGRAVITY, &g) < 0) g = DEFAULT_GRAVITY;
-
-	*result = g * sdf;
-	return 0;
-}
-
 static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 {
 	standardData *data = qdsGetRulesetData(game);
-
-	int baseCallReturn = qdsUtilCallHandler(&data->baseState, game, call, argp);
-	if (baseCallReturn >= 0) return baseCallReturn;
 
 	switch (call) {
 		case QDS_GETRULESETNAME:
@@ -384,30 +371,14 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_GETCOMBO:
 			*(unsigned int *)argp = data->combo;
 			return 0;
-		case QDS_GETGRAVITY:
-			*(int *)argp = DEFAULT_GRAVITY;
-			return 0;
-		case QDS_GETSDG:
-			return getSoftDropGravity(game, argp);
-		case QDS_GETARE:
-			*(unsigned int *)argp = 0;
-			return 0;
-		case QDS_GETLINEDELAY:
-			*(unsigned int *)argp = 30;
-			return 0;
 		case QDS_GETNEXTCOUNT:
 			*(int *)argp = 7;
-			return 0;
-		case QDS_GETINFINIHOLD:
-			return false;
-		case QDS_GETLOCKTIME:
-			*(int *)argp = 30;
 			return 0;
 		case QDS_GETRESETS:
 			*(int *)argp = 15;
 			return 0;
 		default:
-			return -ENOTTY;
+			return qdsUtilCallHandler(&data->baseState, game, call, argp);
 	}
 }
 

@@ -28,6 +28,8 @@
 #include <quadus/ruleset/utils.h>
 #include <string.h>
 
+#define DEFAULT_GRAVITY (65536 / 60)
+
 QDS_API void qdsInitRulesetState(qdsRulesetState *state)
 {
 	state->status = QDS_STATUS_INIT;
@@ -276,14 +278,40 @@ QDS_API void qdsRulesetCycle(qdsRulesetState *restrict state,
 	}
 }
 
+static int getSoftDropGravity(qdsGame *game, int *result)
+{
+	int sdf, g;
+	if (qdsCall(game, QDS_GETSDF, &sdf) < 0) return -ENOTTY;
+	if (qdsCall(game, QDS_GETGRAVITY, &g) < 0) g = DEFAULT_GRAVITY;
+
+	*result = g * sdf;
+	return 0;
+}
+
 QDS_API int qdsUtilCallHandler(qdsRulesetState *state,
 							   qdsGame *game,
 							   unsigned long call,
 							   void *argp)
 {
 	switch (call) {
+		case QDS_GETGRAVITY:
+			*(int *)argp = DEFAULT_GRAVITY;
+			return 0;
+		case QDS_GETSDG:
+			return getSoftDropGravity(game, argp);
+		case QDS_GETARE:
+			*(unsigned int *)argp = 0;
+			return 0;
+		case QDS_GETLINEDELAY:
+			*(unsigned int *)argp = 30;
+			return 0;
 		case QDS_CANHOLD:
 			return !state->held || qdsCall(game, QDS_GETINFINIHOLD, NULL) > 0;
+		case QDS_GETINFINIHOLD:
+			return false;
+		case QDS_GETLOCKTIME:
+			*(int *)argp = 30;
+			return 0;
 		case QDS_GETCLEARTYPE:
 			*(int *)argp = state->clearType;
 			return 0;
