@@ -80,6 +80,7 @@ QDS_API void qdsProcessHold(qdsRulesetState *restrict data,
 
 	if (data->held && (qdsCall(game, QDS_GETINFINIHOLD, NULL) <= 0)) return;
 	qdsHold(game);
+	if (qdsOverlaps(game)) qdsEndGame(game);
 	data->held = true;
 }
 

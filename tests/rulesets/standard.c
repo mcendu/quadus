@@ -684,6 +684,35 @@ START_TEST(topOut)
 }
 END_TEST
 
+START_TEST(topOutHold)
+{
+	const qdsLine playfield[] = {
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 }, { 8, 8, 8, 8, 8, 8, 8, 8, 8, 0 },
+		{ 8, 8, 8, 8, 0, 0, 8, 8, 8, 0 }, { 8, 8, 8, 8, 0, 0, 8, 8, 8, 0 },
+	};
+	const int seq[] = { QDS_PIECE_O, QDS_PIECE_I };
+	qdsAddLines(game, playfield, 22);
+	qdsSetMode(game, &mockGenMode);
+	setMockSequence(game, seq, 2);
+
+	qdsRunCycle(game, 0);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_O);
+	ck_assert_int_eq(data->baseState.status, QDS_STATUS_ACTIVE);
+	qdsRunCycle(game, QDS_INPUT_HOLD);
+	ck_assert_int_eq(qdsGetActivePieceType(game), QDS_PIECE_I);
+	ck_assert_int_eq(data->baseState.status, QDS_STATUS_GAMEOVER);
+}
+END_TEST
+
 Suite *createSuite(void)
 {
 	Suite *s = suite_create("qdsRulesetStandard");
@@ -712,6 +741,7 @@ Suite *createSuite(void)
 	tcase_add_test(c, lockTimeResetStep);
 	tcase_add_test(c, lockTimeResetLimit);
 	tcase_add_test(c, topOut);
+	tcase_add_test(c, topOutHold);
 	tcase_add_checked_fixture(c, setup, teardown);
 	suite_add_tcase(s, c);
 
