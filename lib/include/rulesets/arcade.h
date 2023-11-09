@@ -39,10 +39,10 @@ typedef struct arcadeData
 	struct qdsInputState inputState;
 	struct qdsTgmGen gen;
 
-	unsigned int time;
-	unsigned int lines;
 	unsigned int score;
 	unsigned int combo;
+	unsigned short softDistance;
+	unsigned short sonicDistance;
 } arcadeData;
 
 extern const qdsPiecedef RSSYM(pieceT);

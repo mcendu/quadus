@@ -61,6 +61,12 @@ static const struct
 	{ &RSSYM(pieceZ), kickOrderCw, kickOrderCcw },
 };
 
+/**
+ * Simulated levels given out to line clears for scoring purposes.
+ */
+static const unsigned char clearLevelBonus[] = { 0, 1, 2, 4, 6 };
+static const unsigned char clearLevelBonusTwist[] = { 0, 2, 3, 6, 10 };
+
 static void *init(void)
 {
 	arcadeData *data = malloc(sizeof(arcadeData));
@@ -68,10 +74,10 @@ static void *init(void)
 
 	qdsInitRulesetState(&data->baseState);
 
-	data->time = 0;
-	data->lines = 0;
 	data->score = 0;
-	data->combo = 0;
+	data->combo = 1;
+	data->softDistance = 0;
+	data->sonicDistance = 0;
 
 	data->inputState.lastInput = 0;
 	data->inputState.direction = 0;
@@ -163,6 +169,8 @@ static bool onSpawn(qdsGame *restrict game, int piece)
 {
 	arcadeData *data = qdsGetRulesetData(game);
 	qdsHandleSpawn(&data->baseState);
+	data->softDistance = 0;
+	data->sonicDistance = 0;
 	return true;
 }
 
@@ -183,21 +191,49 @@ static void doGravity(arcadeData *restrict data,
 
 static bool onDrop(qdsGame *game, int type, int dy)
 {
-	if (dy > 0) resetLock(qdsGetRulesetData(game), game);
+	arcadeData *data = qdsGetRulesetData(game);
+	if (dy > 0) {
+		resetLock(data, game);
+		if (type == QDS_DROP_SOFT) data->softDistance += dy;
+		if (type == QDS_DROP_HARD && dy > data->sonicDistance)
+			data->sonicDistance = dy;
+	}
 	return true;
 }
 
 static void addLockScore(qdsGame *restrict game)
 {
 	arcadeData *restrict data = qdsGetRulesetData(game);
-	qdsCheckLockType(&data->baseState, game);
+	unsigned lockType = qdsCheckLockType(&data->baseState, game);
+	int lines = lockType & QDS_LINECLEAR_MAX;
 
-	if (data->baseState.pendingLines.lines > 0) {
-
+	if (lines > 0) {
+		data->combo += 2 * lines - 2;
 	} else {
 		/* break combo */
-		data->combo = 0;
+		data->combo = 1;
+		return; /* no score is given out */
 	}
+
+	int level, postlevel;
+	if (qdsCall(game, QDS_GETSUBLEVEL, &level) < 0) level = 1;
+
+	int score = (level + lines + 3) / 4;
+	score += data->softDistance;
+	score += data->sonicDistance;
+	score *= lines;
+	score *= data->combo;
+	if (lockType & QDS_LINECLEAR_ALLCLEAR) score *= 4;
+
+	lines = lines > 4 ? 4 : lines;
+	postlevel = level;
+	if (lockType & QDS_LINECLEAR_TWIST)
+		postlevel += clearLevelBonusTwist[lines];
+	else
+		postlevel += clearLevelBonus[lines];
+	score += (postlevel + 1) / 2;
+
+	data->score += score;
 }
 
 static void doActiveCycle(qdsRulesetState *restrict data,
@@ -218,8 +254,6 @@ static void gameCycle(qdsGame *restrict game, unsigned int input)
 		= qdsFilterDirections(game, &data->inputState, input);
 
 	qdsRulesetCycle(&data->baseState, game, doActiveCycle, effective);
-
-	data->time += 1;
 }
 
 static int spawnX(qdsGame *game)
@@ -252,7 +286,6 @@ static void onLineFilled(qdsGame *restrict game, int y)
 {
 	arcadeData *data = qdsGetRulesetData(game);
 	qdsQueueLine(&data->baseState.pendingLines, y);
-	data->lines += 1;
 }
 
 static int getSoftDropGravity(qdsGame *game, int *result)
@@ -276,17 +309,8 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 		case QDS_GETRULESETNAME:
 			*(const char **)argp = "Arcade";
 			return 0;
-		case QDS_GETTIME:
-			*(unsigned int *)argp = data->time;
-			return 0;
-		case QDS_GETLINES:
-			*(unsigned int *)argp = data->lines;
-			return 0;
 		case QDS_GETSCORE:
 			*(unsigned int *)argp = data->score;
-			return 0;
-		case QDS_GETCOMBO:
-			*(unsigned int *)argp = data->combo;
 			return 0;
 		case QDS_GETGRAVITY:
 			*(int *)argp = DEFAULT_GRAVITY;
@@ -306,15 +330,12 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 			*(unsigned int *)argp = 30;
 			return 0;
 		case QDS_GETNEXTCOUNT:
-			*(int *)argp = 7;
+			*(int *)argp = 8;
 			return 0;
 		case QDS_GETINFINIHOLD:
 			return false;
 		case QDS_GETLOCKTIME:
 			*(int *)argp = 30;
-			return 0;
-		case QDS_GETRESETS:
-			*(int *)argp = 15;
 			return 0;
 		default:
 			return -ENOTTY;
