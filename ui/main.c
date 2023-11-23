@@ -24,6 +24,7 @@
 
 #include "input/input.h"
 #include "quadustui.h"
+#include "screen.h"
 #include <curses.h>
 #include <quadus.h>
 #include <setjmp.h>
@@ -64,16 +65,12 @@ int main(int argc, char **argv)
 	sigprocmask(SIG_BLOCK, &vblankWaitSet, NULL);
 
 	struct uiState state;
-	state.time = 0;
-	state.useDisplayPlayfield = false;
-	state.topOut = false;
-	state.lines.lines = 0;
+	initUiData(&state);
 
 	state.game = qdsNewGame();
 	if (!state.game) abort();
-	qdsSetRuleset(state.game, &qdsRulesetStandard);
-	qdsSetMode(state.game, &qdsModeMaster);
-	qdsSetUi(state.game, &ui, &state);
+	state.ruleset = &qdsRulesetStandard;
+	state.mode = &qdsModeMarathon;
 
 	timer_t frameTimer;
 	struct sigevent frameTimerSigev = {
@@ -156,6 +153,8 @@ int main(int argc, char **argv)
 	sigaddset(&waitedSignals, SIGINT);
 	sigprocmask(SIG_BLOCK, &waitedSignals, NULL);
 
+	changeScreen(&state, &screenGame);
+
 	while (1) {
 		int sig;
 		sigwait(&waitedSignals, &sig);
@@ -166,12 +165,9 @@ int main(int argc, char **argv)
 
 static void loop(struct uiState *state)
 {
-	qdsGame *game = state->game;
-
 	state->inputHandler->read(&state->input, state->inputData);
-	qdsRunCycle(game, state->input);
 	wnoutrefresh(stdscr);
-	gameView(stdscr, 0, 0, game);
+	state->currentScreen->update(stdscr, state);
 	doupdate();
 
 	state->time++;

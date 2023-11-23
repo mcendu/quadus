@@ -21,59 +21,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "quadustui.h"
-#include <quadus.h>
-#include <quadus/calls.h>
-#include <quadus/ruleset/linequeue.h>
-#include <quadus/ui.h>
-#include <stdbool.h>
-#include <string.h>
+#include "screen.h"
+#include <curses.h>
 
 void initUiData(uiState *data)
 {
+	data->time = 0;
+	data->currentScreen = NULL;
 	data->useDisplayPlayfield = false;
+	data->topOut = false;
 	data->lines.lines = 0;
 }
 
-static void onLineFilled(qdsGame *game, int y)
+void changeScreen(uiState *data, const screen *screen)
 {
-	uiState *data = qdsGetUiData(game);
-	qdsQueueLine(&data->lines, y);
+	if (data->currentScreen && data->currentScreen->exit) {
+		data->currentScreen->exit(stdscr, data);
+	}
+	data->currentScreen = screen;
+	if (screen && screen->enter) {
+		screen->enter(stdscr, data);
+	}
 }
-
-static void removeLineFromDisplay(qdsGame *game, int y)
-{
-	if (y >= 22) return;
-	uiState *data = qdsGetUiData(game);
-	memset(data->displayPlayfield[y], 0, sizeof(qdsLine));
-}
-
-static void postLock(qdsGame *game)
-{
-	uiState *data = qdsGetUiData(game);
-	if (data->lines.lines == 0) return;
-
-	memcpy(data->displayPlayfield, qdsGetPlayfield(game), sizeof(qdsLine[22]));
-	qdsForeachPendingLine(game, &data->lines, removeLineFromDisplay);
-	data->useDisplayPlayfield = true;
-}
-
-static bool onLineClear(qdsGame *game, int y)
-{
-	uiState *data = qdsGetUiData(game);
-	data->useDisplayPlayfield = false;
-	return true;
-}
-
-static void onTopOut(qdsGame *game)
-{
-	uiState *data = qdsGetUiData(game);
-	data->topOut = true;
-	data->topOutTime = data->time;
-}
-
-qdsUserInterface ui = { .events = {
-							.onLineFilled = onLineFilled,
-							.postLock = postLock,
-							.onLineClear = onLineClear,
-							.onTopOut = onTopOut,
-						} };

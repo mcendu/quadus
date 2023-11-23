@@ -20,63 +20,52 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef UI_H
-#define UI_H
-
+#include "quadustui.h"
 #include <curses.h>
-#include <quadus.h>
-#include <quadus/ruleset/linequeue.h>
-#include <quadus/ui.h>
-#include <setjmp.h>
-#include <stdalign.h>
+#include <stddef.h>
 
-#define PAIR_ACCENT 8
-
-#define INPUT_UI_UP (1 << 16)
-#define INPUT_UI_DOWN (1 << 17)
-#define INPUT_UI_LEFT (1 << 18)
-#define INPUT_UI_RIGHT (1 << 19)
-#define INPUT_UI_CONFIRM (1 << 20)
-#define INPUT_UI_BACK (1 << 21)
-#define INPUT_UI_MENU (1 << 22)
-
-typedef struct rect
+struct menuItem
 {
-	int x;
-	int y;
-	int w;
-	int h;
-} rect;
+	const char *name;
+	void *data;
+};
 
-typedef struct screen screen;
-
-typedef struct uiState
+void menu(WINDOW *restrict w,
+		  const rect *restrict rect,
+		  const struct menuItem *restrict menu,
+		  size_t selection)
 {
-	const screen *currentScreen;
+	size_t itemcount = 0;
+	for (const struct menuItem *i = menu; i->name != NULL; ++i) itemcount++;
 
-	qdsGame *game;
-	const qdsRuleset *ruleset;
-	const qdsGamemode *mode;
+	size_t scroll = 0;
+	if (itemcount > rect->h && selection > rect->h / 2) {
+		if (scroll + rect->h > itemcount)
+			scroll = itemcount - rect->h;
+		else
+			scroll = selection - rect->h / 2;
+	}
 
-	const struct inputHandler *inputHandler;
-	void *inputData;
-	unsigned int input;
-	unsigned int time;
+	for (int i = 0; i < rect->h; ++i) {
+		const struct menuItem *item = &menu[scroll + i];
 
-	qdsLine displayPlayfield[22];
-	bool useDisplayPlayfield : 1;
-	bool topOut : 1;
-	struct qdsPendingLines lines;
+		wmove(w, rect->y + i, rect->x);
+		if (scroll + i == selection)
+			wattr_set(w, A_REVERSE, 0, NULL);
+		else
+			wattr_set(w, 0, 0, NULL);
+		waddnstr(w, item->name, rect->w);
+	}
+}
 
-	unsigned int topOutTime;
-} uiState;
-
-extern void initUiData(uiState *data);
-extern void changeScreen(uiState *, const screen *screen);
-
-extern qdsUserInterface ui;
-extern jmp_buf cleanupJump;
-
-extern const screen screenGame;
-
-#endif /* UI_H */
+size_t updateSelection(size_t old,
+					   const struct menuItem *restrict menu,
+					   unsigned int input)
+{
+	if (input & INPUT_UI_UP && old - 1 >= 0)
+		return old - 1;
+	else if (input & INPUT_UI_DOWN && menu[old + 1].name != NULL)
+		return old + 1;
+	else
+		return old;
+}

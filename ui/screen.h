@@ -20,63 +20,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef UI_H
-#define UI_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
+#include "quadustui.h"
 #include <curses.h>
-#include <quadus.h>
-#include <quadus/ruleset/linequeue.h>
-#include <quadus/ui.h>
-#include <setjmp.h>
-#include <stdalign.h>
 
-#define PAIR_ACCENT 8
-
-#define INPUT_UI_UP (1 << 16)
-#define INPUT_UI_DOWN (1 << 17)
-#define INPUT_UI_LEFT (1 << 18)
-#define INPUT_UI_RIGHT (1 << 19)
-#define INPUT_UI_CONFIRM (1 << 20)
-#define INPUT_UI_BACK (1 << 21)
-#define INPUT_UI_MENU (1 << 22)
-
-typedef struct rect
+struct screen
 {
-	int x;
-	int y;
-	int w;
-	int h;
-} rect;
+	void (*enter)(WINDOW *w, uiState *state);
+	void (*update)(WINDOW *w, uiState *state);
+	void (*exit)(WINDOW *w, uiState *state);
+};
 
-typedef struct screen screen;
-
-typedef struct uiState
-{
-	const screen *currentScreen;
-
-	qdsGame *game;
-	const qdsRuleset *ruleset;
-	const qdsGamemode *mode;
-
-	const struct inputHandler *inputHandler;
-	void *inputData;
-	unsigned int input;
-	unsigned int time;
-
-	qdsLine displayPlayfield[22];
-	bool useDisplayPlayfield : 1;
-	bool topOut : 1;
-	struct qdsPendingLines lines;
-
-	unsigned int topOutTime;
-} uiState;
-
-extern void initUiData(uiState *data);
-extern void changeScreen(uiState *, const screen *screen);
-
-extern qdsUserInterface ui;
-extern jmp_buf cleanupJump;
-
-extern const screen screenGame;
-
-#endif /* UI_H */
+#endif /* !SCREEN_H */
