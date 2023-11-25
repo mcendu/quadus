@@ -38,6 +38,12 @@
 
 #define SIGVBLANK SIGRTMIN
 
+#ifdef NCURSES_VERSION
+#define COLOR_BG -1
+#else
+#define COLOR_BG COLOR_BLACK
+#endif
+
 jmp_buf cleanupJump;
 
 static void loop(struct uiState *state);
@@ -67,8 +73,6 @@ int main(int argc, char **argv)
 	struct uiState state;
 	initUiData(&state);
 
-	state.game = qdsNewGame();
-	if (!state.game) abort();
 	state.ruleset = &qdsRulesetStandard;
 	state.mode = &qdsModeMarathon;
 
@@ -90,16 +94,19 @@ int main(int argc, char **argv)
 	noecho();
 	keypad(stdscr, true);
 	nodelay(stdscr, true);
-	refresh();
 
-	init_pair(1, COLOR_CYAN, COLOR_BLACK);
-	init_pair(2, COLOR_BLUE, COLOR_BLACK);
-	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(4, COLOR_WHITE, COLOR_BLACK);
-	init_pair(5, COLOR_GREEN, COLOR_BLACK);
-	init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(7, COLOR_RED, COLOR_BLACK);
-	init_pair(PAIR_ACCENT, COLOR_RED, COLOR_BLACK);
+#ifdef NCURSES_VERSION
+	use_default_colors();
+	assume_default_colors(-1, -1);
+#endif
+	init_pair(1, COLOR_CYAN, COLOR_BG);
+	init_pair(2, COLOR_BLUE, COLOR_BG);
+	init_pair(3, COLOR_YELLOW, COLOR_BG);
+	init_pair(4, COLOR_WHITE, COLOR_BG);
+	init_pair(5, COLOR_GREEN, COLOR_BG);
+	init_pair(6, COLOR_MAGENTA, COLOR_BG);
+	init_pair(7, COLOR_RED, COLOR_BG);
+	init_pair(PAIR_ACCENT, COLOR_RED, COLOR_BG);
 
 	initInput(&state.inputHandler, &state.inputData);
 	state.input = 0;
@@ -120,7 +127,6 @@ int main(int argc, char **argv)
 		endwin();
 		if (state.inputHandler->cleanup)
 			state.inputHandler->cleanup(state.inputData);
-		qdsDestroyGame(state.game);
 		timer_delete(frameTimer);
 
 		if (jmpval != SIGINT) fprintf(stderr, "%s\n", strsignal(jmpval));
@@ -153,7 +159,7 @@ int main(int argc, char **argv)
 	sigaddset(&waitedSignals, SIGINT);
 	sigprocmask(SIG_BLOCK, &waitedSignals, NULL);
 
-	changeScreen(&state, &screenGame);
+	changeScreen(&state, &screenModeSelect);
 
 	while (1) {
 		int sig;

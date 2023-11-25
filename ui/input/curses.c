@@ -21,6 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "input.h"
+#include "quadustui.h"
 #include <curses.h>
 #include <quadus.h>
 #include <signal.h>
@@ -33,16 +34,26 @@ static unsigned int readCursesInput(unsigned int *last, void *_)
 		switch (ch) {
 			case KEY_LEFT:
 				input |= QDS_INPUT_LEFT;
+				input |= INPUT_UI_LEFT;
 				break;
 			case KEY_RIGHT:
 				input |= QDS_INPUT_RIGHT;
+				input |= INPUT_UI_RIGHT;
 				break;
 			case KEY_DOWN:
 				input |= QDS_INPUT_SOFT_DROP;
+				input |= INPUT_UI_DOWN;
 				break;
 			case KEY_UP:
+				input |= QDS_INPUT_HARD_DROP;
+				input |= INPUT_UI_UP;
+				break;
+			case '\n':
+				input |= INPUT_UI_CONFIRM;
+				break;
 			case ' ':
 				input |= QDS_INPUT_HARD_DROP;
+				input |= INPUT_UI_CONFIRM;
 				break;
 			case 'z':
 			case 'Z':

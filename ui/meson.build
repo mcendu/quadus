@@ -41,8 +41,10 @@ quadusui_src = [
     'game.c',
     'input/curses.c',
     'screens/game.c',
+    'screens/modeselect.c',
     'main.c',
     'uidata.c',
+    'widgets/menu.c',
 ]
 
 if HAVE_LINUX_CONSOLE

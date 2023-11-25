@@ -53,8 +53,8 @@ typedef struct screen screen;
 typedef struct uiState
 {
 	const screen *currentScreen;
+	void *screenData;
 
-	qdsGame *game;
 	const qdsRuleset *ruleset;
 	const qdsGamemode *mode;
 
@@ -78,5 +78,6 @@ extern qdsUserInterface ui;
 extern jmp_buf cleanupJump;
 
 extern const screen screenGame;
+extern const screen screenModeSelect;
 
 #endif /* UI_H */

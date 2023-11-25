@@ -30,7 +30,7 @@
 
 #include <curses.h>
 #include <stdarg.h>
-#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 static const char tileFilled[] = "[]";
@@ -336,21 +336,24 @@ static void gameView(WINDOW *w, int top, int left, qdsGame *game)
 
 static void screenEnter(WINDOW *w, uiState *state)
 {
-	qdsInitGame(state->game);
-	qdsSetRuleset(state->game, state->ruleset);
-	qdsSetMode(state->game, state->mode);
-	qdsSetUi(state->game, &ui, state);
+	werase(w);
+	qdsGame *game = state->screenData = qdsNewGame();
+	if (!game) abort();
+
+	qdsSetRuleset(game, state->ruleset);
+	qdsSetMode(game, state->mode);
+	qdsSetUi(game, &ui, state);
 }
 
 static void screenUpdate(WINDOW *w, uiState *state)
 {
-	qdsRunCycle(state->game, state->input);
-	gameView(stdscr, 0, 0, state->game);
+	qdsRunCycle(state->screenData, state->input);
+	gameView(stdscr, 0, 0, state->screenData);
 }
 
 static void screenExit(WINDOW *w, uiState *state)
 {
-	qdsCleanupGame(state->game);
+	qdsDestroyGame(state->screenData);
 }
 
 const screen screenGame = {
