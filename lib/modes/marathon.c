@@ -61,24 +61,29 @@ static const struct levelData speedCurve[] = {
 	{ 434424, 30, 30, 10 },
 	{ 749596, 30, 30, 10 },
 	{ 1325716, 30, 30, 10 },
-	{ 2097152, 30, 30, 10 },
+	{ 2097152, 24, 30, 10 },
 	/* 21..30 */
-	{ 2097152, 27, 30, 9 },
-	{ 2097152, 23, 30, 9 },
-	{ 2097152, 18, 30, 9 },
-	{ 2097152, 13, 30, 9 },
-	{ 2097152, 9, 30, 9 },
-	{ 2097152, 6, 29, 8 },
-	{ 2097152, 6, 28, 8 },
-	{ 2097152, 6, 26, 8 },
-	{ 2097152, 6, 24, 7 },
-	{ 2097152, 6, 21, 7 },
-	/* 31..35 */
-	{ 2097152, 6, 18, 7 },
-	{ 2097152, 6, 14, 6 },
-	{ 2097152, 6, 10, 6 },
-	{ 2097152, 6, 6, 5 },
-	{ 2097152, 6, 2, 5 },
+	{ 2097152, 19, 30, 9 },
+	{ 2097152, 15, 30, 9 },
+	{ 2097152, 12, 30, 9 },
+	{ 2097152, 10, 30, 9 },
+	{ 2097152, 8, 30, 9 },
+	{ 2097152, 6, 27, 8 },
+	{ 2097152, 5, 24, 8 },
+	{ 2097152, 4, 22, 8 },
+	{ 2097152, 3, 20, 7 },
+	{ 2097152, 3, 18, 7 },
+	/* 31..40 */
+	{ 2097152, 3, 16, 7 },
+	{ 2097152, 3, 14, 6 },
+	{ 2097152, 3, 13, 6 },
+	{ 2097152, 3, 12, 6 },
+	{ 2097152, 3, 10, 6 },
+	{ 2097152, 3, 9, 6 },
+	{ 2097152, 3, 8, 6 },
+	{ 2097152, 3, 7, 6 },
+	{ 2097152, 3, 6, 6 },
+	{ 2097152, 3, 2, 6 },
 };
 
 static void *init(void)
@@ -87,26 +92,15 @@ static void *init(void)
 	if (!data) return NULL;
 	data->level = 0;
 	data->lines = 0;
-	qdsQuadusGenInit(&data->rng, time(NULL));
 	return data;
-}
-
-static int peek(const void *data, int pos)
-{
-	return qdsQuadusGenPeek(&((const modeData *)data)->rng, pos);
-}
-
-static int draw(void *data)
-{
-	return qdsQuadusGenDraw(&((modeData *)data)->rng);
 }
 
 static void onLineFilled(qdsGame *game, int y)
 {
 	modeData *data = qdsGetModeData(game);
 	data->lines += 1;
-	data->level = data->lines / 10;
-	if (data->level > 34) data->level = 34;
+	int level = data->lines / 10;
+	data->level = level > 39 ? 39 : level;
 }
 
 static int modeCall(qdsGame *game, unsigned long call, void *argp)
@@ -152,11 +146,22 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 	return -ENOTTY;
 }
 
+static int modeInvisibleCall(qdsGame *game, unsigned long call, void *argp)
+{
+	if (call == QDS_GETVISIBILITY) return 0;
+	return modeCall(game, call, argp);
+}
+
 QDS_API const qdsGamemode qdsModeMarathon = {
 	.init = init,
 	.destroy = free,
-	.getPiece = peek,
-	.shiftPiece = draw,
 	.events = { .onLineFilled = onLineFilled },
 	.call = modeCall,
+};
+
+QDS_API const qdsGamemode qdsModeInvisible = {
+	.init = init,
+	.destroy = free,
+	.events = { .onLineFilled = onLineFilled },
+	.call = modeInvisibleCall,
 };
