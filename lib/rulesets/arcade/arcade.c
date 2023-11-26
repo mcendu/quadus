@@ -288,6 +288,13 @@ static void onLineFilled(qdsGame *restrict game, int y)
 	qdsQueueLine(&data->baseState.pendingLines, y);
 }
 
+static int getSoftDropGravity(qdsGame *game)
+{
+	int g;
+	if (qdsCall(game, QDS_GETGRAVITY, &g) < 0) g = 1092;
+	return g > 65536 ? g : 65536;
+}
+
 static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 {
 	arcadeData *data = qdsGetRulesetData(game);
@@ -301,6 +308,12 @@ static int rulesetCall(qdsGame *restrict game, unsigned long call, void *argp)
 			return 0;
 		case QDS_GETARR:
 			*(unsigned int *)argp = 1;
+			return 0;
+		case QDS_GETARE:
+			*(unsigned int *)argp = 5;
+			return 0;
+		case QDS_GETSDG:
+			*(unsigned int *)argp = getSoftDropGravity(game);
 			return 0;
 		case QDS_GETNEXTCOUNT:
 			*(int *)argp = 8;
