@@ -148,7 +148,14 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 
 static int modeInvisibleCall(qdsGame *game, unsigned long call, void *argp)
 {
-	if (call == QDS_GETVISIBILITY) return 0;
+	if (call == QDS_GETMODENAME) {
+		*(const char **)argp = "Invisible Marathon";
+		return 0;
+	} else if (call == QDS_GETVISIBILITY) {
+		*(uint_fast16_t *)argp = 0;
+		return 0;
+	}
+
 	return modeCall(game, call, argp);
 }
 
