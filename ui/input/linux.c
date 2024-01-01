@@ -20,6 +20,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "config.h"
+#include "evdev.h"
 #include "input.h"
 #include "quadustui.h"
 
@@ -42,7 +44,7 @@ struct linuxInputData
 {
 	int fd;
 	long oldkbmode;
-	unsigned char inputState[KEY_MAX / CHAR_BIT];
+	unsigned char inputState[KEY_CNT / CHAR_BIT];
 };
 
 /**
@@ -100,42 +102,7 @@ static unsigned int readInput(unsigned int *old, void *d)
 			else
 				data->inputState[key / CHAR_BIT] |= 1 << key % CHAR_BIT;
 
-			switch (key) {
-				case KEY_LEFT:
-					flag = QDS_INPUT_LEFT | INPUT_UI_LEFT;
-					break;
-				case KEY_RIGHT:
-					flag = QDS_INPUT_RIGHT | INPUT_UI_RIGHT;
-					break;
-				case KEY_DOWN:
-					flag = QDS_INPUT_SOFT_DROP | INPUT_UI_DOWN;
-					break;
-				case KEY_UP:
-					flag = QDS_INPUT_HARD_DROP | INPUT_UI_UP;
-					break;
-				case KEY_SPACE:
-					flag = QDS_INPUT_HARD_DROP | INPUT_UI_CONFIRM;
-					break;
-				case KEY_ENTER:
-					flag = INPUT_UI_CONFIRM;
-					break;
-				case KEY_X:
-					flag = QDS_INPUT_ROTATE_C;
-					break;
-				case KEY_Z:
-				case KEY_C:
-					flag = QDS_INPUT_ROTATE_CC;
-					break;
-				case KEY_LEFTSHIFT:
-					flag = QDS_INPUT_HOLD;
-					break;
-				case KEY_ESC:
-					flag = INPUT_UI_BACK | INPUT_UI_MENU;
-					break;
-				case KEY_Q:
-					raise(SIGINT);
-					break;
-			}
+			flag = mapEvdevInput(key);
 
 			if (release)
 				input &= ~flag;

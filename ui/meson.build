@@ -48,7 +48,10 @@ quadusui_src = [
 ]
 
 if HAVE_LINUX_CONSOLE
-    quadusui_src += 'input/linux.c'
+    quadusui_src += [
+        'input/evdev.c',
+        'input/linux.c',
+    ]
 endif
 
 quadusui_bin = executable('quadus', quadusui_src,
