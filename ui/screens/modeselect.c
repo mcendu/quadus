@@ -25,6 +25,7 @@
 #include "screen.h"
 #include "widgets.h"
 #include <quadus.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -69,6 +70,13 @@ static bool handleSelect(WINDOW *w, uiState *state, struct modeSelection *sel)
 			state->ruleset = rulesets[sel->iRule].data;
 			changeScreen(state, &screenGame);
 			return false;
+		}
+	} else if (state->input & INPUT_UI_BACK) {
+		if (sel->menuLevel == LEVEL_RULESET) {
+			werase(w);
+			sel->menuLevel = LEVEL_MODE;
+		} else if (sel->menuLevel == LEVEL_MODE) {
+			raise(SIGINT);
 		}
 	}
 
