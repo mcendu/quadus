@@ -172,8 +172,28 @@ static void *initInput(int fd)
 	return data;
 }
 
+static void cleanup(void *state)
+{
+	struct inputData *data = state;
+	close(data->fd);
+	free(data);
+
+	/* read out stdin to prevent issues when exiting */
+	int fileflags = fcntl(STDIN_FILENO, F_GETFL);
+	if (fileflags >= 0) {
+		fcntl(STDIN_FILENO, F_SETFL, fileflags | O_NONBLOCK);
+	}
+	char *buf = malloc(4096);
+	while (read(STDIN_FILENO, buf, 4096) > 0)
+		;
+	free(buf);
+	if (fileflags >= 0) {
+		fcntl(STDIN_FILENO, F_SETFL, fileflags);
+	}
+}
+
 const struct inputHandler evdevInput = {
 	.read = readInput,
 	.init = initInput,
-	.cleanup = free,
+	.cleanup = cleanup,
 };
