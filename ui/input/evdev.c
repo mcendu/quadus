@@ -44,7 +44,7 @@ struct inputData
 
 unsigned int mapEvdevInput(int key)
 {
-	unsigned int flag;
+	unsigned int flag = 0;
 	switch (key) {
 		case KEY_LEFT:
 			flag = QDS_INPUT_LEFT | INPUT_UI_LEFT;
