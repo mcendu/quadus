@@ -23,6 +23,8 @@
 #ifndef UI_H
 #define UI_H
 
+#include "config.h"
+
 #include <curses.h>
 #include <quadus.h>
 #include <quadus/ruleset/linequeue.h>
@@ -74,9 +76,18 @@ typedef struct uiState
 extern void initUiData(uiState *data);
 extern void changeScreen(uiState *, const screen *screen);
 
+#ifdef HAVE_UDEV
+#include <libudev.h>
+#include <poll.h>
+extern int searchKeyboards(struct pollfd *fds,
+						   size_t capacity,
+						   struct udev *udev);
+#endif
+
 extern qdsUserInterface ui;
 extern jmp_buf cleanupJump;
 
+extern const screen screenMainMenu;
 extern const screen screenGame;
 extern const screen screenModeSelect;
 

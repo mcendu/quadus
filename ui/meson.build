@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 curses_dep = dependency('curses', required: get_option('enable_tui'))
+libudev_dep = dependency('libudev', required: false)
 
 if not curses_dep.found()
     subdir_done()
@@ -33,24 +34,42 @@ cfg.set('HAVE_RT_SIGNAL',
 cfg.set('HAVE_POSIX_TIMER',
     cc.has_header_symbol('time.h', 'timer_create',
         required: true))
+cfg.set('HAVE_POLL', cc.has_header_symbol('poll.h', 'poll', required: true))
 
-HAVE_LINUX_CONSOLE = cc.has_header('linux/kd.h')
-cfg.set('HAVE_LINUX_CONSOLE', HAVE_LINUX_CONSOLE)
+HAVE_LINUX_CONSOLE = false
+HAVE_EVDEV = false
+HAVE_IOCTL = cc.has_header_symbol('sys/ioctl.h', 'ioctl')
+if HAVE_IOCTL
+    HAVE_LINUX_CONSOLE = cc.has_header('linux/kd.h')
+    cfg.set('HAVE_LINUX_CONSOLE', HAVE_LINUX_CONSOLE)
+    HAVE_EVDEV = cc.has_header('linux/input.h')
+    cfg.set('HAVE_EVDEV', HAVE_EVDEV)
+endif
+
+cfg.set('HAVE_UDEV', libudev_dep.found())
 
 quadusui_src = [
     'game.c',
     'input/curses.c',
     'screens/game.c',
+    'screens/menu.c',
     'screens/modeselect.c',
     'main.c',
     'uidata.c',
     'widgets/menu.c',
 ]
-
-if HAVE_LINUX_CONSOLE
+if HAVE_EVDEV
     quadusui_src += [
         'input/evdev.c',
+    ]
+endif
+if HAVE_LINUX_CONSOLE
+    quadusui_src += [
         'input/linux.c',
+    ]
+endif
+if libudev_dep.found()
+    quadusui_src += [
         'udev.c'
     ]
 endif
@@ -59,5 +78,5 @@ quadusui_bin = executable('quadus', quadusui_src,
     include_directories: [quaduscore_include, config_include],
     link_with: [quaduscore_lib],
     link_args: ['-lrt'],
-    dependencies: [malloc_deps, curses_dep],
+    dependencies: [malloc_deps, curses_dep, libudev_dep],
     install: true)

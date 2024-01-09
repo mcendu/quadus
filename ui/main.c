@@ -49,17 +49,6 @@ jmp_buf cleanupJump;
 static void loop(struct uiState *state);
 static void cleanup(int signo);
 
-static inline void initInput(const struct inputHandler **handler, void **data)
-{
-#ifdef HAVE_LINUX_CONSOLE
-	/* use console input; fallback to curses if not possible */
-	*handler = &linuxConsoleInput;
-	if (!(*data = linuxConsoleInput.init(0))) *handler = &cursesInput;
-#else
-	*handlerVar = &cursesInput;
-#endif
-}
-
 int main(int argc, char **argv)
 {
 	sigaction(
@@ -108,7 +97,6 @@ int main(int argc, char **argv)
 	init_pair(7, COLOR_RED, COLOR_BG);
 	init_pair(PAIR_ACCENT, COLOR_RED, COLOR_BG);
 
-	initInput(&state.inputHandler, &state.inputData);
 	state.input = 0;
 
 	timer_settime(frameTimer, 0, &(const struct itimerspec){
@@ -159,7 +147,7 @@ int main(int argc, char **argv)
 	sigaddset(&waitedSignals, SIGINT);
 	sigprocmask(SIG_BLOCK, &waitedSignals, NULL);
 
-	changeScreen(&state, &screenModeSelect);
+	changeScreen(&state, &screenMainMenu);
 
 	while (1) {
 		int sig;
@@ -171,7 +159,8 @@ int main(int argc, char **argv)
 
 static void loop(struct uiState *state)
 {
-	state->inputHandler->read(&state->input, state->inputData);
+	if (state->inputHandler)
+		state->inputHandler->read(&state->input, state->inputData);
 	wnoutrefresh(stdscr);
 	state->currentScreen->update(stdscr, state);
 	doupdate();

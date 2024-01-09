@@ -32,6 +32,12 @@
 /* Does ioctls pertaining to Linux console exist? */
 #mesondefine HAVE_LINUX_CONSOLE
 
+/* Is evdev available? */
+#mesondefine HAVE_EVDEV
+
+/* Is libudev found? */
+#mesondefine HAVE_UDEV
+
 #ifdef NEED_JEMALLOC
 #define JEMALLOC_MANGLE
 #include <jemalloc/jemalloc.h>
