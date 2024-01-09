@@ -31,6 +31,7 @@ struct inputHandler
 };
 
 extern const struct inputHandler cursesInput;
+extern const struct inputHandler evdevInput;
 extern const struct inputHandler linuxConsoleInput;
 
 #endif /* !INPUT_H */
