@@ -51,6 +51,7 @@ if HAVE_LINUX_CONSOLE
     quadusui_src += [
         'input/evdev.c',
         'input/linux.c',
+        'udev.c'
     ]
 endif
 
