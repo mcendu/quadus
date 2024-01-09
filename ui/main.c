@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 	int jmpval;
 	if ((jmpval = setjmp(cleanupJump))) {
 		endwin();
-		if (state.inputHandler->cleanup)
+		if (state.inputHandler && state.inputHandler->cleanup)
 			state.inputHandler->cleanup(state.inputData);
 		timer_delete(frameTimer);
 
