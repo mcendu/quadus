@@ -20,6 +20,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "evdev.h"
 #include "config.h"
 #include "input/input.h"
 #include "quadus.h"
@@ -84,9 +85,6 @@ unsigned int mapEvdevInput(int key)
 	return flag;
 }
 
-#define BIT_SET(bitset, bit) \
-	((bitset)[(bit) / CHAR_BIT] & (1 << (bit) % CHAR_BIT))
-
 static unsigned int syncInput(int fd)
 {
 	unsigned char keys[KEY_CNT / CHAR_BIT];
@@ -94,18 +92,18 @@ static unsigned int syncInput(int fd)
 
 	ioctl(fd, EVIOCGKEY(sizeof(keys)), keys);
 
-	if (BIT_SET(keys, KEY_LEFT)) input |= QDS_INPUT_LEFT | INPUT_UI_LEFT;
-	if (BIT_SET(keys, KEY_RIGHT)) input |= QDS_INPUT_RIGHT | INPUT_UI_RIGHT;
-	if (BIT_SET(keys, KEY_DOWN)) input |= QDS_INPUT_SOFT_DROP | INPUT_UI_DOWN;
-	if (BIT_SET(keys, KEY_UP)) input |= QDS_INPUT_HARD_DROP | INPUT_UI_UP;
-	if (BIT_SET(keys, KEY_SPACE))
+	if (BIT_GET(keys, KEY_LEFT)) input |= QDS_INPUT_LEFT | INPUT_UI_LEFT;
+	if (BIT_GET(keys, KEY_RIGHT)) input |= QDS_INPUT_RIGHT | INPUT_UI_RIGHT;
+	if (BIT_GET(keys, KEY_DOWN)) input |= QDS_INPUT_SOFT_DROP | INPUT_UI_DOWN;
+	if (BIT_GET(keys, KEY_UP)) input |= QDS_INPUT_HARD_DROP | INPUT_UI_UP;
+	if (BIT_GET(keys, KEY_SPACE))
 		input |= QDS_INPUT_HARD_DROP | INPUT_UI_CONFIRM;
-	if (BIT_SET(keys, KEY_ENTER)) input |= INPUT_UI_CONFIRM;
-	if (BIT_SET(keys, KEY_X)) input |= QDS_INPUT_ROTATE_C;
-	if (BIT_SET(keys, KEY_Z) || BIT_SET(keys, KEY_C))
+	if (BIT_GET(keys, KEY_ENTER)) input |= INPUT_UI_CONFIRM;
+	if (BIT_GET(keys, KEY_X)) input |= QDS_INPUT_ROTATE_C;
+	if (BIT_GET(keys, KEY_Z) || BIT_GET(keys, KEY_C))
 		input |= QDS_INPUT_ROTATE_CC;
-	if (BIT_SET(keys, KEY_LEFTSHIFT)) input |= QDS_INPUT_HOLD;
-	if (BIT_SET(keys, KEY_ESC)) input |= INPUT_UI_BACK | INPUT_UI_MENU;
+	if (BIT_GET(keys, KEY_LEFTSHIFT)) input |= QDS_INPUT_HOLD;
+	if (BIT_GET(keys, KEY_ESC)) input |= INPUT_UI_BACK | INPUT_UI_MENU;
 
 	return input;
 }

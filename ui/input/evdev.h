@@ -25,4 +25,7 @@
 
 unsigned int mapEvdevInput(int key);
 
+#define BIT_GET(bitset, bit) \
+	((bitset)[(bit) / CHAR_BIT] & (1 << (bit) % CHAR_BIT))
+
 #endif /* !INPUT_EVDEV_H */
