@@ -30,6 +30,8 @@ typedef struct modeData
 	struct qdsQuadusGen rng;
 	int level;
 	int lines;
+	unsigned int time;
+	bool gameOver : 1;
 } modeData;
 
 #endif /* !MODES_MARATHON_H */

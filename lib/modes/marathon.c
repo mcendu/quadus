@@ -92,7 +92,15 @@ static void *init(void)
 	if (!data) return NULL;
 	data->level = 0;
 	data->lines = 0;
+	data->time = 0;
+	data->gameOver = false;
 	return data;
+}
+
+static void onCycle(qdsGame *game)
+{
+	modeData *data = qdsGetModeData(game);
+	if (!data->gameOver) data->time += 1;
 }
 
 static void onLineFilled(qdsGame *game, int y)
@@ -103,6 +111,12 @@ static void onLineFilled(qdsGame *game, int y)
 	data->level = level > 39 ? 39 : level;
 }
 
+static void onTopOut(qdsGame *game)
+{
+	modeData *data = qdsGetModeData(game);
+	data->gameOver = true;
+}
+
 static int modeCall(qdsGame *game, unsigned long call, void *argp)
 {
 	modeData *data = qdsGetModeData(game);
@@ -110,6 +124,9 @@ static int modeCall(qdsGame *game, unsigned long call, void *argp)
 	switch (call) {
 		case QDS_GETMODENAME:
 			*(const char **)argp = "Marathon";
+			return 0;
+		case QDS_GETTIME:
+			*(unsigned int *)argp = data->time;
 			return 0;
 		case QDS_GETLEVEL:
 			*(int *)argp = data->level + 1;
@@ -162,13 +179,21 @@ static int modeInvisibleCall(qdsGame *game, unsigned long call, void *argp)
 QDS_API const qdsGamemode qdsModeMarathon = {
 	.init = init,
 	.destroy = free,
-	.events = { .onLineFilled = onLineFilled },
+	.events = {
+		.onCycle = onCycle,
+		.onLineFilled = onLineFilled,
+		.onTopOut = onTopOut,
+	},
 	.call = modeCall,
 };
 
 QDS_API const qdsGamemode qdsModeInvisible = {
 	.init = init,
 	.destroy = free,
-	.events = { .onLineFilled = onLineFilled },
+	.events = {
+		.onCycle = onCycle,
+		.onLineFilled = onLineFilled,
+		.onTopOut = onTopOut,
+	},
 	.call = modeInvisibleCall,
 };

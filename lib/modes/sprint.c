@@ -32,15 +32,26 @@
 
 struct modeData
 {
+	unsigned int time;
 	int lines;
+	bool gameOver : 1;
 };
 
 static void *init(void)
 {
 	struct modeData *data = malloc(sizeof(struct modeData));
 	if (!data) return NULL;
+	data->time = 0;
 	data->lines = 0;
+	data->gameOver = false;
 	return data;
+}
+
+static void onCycle(qdsGame *game)
+{
+	struct modeData *data = qdsGetModeData(game);
+
+	if (!data->gameOver && data->lines < 40) data->time += 1;
 }
 
 static bool onSpawn(qdsGame *game, int piece)
@@ -51,6 +62,12 @@ static bool onSpawn(qdsGame *game, int piece)
 		return false;
 	}
 	return true;
+}
+
+static void onTopOut(qdsGame *game)
+{
+	struct modeData *data = qdsGetModeData(game);
+	data->gameOver = true;
 }
 
 static void onLineFilled(qdsGame *game, int y)
@@ -66,6 +83,9 @@ static int call(qdsGame *game, unsigned long req, void *argp)
 	switch (req) {
 		case QDS_GETMODENAME:
 			*(const char **)argp = "Sprint";
+			return 0;
+		case QDS_GETTIME:
+			*(unsigned int *)argp = data->time;
 			return 0;
 		case QDS_GETGRAVITY:
 			*(int *)argp = 1092;
@@ -94,8 +114,10 @@ QDS_API const qdsGamemode qdsModeSprint = {
 	.init = init,
 	.destroy = free,
 	.events = {
+		.onCycle = onCycle,
 		.onSpawn = onSpawn,
 		.onLineFilled = onLineFilled,
+		.onTopOut = onTopOut,
 	},
 	.call = call,
 };
