@@ -40,6 +40,7 @@
 struct inputData
 {
 	int fd;
+	int oldStdinMode;
 };
 
 unsigned int mapEvdevInput(int key)
@@ -143,6 +144,11 @@ static unsigned int readInput(unsigned int *prev, void *st)
 		}
 	}
 
+	/* clear out stdin */
+
+	while (read(STDIN_FILENO, &ev, sizeof(struct input_event)) > 0)
+		;
+
 	*prev = input;
 	return input;
 }
@@ -169,6 +175,11 @@ static void *initInput(int fd)
 		return NULL;
 	}
 
+	data->oldStdinMode = fcntl(STDIN_FILENO, F_GETFL);
+	if (data->oldStdinMode >= 0) {
+		fcntl(STDIN_FILENO, F_SETFL, data->oldStdinMode | O_NONBLOCK);
+	}
+
 	return data;
 }
 
@@ -176,20 +187,10 @@ static void cleanup(void *state)
 {
 	struct inputData *data = state;
 	close(data->fd);
+	if (data->oldStdinMode >= 0) {
+		fcntl(STDIN_FILENO, F_SETFL, data->oldStdinMode);
+	}
 	free(data);
-
-	/* read out stdin to prevent issues when exiting */
-	int fileflags = fcntl(STDIN_FILENO, F_GETFL);
-	if (fileflags >= 0) {
-		fcntl(STDIN_FILENO, F_SETFL, fileflags | O_NONBLOCK);
-	}
-	char *buf = malloc(4096);
-	while (read(STDIN_FILENO, buf, 4096) > 0)
-		;
-	free(buf);
-	if (fileflags >= 0) {
-		fcntl(STDIN_FILENO, F_SETFL, fileflags);
-	}
 }
 
 const struct inputHandler evdevInput = {
